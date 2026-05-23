@@ -42,7 +42,7 @@ public class IntakeIOSim implements IntakeIO {
     }
 
     @Override
-    public void zeroHere() {}
+    public void zeroPivotHere() {}
 
     @Override
     public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV) {}

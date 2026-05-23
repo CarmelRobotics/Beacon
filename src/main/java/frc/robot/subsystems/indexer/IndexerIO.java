@@ -33,6 +33,5 @@ public interface IndexerIO {
     }
 
     public void setIndexerVoltage(Voltage voltage);
-
     public void updateInputs(IndexerIOInputsAutoLogged inputs);
 }

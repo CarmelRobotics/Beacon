@@ -53,11 +53,10 @@ public interface IntakeIO {
         }
     }
 
-    public void zeroHere();
+    public void zeroPivotHere();
     public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV);
-    public default void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {}
+    public default void updatePivotMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {}
     public void setPivotPosition(Angle position);
     public void setRollerVoltage(Voltage voltage);
-
     public void updateInputs(IntakeIOInputsAutoLogged inputs);
 }

@@ -14,6 +14,12 @@ public class Intake extends SubsystemBase {
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs;
 
+    @AutoLogOutput(key = "Intake/PivotState")
+    private PivotState pivotState;
+
+    @AutoLogOutput(key = "Intake/RollerState")
+    private RollerState rollerState;
+
     private final LoggedTunableNumber pivotKA;
     private final LoggedTunableNumber pivotKD;
     private final LoggedTunableNumber pivotKI;
@@ -26,12 +32,6 @@ public class Intake extends SubsystemBase {
 
     private final Alert pivotMotorDisconnected;
     private final Alert rollerMotorDisconnected;
-
-    @AutoLogOutput(key = "Intake/PivotState")
-    public PivotState pivotState;
-
-    @AutoLogOutput(key = "Intake/RollerState")
-    public RollerState rollerState;
 
     public Intake(IntakeIO io) {
         this.io = io;
@@ -77,8 +77,8 @@ public class Intake extends SubsystemBase {
             || pivotKJerk.hasChanged(hashCode());
     }
 
-    public void zeroHere() {
-        io.zeroHere();
+    public void zeroPivotHere() {
+        io.zeroPivotHere();
     }
 
     public void setState(PivotState pivotState, RollerState rollerState) {
@@ -110,7 +110,7 @@ public class Intake extends SubsystemBase {
             );
         }
         if (io instanceof IntakeIOTalonFX && hasMotionMagicChanged()) {
-            io.updateMotionMagic(
+            io.updatePivotMotionMagic(
                 pivotKCruiseVelocity.get(),
                 pivotKCruiseVelocity.get(),
                 pivotKJerk.get()

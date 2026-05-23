@@ -44,7 +44,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void zeroHere() {
+    public void zeroPivotHere() {
         pivotMotor.setPosition(0);
     }
 
@@ -56,7 +56,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
+    public void updatePivotMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
         pivotMotor.getConfigurator().apply(new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(kCruiseVelocity)
             .withMotionMagicAcceleration(kAcceleration)
