@@ -1,6 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.AutoLog;
@@ -13,7 +13,7 @@ import edu.wpi.first.units.measure.Voltage;
 
 public interface IntakeIO {
     @AutoLog
-    public static class IntakeIOInputsAutoLogged {
+    public static class IntakeIOInputs {
         public boolean pivotConnected;
         public Angle pivotPosition;
         public AngularVelocity pivotVelocity;
@@ -31,28 +31,33 @@ public interface IntakeIO {
     }
 
     public enum PivotState {
-        STOW,
-        GROUND;
+        STOW(Degrees.zero()),
+        GROUND(Degrees.of(360));
+
+        public final Angle position;
+
+        private PivotState(Angle position) {
+            this.position = position;
+        }
     }
 
     public enum RollerState {
-        OFF,
-        INTAKE,
-        EJECT;
+        OFF(Volts.zero()),
+        INTAKE(Volts.of(12)),
+        EJECT(Volts.of(-12));
+
+        public final Voltage voltage;
+
+        private RollerState(Voltage voltage) {
+            this.voltage = voltage;
+        }
     }
 
-    public static class IntakeIOOutputs {
-        public PivotState pivotState = PivotState.STOW;
-        public RollerState rollerState = RollerState.OFF;
+    public void zeroHere();
+    public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV);
+    public default void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {}
+    public void setPivotPosition(Angle position);
+    public void setRollerVoltage(Voltage voltage);
 
-        public Angle setPivotPosition = Rotations.zero();
-        public Voltage setPivotVoltage = Volts.zero();
-        public Voltage setRollerVoltage = Volts.zero();
-    }
-
-    public default void zeroHere() {}
-    public default void setPivotPosition(Angle position) {}
-    public default void setRollerVoltage(Voltage voltage) {}
-
-    public default void updateInputs(IntakeIOInputsAutoLogged inputs) {}
+    public void updateInputs(IntakeIOInputs inputs);
 }

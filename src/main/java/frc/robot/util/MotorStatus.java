@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
 public interface MotorStatus {
+    public boolean getConnected();
     public Angle getPosition();
     public AngularVelocity getVelocity();
     public Voltage getAppliedVoltage();

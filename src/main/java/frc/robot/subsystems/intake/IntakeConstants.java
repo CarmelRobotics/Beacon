@@ -14,16 +14,8 @@ public final class IntakeConstants {
     public static final int kRollerMotorId = 2;
 
     public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
-    
-    public static final DCMotor kSimPivotMotor = DCMotor.getKrakenX60(1);
-    public static final double kSimPivotMotorGearRatio = 1.0; // Please Tune
-    public static final double kSimPivotMotorGearMOIJ = 1.0; // Please Tune
 
-    public static final DCMotor kSimRollerMotor = DCMotor.getKrakenX60(1);
-    public static final double kSimRollerMotorGearRatio = 1.0; // Please Tune
-    public static final double kSimRollerMotorGearMOIJ = 1.0; // Please Tune
-
-    private static final class PivotConfigs {
+    public static final class PivotConfigs {
         public static final double kA = 0.01;
         public static final double kD = 0.15;
         public static final double kI = 0;
@@ -43,11 +35,21 @@ public final class IntakeConstants {
             .withMotionMagicCruiseVelocity(kMotionMagicCruiseVelocity)
             .withMotionMagicAcceleration(kMotionMagicAcceleration)
             .withMotionMagicJerk(kMotionMagicJerk);
+
+        public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
+            .withSlot0(PivotConfigs.Slot0Configs)
+            .withMotionMagic(PivotConfigs.MotionMagicConfigs);
+
+        public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
+        public static final double kSimMotorGearRatio = 1.0; // Please Tune
+        public static final double kSimMotorMOIJ = 1.0; // Please Tune
     }
 
-    public static final TalonFXConfiguration PivotConfiguration = new TalonFXConfiguration()
-        .withSlot0(PivotConfigs.Slot0Configs)
-        .withMotionMagic(PivotConfigs.MotionMagicConfigs);
-    
-    public static final TalonFXConfiguration RollerConfiguration = new TalonFXConfiguration();
+    public static final class RollerConfigs {
+        public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration();
+
+        public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
+        public static final double kSimMotorGearRatio = 1.0; // Please Tune
+        public static final double kSimMotorMOIJ = 1.0; // Please Tune
+    }
 }

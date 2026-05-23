@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
 public class TalonFXStatus implements MotorStatus {
+    private final TalonFX motor;
     private final StatusSignal<Angle> position;
     private final StatusSignal<AngularVelocity> velocity;
     private final StatusSignal<Voltage> appliedVoltage;
@@ -20,6 +21,7 @@ public class TalonFXStatus implements MotorStatus {
     private final StatusSignal<Temperature> temperature;
 
     public TalonFXStatus(final TalonFX motor) {
+        this.motor = motor;
         this.position = motor.getPosition();
         this.velocity = motor.getVelocity();
         this.appliedVoltage = motor.getMotorVoltage();
@@ -32,6 +34,10 @@ public class TalonFXStatus implements MotorStatus {
         BaseStatusSignal.setUpdateFrequencyForAll(
             frequency,position, velocity, appliedVoltage, 
             supplyCurrent, statorCurrent, temperature);
+    }
+
+    public boolean getConnected() {
+        return motor.isConnected();
     }
 
     public Angle getPosition() {

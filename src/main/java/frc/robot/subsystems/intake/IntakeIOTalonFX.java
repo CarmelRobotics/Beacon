@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,8 +31,8 @@ public class IntakeIOTalonFX implements IntakeIO {
         this.positionRequest = new MotionMagicVoltage(0);
         this.voltageRequest = new VoltageOut(0);
 
-        pivotMotor.getConfigurator().apply(IntakeConstants.PivotConfiguration);
-        rollerMotor.getConfigurator().apply(IntakeConstants.RollerConfiguration);
+        pivotMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
+        rollerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
 
         pivotMotor.setNeutralMode(NeutralModeValue.Brake);
 
@@ -47,6 +49,22 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
+    public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV) {
+        pivotMotor.getConfigurator().apply(new Slot0Configs()
+            .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV)
+        );
+    }
+
+    @Override
+    public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
+        pivotMotor.getConfigurator().apply(new MotionMagicConfigs()
+            .withMotionMagicCruiseVelocity(kCruiseVelocity)
+            .withMotionMagicAcceleration(kAcceleration)
+            .withMotionMagicJerk(kJerk)
+        );
+    }
+
+    @Override
     public void setPivotPosition(Angle position) {
         pivotMotor.setControl(positionRequest.withPosition(position));
     }
@@ -57,15 +75,15 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void updateInputs(IntakeIOInputsAutoLogged inputs) {
-        inputs.pivotConnected = pivotMotor.isConnected();
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.pivotConnected = pivotStatus.getConnected();
         inputs.pivotPosition = pivotStatus.getPosition();
         inputs.pivotVelocity = pivotStatus.getVelocity();
         inputs.pivotAppliedVoltage = pivotStatus.getAppliedVoltage();
         inputs.pivotStatorCurrent = pivotStatus.getSupplyCurrent();
         inputs.pivotTemperature = pivotStatus.getTemperature();
 
-        inputs.rollerConnected = rollerMotor.isConnected();
+        inputs.rollerConnected = rollerStatus.getConnected();
         inputs.rollerVelocity = rollerStatus.getVelocity();
         inputs.rollerAppliedVoltage = rollerStatus.getAppliedVoltage();
         inputs.rollerSupplyCurrent = rollerStatus.getSupplyCurrent();
