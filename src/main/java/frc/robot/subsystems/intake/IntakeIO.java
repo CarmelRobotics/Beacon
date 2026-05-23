@@ -59,5 +59,5 @@ public interface IntakeIO {
     public void setPivotPosition(Angle position);
     public void setRollerVoltage(Voltage voltage);
 
-    public void updateInputs(IntakeIOInputs inputs);
+    public void updateInputs(IntakeIOInputsAutoLogged inputs);
 }

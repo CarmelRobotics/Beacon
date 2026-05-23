@@ -75,7 +75,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void updateInputs(IntakeIOInputs inputs) {
+    public void updateInputs(IntakeIOInputsAutoLogged inputs) {
         inputs.pivotConnected = pivotStatus.getConnected();
         inputs.pivotPosition = pivotStatus.getPosition();
         inputs.pivotVelocity = pivotStatus.getVelocity();
