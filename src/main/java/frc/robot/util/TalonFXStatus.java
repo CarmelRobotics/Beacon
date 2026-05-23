@@ -34,6 +34,7 @@ public class TalonFXStatus implements MotorStatus {
         BaseStatusSignal.setUpdateFrequencyForAll(
             frequency,position, velocity, appliedVoltage, 
             supplyCurrent, statorCurrent, temperature);
+        motor.optimizeBusUtilization();
     }
 
     public boolean getConnected() {

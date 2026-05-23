@@ -27,7 +27,7 @@ public class IntakeIOSim implements IntakeIO {
                 IntakeConstants.PivotConfigs.kSimMotor
         );
 
-        this.rollerMotor = 
+        this.rollerMotor =
             new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
                     IntakeConstants.RollerConfigs.kSimMotor,

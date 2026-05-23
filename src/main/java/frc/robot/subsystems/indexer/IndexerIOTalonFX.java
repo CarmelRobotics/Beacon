@@ -17,9 +17,7 @@ public class IndexerIOTalonFX implements IndexerIO {
         this.voltageRequest = new VoltageOut(0);
 
         indexerMotor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration);
-
         indexerStatus.setUpdateFrequency(IndexerConstants.kStatusUpdateFrequency);
-        indexerMotor.optimizeBusUtilization();
     }
 
     @Override

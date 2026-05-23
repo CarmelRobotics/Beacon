@@ -15,11 +15,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     private final TalonFX pivotMotor;
     private final TalonFX rollerMotor;
 
-    private final MotionMagicVoltage positionRequest;
-    private final VoltageOut voltageRequest;
-
     private final TalonFXStatus pivotStatus;
     private final TalonFXStatus rollerStatus;
+
+    private final MotionMagicVoltage positionRequest;
+    private final VoltageOut voltageRequest;
 
     public IntakeIOTalonFX() {
         this.pivotMotor = new TalonFX(IntakeConstants.kPivotMotorId);
@@ -38,9 +38,6 @@ public class IntakeIOTalonFX implements IntakeIO {
 
         pivotStatus.setUpdateFrequency(IntakeConstants.kStatusUpdateFrequency);
         rollerStatus.setUpdateFrequency(IntakeConstants.kStatusUpdateFrequency);
-
-        pivotMotor.optimizeBusUtilization();
-        rollerMotor.optimizeBusUtilization();
     }
 
     @Override
