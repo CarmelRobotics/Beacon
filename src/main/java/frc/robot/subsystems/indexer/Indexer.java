@@ -1,34 +1,39 @@
 package frc.robot.subsystems.indexer;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.indexer.IndexerIO.IndexerState;
+import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 
 public class Indexer extends SubsystemBase {
     private final IndexerIO io;
     private final IndexerIOInputsAutoLogged inputs;
-    @AutoLogOutput(key = "Indexer/IndexerState")
-    public IndexerState indexerState;
     private final Alert indexerMotorDisconnected;
 
     public Indexer(IndexerIO io) {
         this.io = io;
         this.inputs = new IndexerIOInputsAutoLogged();
-        this.indexerState = IndexerState.OFF;
         this.indexerMotorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
     }
 
-    public void setState(IndexerState indexerState) {
-        this.indexerState = indexerState;
+    public Command setState(IndexerState indexerState) {
+        switch (indexerState) {
+            case IDLE:
+                return run(() -> io.setIndexerVoltage(IndexerConstants.kIdleVoltage));
+            case FEED:
+                return run(() -> io.setIndexerVoltage(IndexerConstants.kFeedVoltage));
+            case EJECT:
+                return run(() -> io.setIndexerVoltage(IndexerConstants.kEjectVoltage));
+        }
+
+        return Commands.none();
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        io.setIndexerVoltage(indexerState.voltage);
         indexerMotorDisconnected.set(!inputs.connected);
     }
 }

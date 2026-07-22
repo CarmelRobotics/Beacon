@@ -1,16 +1,28 @@
 package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Hertz;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.units.measure.Voltage;
 
 public final class IndexerConstants {
     public static final int kMotorId = 3;
 
     public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
+
+    public static final Voltage kIdleVoltage = Volts.zero();
+    public static final Voltage kFeedVoltage = Volts.of(12);
+    public static final Voltage kEjectVoltage = Volts.of(-12);
+
+    public enum IndexerState {
+        IDLE,
+        FEED,
+        EJECT;
+    }
 
     public static final class Configs {
         public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration();
