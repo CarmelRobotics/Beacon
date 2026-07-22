@@ -10,22 +10,22 @@ import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 public class Indexer extends SubsystemBase {
     private final IndexerIO io;
     private final IndexerIOInputsAutoLogged inputs;
-    private final Alert indexerMotorDisconnected;
+    private final Alert motorDisconnected;
 
     public Indexer(IndexerIO io) {
         this.io = io;
         this.inputs = new IndexerIOInputsAutoLogged();
-        this.indexerMotorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
+        this.motorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
     }
 
     public Command setState(IndexerState indexerState) {
         switch (indexerState) {
             case IDLE:
-                return run(() -> io.setIndexerVoltage(IndexerConstants.kIdleVoltage));
+                return run(() -> io.setVoltage(IndexerConstants.kIdleVoltage));
             case FEED:
-                return run(() -> io.setIndexerVoltage(IndexerConstants.kFeedVoltage));
+                return run(() -> io.setVoltage(IndexerConstants.kFeedVoltage));
             case EJECT:
-                return run(() -> io.setIndexerVoltage(IndexerConstants.kEjectVoltage));
+                return run(() -> io.setVoltage(IndexerConstants.kEjectVoltage));
         }
 
         return Commands.none();
@@ -34,6 +34,6 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        indexerMotorDisconnected.set(!inputs.connected);
+        motorDisconnected.set(!inputs.connected);
     }
 }

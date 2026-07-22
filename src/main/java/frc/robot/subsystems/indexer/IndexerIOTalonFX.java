@@ -7,31 +7,31 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.util.TalonFXStatus;
 
 public class IndexerIOTalonFX implements IndexerIO {
-    private final TalonFX indexerMotor;
-    private final TalonFXStatus indexerStatus;
+    private final TalonFX motor;
+    private final TalonFXStatus motorStatus;
     private final VoltageOut voltageRequest;
     
     public IndexerIOTalonFX() {
-        this.indexerMotor = new TalonFX(IndexerConstants.kMotorId);
-        this.indexerStatus = new TalonFXStatus(indexerMotor);
+        this.motor = new TalonFX(IndexerConstants.kMotorId);
+        this.motorStatus = new TalonFXStatus(motor);
         this.voltageRequest = new VoltageOut(0);
 
-        indexerMotor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration);
-        indexerStatus.setUpdateFrequency(IndexerConstants.kStatusUpdateFrequency);
+        motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration);
+        motorStatus.setUpdateFrequency(IndexerConstants.kStatusUpdateFrequency);
     }
 
     @Override
-    public void setIndexerVoltage(Voltage voltage) {
-        indexerMotor.setControl(voltageRequest.withOutput(voltage));
+    public void setVoltage(Voltage voltage) {
+        motor.setControl(voltageRequest.withOutput(voltage));
     }
 
     @Override
     public void updateInputs(IndexerIOInputsAutoLogged inputs) {
-        inputs.connected = indexerStatus.getConnected();
-        inputs.velocity = indexerStatus.getVelocity();
-        inputs.appliedVoltage = indexerStatus.getAppliedVoltage();
-        inputs.supplyCurrent = indexerStatus.getSupplyCurrent();
-        inputs.statorCurrent = indexerStatus.getStatorCurrent();
-        inputs.temperature = indexerStatus.getTemperature();
+        inputs.connected = motorStatus.getConnected();
+        inputs.velocity = motorStatus.getVelocity();
+        inputs.appliedVoltage = motorStatus.getAppliedVoltage();
+        inputs.supplyCurrent = motorStatus.getSupplyCurrent();
+        inputs.statorCurrent = motorStatus.getStatorCurrent();
+        inputs.temperature = motorStatus.getTemperature();
     }
 }

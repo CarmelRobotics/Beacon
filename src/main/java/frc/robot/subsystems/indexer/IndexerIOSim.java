@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.util.SimMotorStatus;
 
 public class IndexerIOSim implements IndexerIO {
-    private final DCMotorSim indexerMotor;
-    private final SimMotorStatus indexerStatus;
+    private final DCMotorSim motor;
+    private final SimMotorStatus motorStatus;
 
     public IndexerIOSim() {
-        this.indexerMotor =
+        this.motor =
             new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
                     IndexerConstants.Configs.kSimMotor,
@@ -22,21 +22,21 @@ public class IndexerIOSim implements IndexerIO {
                 IndexerConstants.Configs.kSimMotor
         );
 
-        this.indexerStatus = new SimMotorStatus(indexerMotor);
+        this.motorStatus = new SimMotorStatus(motor);
     }
 
     @Override
-    public void setIndexerVoltage(Voltage voltage) {
-        indexerMotor.setInputVoltage(voltage.in(Volts));
+    public void setVoltage(Voltage voltage) {
+        motor.setInputVoltage(voltage.in(Volts));
     }
 
     @Override
     public void updateInputs(IndexerIOInputsAutoLogged inputs) {
-        inputs.connected = indexerStatus.getConnected();
-        inputs.velocity = indexerStatus.getVelocity();
-        inputs.appliedVoltage = indexerStatus.getAppliedVoltage();
-        inputs.supplyCurrent = indexerStatus.getSupplyCurrent();
-        inputs.statorCurrent = indexerStatus.getStatorCurrent();
-        inputs.temperature = indexerStatus.getTemperature();
+        inputs.connected = motorStatus.getConnected();
+        inputs.velocity = motorStatus.getVelocity();
+        inputs.appliedVoltage = motorStatus.getAppliedVoltage();
+        inputs.supplyCurrent = motorStatus.getSupplyCurrent();
+        inputs.statorCurrent = motorStatus.getStatorCurrent();
+        inputs.temperature = motorStatus.getTemperature();
     }
 }
