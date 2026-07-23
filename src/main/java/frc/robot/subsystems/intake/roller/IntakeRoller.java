@@ -12,11 +12,13 @@ import frc.robot.subsystems.intake.IntakeConstants.RollerState;
 public class IntakeRoller extends SubsystemBase {
     private final IntakeRollerIO io;
     private final IntakeRollerIOInputsAutoLogged inputs;
+
     private final Alert motorDisconnected;
     
     public IntakeRoller(IntakeRollerIO io) {
         this.io = io;
         this.inputs = new IntakeRollerIOInputsAutoLogged();
+        
         this.motorDisconnected = new Alert("[Intake] Roller Motor Disconnected.", AlertType.kError);
     }
 

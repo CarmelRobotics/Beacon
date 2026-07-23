@@ -9,11 +9,13 @@ import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 public class Indexer extends SubsystemBase {
     private final IndexerIO io;
     private final IndexerIOInputsAutoLogged inputs;
+
     private final Alert motorDisconnected;
 
     public Indexer(IndexerIO io) {
         this.io = io;
         this.inputs = new IndexerIOInputsAutoLogged();
+        
         this.motorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
     }
 

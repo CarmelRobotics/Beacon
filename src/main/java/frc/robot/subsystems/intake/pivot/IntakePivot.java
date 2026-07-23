@@ -14,6 +14,8 @@ public class IntakePivot extends SubsystemBase {
     private final IntakePivotIO io;
     private final IntakePivotIOInputsAutoLogged inputs;
 
+    private final Alert motorDisconnected;
+
     private final LoggedTunableNumber kA;
     private final LoggedTunableNumber kD;
     private final LoggedTunableNumber kI;
@@ -24,11 +26,11 @@ public class IntakePivot extends SubsystemBase {
     private final LoggedTunableNumber kAcceleration;
     private final LoggedTunableNumber kJerk;
 
-    private final Alert motorDisconnected;
-
     public IntakePivot(IntakePivotIO io) {
         this.io = io;
         this.inputs = new IntakePivotIOInputsAutoLogged();
+
+        this.motorDisconnected = new Alert("[Intake] Pivot Motor Disconnected.", AlertType.kError);
 
         this.kA = 
             new LoggedTunableNumber("Intake/Pivot/kA", IntakeConstants.PivotConfigs.kA);
@@ -49,9 +51,18 @@ public class IntakePivot extends SubsystemBase {
         this.kJerk = 
             new LoggedTunableNumber("Intake/Pivot/kJerk", IntakeConstants.PivotConfigs.kMotionMagicJerk);
 
-        this.motorDisconnected = new Alert("[Intake] Pivot Motor Disconnected.", AlertType.kError);
-
         io.zeroHere();
+    }
+
+    public Command zeroHere() {
+        return run(() -> io.zeroHere());
+    }
+
+    public Command setState(PivotState state) {
+        return (switch (state) {
+            case STOW -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
+            case DEPLOY -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
+        }).withName("[Intake] Run from state: " + state.toString());
     }
 
     private boolean hasPIDChanged() {
@@ -67,17 +78,6 @@ public class IntakePivot extends SubsystemBase {
         return kCruiseVelocity.hasChanged(hashCode())
             || kAcceleration.hasChanged(hashCode())
             || kJerk.hasChanged(hashCode());
-    }
-
-    public Command zeroHere() {
-        return run(() -> io.zeroHere());
-    }
-
-    public Command setState(PivotState state) {
-        return (switch (state) {
-            case STOW -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
-            case DEPLOY -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
-        }).withName("[Intake] Run from state: " + state.toString());
     }
 
     @Override
