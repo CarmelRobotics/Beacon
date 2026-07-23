@@ -3,7 +3,6 @@ package frc.robot.subsystems.indexer;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 
@@ -18,17 +17,12 @@ public class Indexer extends SubsystemBase {
         this.motorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
     }
 
-    public Command setState(IndexerState indexerState) {
-        switch (indexerState) {
-            case IDLE:
-                return run(() -> io.setVoltage(IndexerConstants.kIdleVoltage));
-            case FEED:
-                return run(() -> io.setVoltage(IndexerConstants.kFeedVoltage));
-            case EJECT:
-                return run(() -> io.setVoltage(IndexerConstants.kEjectVoltage));
-        }
-
-        return Commands.none();
+    public Command setState(IndexerState state) {
+        return (switch (state) {
+            case IDLE -> run(() -> io.setVoltage(IndexerConstants.kIdleVoltage));
+            case FEED -> run(() -> io.setVoltage(IndexerConstants.kFeedVoltage));
+            case EJECT -> run(() -> io.setVoltage(IndexerConstants.kEjectVoltage));
+        }).withName("[Indexer] Run from state: " + state.toString());
     }
 
     @Override
