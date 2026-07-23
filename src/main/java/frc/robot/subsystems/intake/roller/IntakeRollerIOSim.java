@@ -6,7 +6,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.util.SimMotorStatus;
+import frc.robot.util.motorstatus.SimMotorStatus;
 
 public class IntakeRollerIOSim implements IntakeRollerIO {
     private final DCMotorSim motor;

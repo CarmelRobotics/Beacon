@@ -6,7 +6,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.util.SimMotorStatus;
+import frc.robot.util.motorstatus.SimMotorStatus;
 
 public class ShooterRollerIOSim implements ShooterRollerIO {
     private final DCMotorSim frontLeftMotor;

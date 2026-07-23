@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.util.TalonFXStatus;
+import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     private final TalonFX frontLeftLeaderMotor;

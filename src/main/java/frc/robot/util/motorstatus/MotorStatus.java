@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.motorstatus;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;

@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.util.TalonFXStatus;
+import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterKickerIOTalonFX implements ShooterKickerIO {
     private final TalonFX motor;

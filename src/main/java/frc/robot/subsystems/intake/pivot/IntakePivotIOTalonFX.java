@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.util.TalonFXStatus;
+import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IntakePivotIOTalonFX implements IntakePivotIO {
     private final TalonFX motor;

@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.util.TalonFXStatus;
+import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     private final TalonFX motor;

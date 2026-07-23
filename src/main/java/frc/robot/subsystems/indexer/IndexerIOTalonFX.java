@@ -4,7 +4,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.util.TalonFXStatus;
+import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IndexerIOTalonFX implements IndexerIO {
     private final TalonFX motor;

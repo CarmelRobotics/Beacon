@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.motorstatus;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
