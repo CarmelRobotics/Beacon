@@ -19,7 +19,7 @@ public class IntakeRoller extends SubsystemBase {
         this.io = io;
         this.inputs = new IntakeRollerIOInputsAutoLogged();
         
-        this.motorDisconnected = new Alert("[Intake] Roller Motor Disconnected.", AlertType.kError);
+        this.motorDisconnected = new Alert("[Intake/Roller] Roller Motor Disconnected.", AlertType.kError);
     }
 
     public Command setState(RollerState state) {
@@ -27,7 +27,7 @@ public class IntakeRoller extends SubsystemBase {
             case IDLE -> run(() -> io.setVoltage(IntakeConstants.kIdleVoltage));
             case INTAKE -> run(() -> io.setVoltage(IntakeConstants.kIntakeVoltage));
             case EJECT -> run(() -> io.setVoltage(IntakeConstants.kEjectVoltage));
-        }).withName("[Intake] Run from state: " + state.toString());
+        }).withName("[Intake/Roller] Run from state: " + state.toString());
     }
 
     @Override

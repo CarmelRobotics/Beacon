@@ -30,7 +30,7 @@ public class IntakePivot extends SubsystemBase {
         this.io = io;
         this.inputs = new IntakePivotIOInputsAutoLogged();
 
-        this.motorDisconnected = new Alert("[Intake] Pivot Motor Disconnected.", AlertType.kError);
+        this.motorDisconnected = new Alert("[Intake/Pivot] Pivot Motor Disconnected.", AlertType.kError);
 
         this.kA = 
             new LoggedTunableNumber("Intake/Pivot/kA", IntakeConstants.PivotConfigs.kA);
@@ -62,7 +62,7 @@ public class IntakePivot extends SubsystemBase {
         return (switch (state) {
             case STOW -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
             case DEPLOY -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
-        }).withName("[Intake] Run from state: " + state.toString());
+        }).withName("[Intake/Pivot] Run from state: " + state.toString());
     }
 
     private boolean hasPIDChanged() {
