@@ -10,34 +10,34 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.TalonFXStatus;
 
 public class ShooterPivotIOTalonFX implements ShooterPivotIO {
-    private final TalonFX pivotMotor;
-    private final TalonFXStatus pivotStatus;
+    private final TalonFX motor;
+    private final TalonFXStatus motorStatus;
     private final MotionMagicVoltage positionRequest;
 
     public ShooterPivotIOTalonFX() {
-        this.pivotMotor = new TalonFX(ShooterConstants.kPivotMotorId);
-        this.pivotStatus = new TalonFXStatus(pivotMotor);
+        this.motor = new TalonFX(ShooterConstants.kPivotMotorId);
+        this.motorStatus = new TalonFXStatus(motor);
         this.positionRequest = new MotionMagicVoltage(0);
 
-        pivotMotor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration);
-        pivotStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
+        motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration);
+        motorStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
     }
 
     @Override
-    public void zeroPivotHere() {
-        pivotMotor.setPosition(0);
+    public void zeroHere() {
+        motor.setPosition(0);
     }
 
     @Override
-    public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV) {
-        pivotMotor.getConfigurator().apply(new Slot0Configs()
+    public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {
+        motor.getConfigurator().apply(new Slot0Configs()
             .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV)
         );
     }
 
     @Override
-    public void updatePivotMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
-        pivotMotor.getConfigurator().apply(new MotionMagicConfigs()
+    public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
+        motor.getConfigurator().apply(new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(kCruiseVelocity)
             .withMotionMagicAcceleration(kAcceleration)
             .withMotionMagicJerk(kJerk)
@@ -45,17 +45,17 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     }
 
     @Override
-    public void setPivotPosition(Angle position) {
-        pivotMotor.setControl(positionRequest.withPosition(position));
+    public void setPosition(Angle position) {
+        motor.setControl(positionRequest.withPosition(position));
     }
 
     @Override
     public void updateInputs(ShooterPivotIOInputsAutoLogged inputs) {
-        inputs.connected = pivotStatus.getConnected();
-        inputs.position = pivotStatus.getPosition();
-        inputs.velocity = pivotStatus.getVelocity();
-        inputs.appliedVoltage = pivotStatus.getAppliedVoltage();
-        inputs.statorCurrent = pivotStatus.getSupplyCurrent();
-        inputs.temperature = pivotStatus.getTemperature();
+        inputs.connected = motorStatus.getConnected();
+        inputs.position = motorStatus.getPosition();
+        inputs.velocity = motorStatus.getVelocity();
+        inputs.appliedVoltage = motorStatus.getAppliedVoltage();
+        inputs.statorCurrent = motorStatus.getSupplyCurrent();
+        inputs.temperature = motorStatus.getTemperature();
     }
 }

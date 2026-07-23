@@ -1,16 +1,13 @@
 package frc.robot.subsystems.shooter.roller;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.TalonFXStatus;
 
@@ -21,7 +18,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     private final TalonFX backRightFollowerMotor;
 
     private final VelocityVoltage velocityRequest;
-    private final VoltageOut voltageRequest;
+    private final DutyCycleOut dutyCycyleRequest;
 
     private final TalonFXStatus frontLeftLeaderStatus;
     private final TalonFXStatus backLeftFollowerStatus;
@@ -40,10 +37,9 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
         this.backRightFollowerStatus = new TalonFXStatus(backRightFollowerMotor);
 
         this.velocityRequest = new VelocityVoltage(0);
-        this.voltageRequest = new VoltageOut(0);
+        this.dutyCycyleRequest = new DutyCycleOut(0);
 
-        frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration
-            .withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive)));
+        frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration);
 
         backLeftFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
         frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -61,7 +57,6 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
             .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
 
         frontLeftLeaderMotor.getConfigurator().apply(slot0configs);
-        backLeftFollowerMotor.getConfigurator().apply(slot0configs);
     }
 
     @Override
@@ -70,8 +65,8 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     }
 
     @Override
-    public void setVoltage(Voltage voltage) {
-        frontLeftLeaderMotor.setControl(voltageRequest.withOutput(voltage));
+    public void setOutput(double output) {
+        frontLeftLeaderMotor.setControl(dutyCycyleRequest.withOutput(output));
     }
 
     @Override

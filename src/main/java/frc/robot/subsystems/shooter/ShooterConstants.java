@@ -1,6 +1,8 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Hertz;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -8,9 +10,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Frequency;
 
 public final class ShooterConstants {
+    /*
+     * TODO: Tune constants
+     */
+
     public static final int kPivotMotorId = 8;
     public static final int kKickerMotorId = 9;
     public static final int kFrontLeftLeaderRollerMotorId = 4;
@@ -53,8 +61,8 @@ public final class ShooterConstants {
             .withMotionMagic(PivotConfigs.MotionMagicConfigs);
 
         public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
-        public static final double kSimMotorGearRatio = 1.0; // Please Tune
-        public static final double kSimMotorMOIJ = 1.0; // Please Tune
+        public static final double kSimMotorGearRatio = 1.0;
+        public static final double kSimMotorMOIJ = 1.0;
     }
 
     public static final class RollerConfigs {
@@ -73,8 +81,8 @@ public final class ShooterConstants {
             .withSlot0(RollerConfigs.Slot0Configs);
 
         public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
-        public static final double kSimMotorGearRatio = 1.0; // Please Tune
-        public static final double kSimMotorMOIJ = 1.0; // Please Tune
+        public static final double kSimMotorGearRatio = 1.0;
+        public static final double kSimMotorMOIJ = 1.0;
     }
 
     public static final class KickerConfigs {
@@ -93,16 +101,41 @@ public final class ShooterConstants {
             .withSlot0(RollerConfigs.Slot0Configs);
 
         public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
-        public static final double kSimMotorGearRatio = 1.0; // Please Tune
-        public static final double kSimMotorMOIJ = 1.0; // Please Tune
+        public static final double kSimMotorGearRatio = 1.0;
+        public static final double kSimMotorMOIJ = 1.0;
     }
 
-    public enum ShooterState {
-        STOW,
-        OFF,
-        PASS_PRESET,
+    public static final double kKickerIdleOutput = 0.0;
+    public static final double kKickerEjectOutput = -1.0;
+    public static final AngularVelocity kKickerStaticScoreVelocity = RotationsPerSecond.of(4.5);
+
+    public static final Angle kPivotStowAngle = Degrees.zero();
+    public static final Angle kPivotStaticScoreAngle = Degrees.of(5);
+
+    public static final AngularVelocity kRollerIdleVelocity = RotationsPerSecond.of(0.5);
+    public static final AngularVelocity kRollerStaticScoreVelocity = RotationsPerSecond.of(40);
+    public static final double kRollerSendOutput = 1.0;
+
+    public enum KickerState {
+        IDLE,
+        EJECT,
+        STATIC_SCORE,
         PASS,
-        SCORE_PRESET,
+        SCORE;
+    }
+
+    public enum PivotState {
+        STOW,
+        STATIC_SCORE,
+        PASS,
+        SCORE;
+    }
+
+    public enum RollerState {
+        IDLE,
+        STATIC_SCORE,
+        STATIC_SEND,
+        PASS,
         SCORE;
     }
 }

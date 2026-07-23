@@ -1,21 +1,19 @@
 package frc.robot.subsystems.shooter.kicker;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.SimMotorStatus;
 
 public class ShooterKickerIOSim implements ShooterKickerIO {
-    private final DCMotorSim kickerMotor;
-    private final SimMotorStatus kickerStatus;
+    private final DCMotorSim motor;
+    private final SimMotorStatus motorStatus;
 
     public ShooterKickerIOSim() {
-        this.kickerMotor =
+        this.motor =
             new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
                     ShooterConstants.KickerConfigs.kSimMotor,
@@ -25,7 +23,7 @@ public class ShooterKickerIOSim implements ShooterKickerIO {
                 ShooterConstants.KickerConfigs.kSimMotor
         );
 
-        this.kickerStatus = new SimMotorStatus(kickerMotor);
+        this.motorStatus = new SimMotorStatus(motor);
     }
 
     @Override
@@ -33,21 +31,21 @@ public class ShooterKickerIOSim implements ShooterKickerIO {
     
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        kickerMotor.setAngularVelocity(velocity.in(RadiansPerSecond));
+        motor.setAngularVelocity(velocity.in(RadiansPerSecond));
     }
 
     @Override
-    public void setVoltage(Voltage voltage) {
-        kickerMotor.setInputVoltage(voltage.in(Volts));
+    public void setOutput(double output) {
+        motor.setInputVoltage(12.0 * output);
     }
     
     @Override
     public void updateInputs(ShooterKickerIOInputsAutoLogged inputs) {
-        inputs.connected = kickerStatus.getConnected();
-        inputs.velocity = kickerStatus.getVelocity();
-        inputs.appliedVoltage = kickerStatus.getAppliedVoltage();
-        inputs.supplyCurrent = kickerStatus.getSupplyCurrent();
-        inputs.statorCurrent = kickerStatus.getStatorCurrent();
-        inputs.temperature = kickerStatus.getTemperature();
+        inputs.connected = motorStatus.getConnected();
+        inputs.velocity = motorStatus.getVelocity();
+        inputs.appliedVoltage = motorStatus.getAppliedVoltage();
+        inputs.supplyCurrent = motorStatus.getSupplyCurrent();
+        inputs.statorCurrent = motorStatus.getStatorCurrent();
+        inputs.temperature = motorStatus.getTemperature();
     }
 }

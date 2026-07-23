@@ -9,11 +9,11 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.SimMotorStatus;
 
 public class ShooterPivotIOSim implements ShooterPivotIO {
-    private final DCMotorSim pivotMotor;
-    private final SimMotorStatus pivotStatus;
+    private final DCMotorSim motor;
+    private final SimMotorStatus motorStatus;
 
     public ShooterPivotIOSim() {
-        this.pivotMotor = 
+        this.motor = 
             new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
                     ShooterConstants.PivotConfigs.kSimMotor,
@@ -23,27 +23,27 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
                 ShooterConstants.PivotConfigs.kSimMotor
         );
 
-        this.pivotStatus = new SimMotorStatus(pivotMotor);
+        this.motorStatus = new SimMotorStatus(motor);
     }
 
     @Override
-    public void zeroPivotHere() {}
+    public void zeroHere() {}
 
     @Override
-    public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV) {}
+    public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
     
     @Override
-    public void setPivotPosition(Angle position) {
-        pivotMotor.setAngle(position.in(Radians));
+    public void setPosition(Angle position) {
+        motor.setAngle(position.in(Radians));
     }
 
     @Override
     public void updateInputs(ShooterPivotIOInputsAutoLogged inputs) {
-        inputs.connected = pivotStatus.getConnected();
-        inputs.position = pivotStatus.getPosition();
-        inputs.velocity = pivotStatus.getVelocity();
-        inputs.appliedVoltage = pivotStatus.getAppliedVoltage();
-        inputs.statorCurrent = pivotStatus.getSupplyCurrent();
-        inputs.temperature = pivotStatus.getTemperature();
+        inputs.connected = motorStatus.getConnected();
+        inputs.position = motorStatus.getPosition();
+        inputs.velocity = motorStatus.getVelocity();
+        inputs.appliedVoltage = motorStatus.getAppliedVoltage();
+        inputs.statorCurrent = motorStatus.getSupplyCurrent();
+        inputs.temperature = motorStatus.getTemperature();
     }
 }

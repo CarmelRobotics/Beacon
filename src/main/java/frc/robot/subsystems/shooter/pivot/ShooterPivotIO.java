@@ -20,9 +20,9 @@ public interface ShooterPivotIO {
         public Temperature temperature;
     }
 
-    public void zeroPivotHere();
-    public void updatePivotPID(double kA, double kD, double kI, double kP, double kS, double kV);
-    public default void updatePivotMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {}
-    public void setPivotPosition(Angle position);
+    public void zeroHere();
+    public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV);
+    public default void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {}
+    public void setPosition(Angle position);
     public void updateInputs(ShooterPivotIOInputsAutoLogged inputs);
 }

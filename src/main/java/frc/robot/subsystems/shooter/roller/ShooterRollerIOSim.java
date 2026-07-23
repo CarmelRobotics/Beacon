@@ -1,11 +1,9 @@
 package frc.robot.subsystems.shooter.roller;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.SimMotorStatus;
@@ -80,11 +78,11 @@ public class ShooterRollerIOSim implements ShooterRollerIO {
     }
 
     @Override
-    public void setVoltage(Voltage voltage) {
-        frontLeftMotor.setInputVoltage(voltage.in(Volts));
-        backLeftMotor.setInputVoltage(voltage.in(Volts));
-        frontRightMotor.setInputVoltage(-(voltage.in(Volts)));
-        backRightMotor.setInputVoltage(-(voltage.in(Volts)));
+    public void setOutput(double output) {
+        frontLeftMotor.setInputVoltage(12.0 * output);
+        backLeftMotor.setInputVoltage(12.0 * output);
+        frontRightMotor.setInputVoltage(-12.0 * output);
+        backRightMotor.setInputVoltage(-12.0 * output);
     }
 
     @Override

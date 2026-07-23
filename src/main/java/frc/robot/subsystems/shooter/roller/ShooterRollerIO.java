@@ -41,6 +41,6 @@ public interface ShooterRollerIO {
 
     public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV);
     public void setVelocity(AngularVelocity velocity);
-    public void setVoltage(Voltage voltage);
+    public void setOutput(double output);
     public void updateInputs(ShooterRollerIOInputsAutoLogged inputs);
 }
