@@ -17,13 +17,13 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     private final TalonFX frontRightFollowerMotor;
     private final TalonFX backRightFollowerMotor;
 
-    private final VelocityVoltage velocityRequest;
-    private final DutyCycleOut dutyCycyleRequest;
-
     private final TalonFXStatus frontLeftLeaderStatus;
     private final TalonFXStatus backLeftFollowerStatus;
     private final TalonFXStatus frontRightFollowerStatus;
     private final TalonFXStatus backRightFollowerStatus;
+
+    private final VelocityVoltage velocityRequest;
+    private final DutyCycleOut dutyCycyleRequest;
 
     public ShooterRollerIOTalonFX() {
         this.frontLeftLeaderMotor = new TalonFX(ShooterConstants.kFrontLeftLeaderRollerMotorId);
