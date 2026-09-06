@@ -13,6 +13,7 @@ public interface ModuleIO {
     @AutoLog
     public class ModuleIOInputs {
         public boolean driveConnected;
+        public Angle drivePosition;
         public AngularVelocity driveVelocity;
         public Voltage driveAppliedVoltage;
         public Current driveSupplyCurrent;
@@ -20,7 +21,7 @@ public interface ModuleIO {
         public Temperature driveTemperature;
 
         public boolean steerConnected;
-        public Angle steerPosition;
+        public Rotation2d steerPosition;
         public AngularVelocity steerVelocity;
         public Voltage steerAppliedVoltage;
         public Current steerSupplyCurrent;
@@ -28,17 +29,17 @@ public interface ModuleIO {
         public Temperature steerTemperature;
 
         public boolean encoderConnected;
-        public boolean encoderMagnentIsOk;
-        public Angle encoderPosition;
+        public boolean encoderMagnetIsOk;
+        public Rotation2d encoderPosition;
 
         public double[] odometryTimestamps;
-        public Angle[] odometryDrivePositions;
-        public Rotation2d[] odometryTurnPositions;
+        public double[] odometryDrivePositionsRads;
+        public Rotation2d[] odometrySteerPositions;
     }
 
     public void setDriveOutput(double output);
     public void setSteerOutput(double output);
-    public void setVelocity(AngularVelocity veloicty);
+    public void setVelocity(AngularVelocity velocity);
     public void setSteer(Rotation2d rotation);
     public void updateInputs(ModuleIOInputsAutoLogged inputs);
 }
