@@ -37,7 +37,7 @@ public class GyroIOPigeon2 implements GyroIO {
         this.yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
         this.yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(yaw.clone());
 
-        pigeon.getConfigurator().apply(DriveConstants.Pigeon2InitialConfigs);
+        pigeon.getConfigurator().apply(DriveConstants.DrivetrainConstants.Pigeon2Configs);
         pigeon.getConfigurator().setYaw(0.0);
         
         BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, yaw, yawVelocity);

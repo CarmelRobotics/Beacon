@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 
@@ -58,10 +59,6 @@ public class Module {
         return Meters.of(inputs.drivePosition.in(Radians) * constants.WheelRadius);
     }
 
-    public Angle getDrivePosition() {
-        return inputs.drivePosition;
-    }
-
     public Rotation2d getSteerAngle() {
         return inputs.steerPosition;
     }
@@ -84,6 +81,14 @@ public class Module {
 
     public double[] getOdometryTimestamps() {
         return inputs.odometryTimestamps;
+    }
+    
+    public Angle getWheelRadiusCharacterizationPosition() {
+        return inputs.drivePosition;
+    }
+
+    public AngularVelocity getFFCharacterizationVelocity() {
+        return inputs.driveVelocity;
     }
 
     public void periodic() {

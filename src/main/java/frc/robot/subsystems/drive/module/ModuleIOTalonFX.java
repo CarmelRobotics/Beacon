@@ -66,8 +66,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         this.positionRequest = new MotionMagicExpoVoltage(0);
 
         this.timestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
-        this.drivePositionQueue = PhoenixOdometryThread.getInstance().registerSignal(driveMotor.getPosition());
-        this.steerPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(steerMotor.getPosition());
+        this.drivePositionQueue = PhoenixOdometryThread.getInstance().registerSignal(driveMotor.getPosition().clone());
+        this.steerPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(steerMotor.getPosition().clone());
 
         configureModule();
 

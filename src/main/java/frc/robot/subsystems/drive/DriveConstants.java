@@ -69,8 +69,8 @@ public class DriveConstants {
                     new CurrentLimitsConfigs()
                             .withStatorCurrentLimit(Amps.of(60))
                             .withStatorCurrentLimitEnable(true));
-    public static final Pigeon2Configuration Pigeon2InitialConfigs = new Pigeon2Configuration();
     private static final CANcoderConfiguration EncoderInitialConfigs = new CANcoderConfiguration();
+    private static final Pigeon2Configuration Pigeon2InitialConfigs = new Pigeon2Configuration();
 
     private static final Current kSlipCurrent = Amps.of(120.0);
     public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.69);
