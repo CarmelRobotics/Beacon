@@ -81,8 +81,8 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         driveMotorStatus.setUpdateFrequency(DriveConstants.kStatusFrequency);
         steerMotorStatus.setUpdateFrequency(DriveConstants.kStatusFrequency);
-        BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, encoderMagnetHealth,
-                encoderPosition);
+        BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, encoderMagnetHealth, encoderPosition);
+        BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kOdometryFrequency, driveMotor.getPosition(), steerMotor.getPosition());
         ParentDevice.optimizeBusUtilizationForAll(driveMotor, steerMotor, encoder);
     }
 

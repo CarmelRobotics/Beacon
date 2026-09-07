@@ -7,6 +7,12 @@
 
 package frc.robot.subsystems.drive.module;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,29 +25,29 @@ import edu.wpi.first.units.measure.Voltage;
 public interface ModuleIO {
     @AutoLog
     public class ModuleIOInputs {
-        public boolean driveConnected;
-        public Angle drivePosition;
-        public AngularVelocity driveVelocity;
-        public Voltage driveAppliedVoltage;
-        public Current driveSupplyCurrent;
-        public Current driveStatorCurrent;
-        public Temperature driveTemperature;
+        public boolean driveConnected = false;
+        public Angle drivePosition = Radians.zero();
+        public AngularVelocity driveVelocity = RadiansPerSecond.zero();
+        public Voltage driveAppliedVoltage = Volts.zero();
+        public Current driveSupplyCurrent = Amps.zero();
+        public Current driveStatorCurrent = Amps.zero();
+        public Temperature driveTemperature = Celsius.zero();
 
-        public boolean steerConnected;
-        public Rotation2d steerPosition;
-        public AngularVelocity steerVelocity;
-        public Voltage steerAppliedVoltage;
-        public Current steerSupplyCurrent;
-        public Current steerStatorCurrent;
-        public Temperature steerTemperature;
+        public boolean steerConnected = false;
+        public Rotation2d steerPosition = new Rotation2d();
+        public AngularVelocity steerVelocity = RadiansPerSecond.zero();
+        public Voltage steerAppliedVoltage = Volts.zero();
+        public Current steerSupplyCurrent = Amps.zero();
+        public Current steerStatorCurrent = Amps.zero();
+        public Temperature steerTemperature = Celsius.zero();
 
-        public boolean encoderConnected;
-        public boolean encoderMagnetIsOk;
-        public Rotation2d encoderPosition;
+        public boolean encoderConnected = false;
+        public boolean encoderMagnetIsOk = false;
+        public Rotation2d encoderPosition = new Rotation2d();
 
-        public double[] odometryTimestamps;
-        public double[] odometryDrivePositionsRads;
-        public Rotation2d[] odometrySteerPositions;
+        public double[] odometryTimestamps = new double[] {};
+        public double[] odometryDrivePositionsRads = new double[] {};
+        public Rotation2d[] odometrySteerPositions = new Rotation2d[] {};
     }
 
     public void setDriveVoltage(Voltage voltage);

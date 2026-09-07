@@ -11,14 +11,18 @@ import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -35,14 +39,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.module.Module;
 import frc.robot.subsystems.drive.module.ModuleIO;
+import frc.robot.util.LocalADStarAK;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -100,6 +108,7 @@ public class Drive extends SubsystemBase {
         DriveConstants.PathPlanner.Config,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
+    Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (List<Pose2d> activePath) -> {
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
@@ -161,6 +170,40 @@ public class Drive extends SubsystemBase {
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return run(() -> runCharacterization(Volts.zero())).withTimeout(1.0).andThen(sysId.dynamic(direction));
+  }
+
+  public Command fieldCentricDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier, double deadband) {
+    return run(() -> {
+      final double x = xSupplier.getAsDouble();
+      final double y = ySupplier.getAsDouble();
+
+      double linearMagnitude = Math.min(MathUtil.applyDeadband(Math.hypot(x, y), deadband), 1.0);
+      double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), deadband);
+
+      Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+      linearMagnitude = linearMagnitude * linearMagnitude;
+
+      omega = Math.copySign(omega * omega, omega);
+
+      Translation2d linearVelocity = new Pose2d(Translation2d.kZero, linearDirection)
+          .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
+          .getTranslation();
+
+      ChassisSpeeds speeds = new ChassisSpeeds(
+          linearVelocity.getX() * getMaxLinearSpeedMetersPerSec(),
+          linearVelocity.getY() * getMaxLinearSpeedMetersPerSec(),
+          omega * getMaxAngularSpeedRadPerSec());
+
+      boolean isFlipped = DriverStation.getAlliance().isPresent()
+          && DriverStation.getAlliance().get() == Alliance.Red;
+
+      runVelocity(
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              speeds,
+              isFlipped
+                  ? getRotation().plus(new Rotation2d(Math.PI))
+                  : getRotation()));
+    });
   }
 
   @AutoLogOutput(key = "SwerveStates/Measured")
@@ -247,9 +290,7 @@ public class Drive extends SubsystemBase {
       for (var module : modules) {
         module.stop();
       }
-    }
 
-    if (DriverStation.isDisabled()) {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
@@ -279,6 +320,6 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    gyroDisconnected.set(!gyroInputs.connected && Constants.kIsReal);
+    gyroDisconnected.set(!gyroInputs.connected && Constants.kCurrentMode == Mode.REAL);
   }
 }
