@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -18,6 +19,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 
 public class Module {
     private final ModuleIO io;
@@ -45,14 +47,14 @@ public class Module {
         io.setSteer(state.angle);
     }
 
-    public void runCharacterization(double output) {
-        io.setDriveOutput(output);
+    public void runCharacterization(Voltage voltage) {
+        io.setDriveVoltage(voltage);
         io.setSteer(Rotation2d.kZero);
     }
 
     public void stop() {
-        io.setDriveOutput(0.0);
-        io.setSteerOutput(0.0);
+        io.setDriveVoltage(Volts.zero());
+        io.setSteerVoltage(Volts.zero());
     }
 
     public Distance getDriveDistance() {

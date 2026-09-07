@@ -8,9 +8,9 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.PhoenixOdometryThread;
 import frc.robot.util.motorstatus.TalonFXStatus;
@@ -44,7 +45,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     private final Queue<Double> drivePositionQueue;
     private final Queue<Double> steerPositionQueue;
 
-    private final DutyCycleOut dutyCycleRequest;
+    private final VoltageOut voltageRequest;
     private final VelocityVoltage velocityRequest;
     private final MotionMagicExpoVoltage positionRequest;
 
@@ -61,7 +62,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         this.encoderMagnetHealth = encoder.getMagnetHealth();
         this.encoderPosition = encoder.getPosition();
 
-        this.dutyCycleRequest = new DutyCycleOut(0);
+        this.voltageRequest = new VoltageOut(0);
         this.velocityRequest = new VelocityVoltage(0);
         this.positionRequest = new MotionMagicExpoVoltage(0);
 
@@ -118,13 +119,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     }
 
     @Override
-    public void setDriveOutput(double output) {
-        driveMotor.setControl(dutyCycleRequest.withOutput(output));
+    public void setDriveVoltage(Voltage voltage) {
+        driveMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
     @Override
-    public void setSteerOutput(double output) {
-        steerMotor.setControl(dutyCycleRequest.withOutput(output));
+    public void setSteerVoltage(Voltage voltage) {
+        steerMotor.setControl(voltageRequest.withOutput(voltage));
     }
 
     @Override
