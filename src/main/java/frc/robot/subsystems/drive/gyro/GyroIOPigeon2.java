@@ -14,8 +14,10 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.PhoenixOdometryThread;
+import frc.robot.util.PhoenixUtil;
 
 import java.util.Queue;
 
@@ -37,7 +39,9 @@ public class GyroIOPigeon2 implements GyroIO {
         this.yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
         this.yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(yaw.clone());
 
-        pigeon.getConfigurator().apply(DriveConstants.DrivetrainConstants.Pigeon2Configs);
+        PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+            () -> pigeon.getConfigurator().apply(DriveConstants.DrivetrainConstants.Pigeon2Configs, Constants.kTimeoutSeconds));
+        
         pigeon.getConfigurator().setYaw(0.0);
         
         BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, yaw, yawVelocity);

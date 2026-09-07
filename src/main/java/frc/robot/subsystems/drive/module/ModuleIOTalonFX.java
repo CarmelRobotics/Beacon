@@ -23,8 +23,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.PhoenixOdometryThread;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ModuleIOTalonFX implements ModuleIO {
@@ -111,9 +113,10 @@ public class ModuleIOTalonFX implements ModuleIO {
                 ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
 
-        driveMotor.getConfigurator().apply(driveConfig);
-        steerMotor.getConfigurator().apply(steerConfig);
-        encoder.getConfigurator().apply(encoderConfig);
+        
+        PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, () -> driveMotor.getConfigurator().apply(driveConfig, Constants.kTimeoutSeconds));
+        PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, () -> steerMotor.getConfigurator().apply(steerConfig, Constants.kTimeoutSeconds));
+        PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, () -> encoder.getConfigurator().apply(encoderConfig));
     }
 
     @Override
