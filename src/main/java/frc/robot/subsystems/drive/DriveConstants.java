@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
@@ -24,16 +25,19 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
 public class DriveConstants {
@@ -211,6 +215,8 @@ public class DriveConstants {
                     Math.hypot(BackLeft.LocationX, BackLeft.LocationY),
                     Math.hypot(BackRight.LocationX, BackRight.LocationY)));
 
+    public static final Time kDeltaTime = Seconds.of(0.02);
+
     public static final double kRobotMassKg = 74.088;
     public static final double kRobotMOI = 6.883;
     public static final double kWheelCof = 1.2;
@@ -221,17 +227,40 @@ public class DriveConstants {
             new Translation2d(BackLeft.LocationX, BackLeft.LocationY),
             new Translation2d(BackRight.LocationX, BackRight.LocationY)
     };
-    
-    public static final RobotConfig PathPlannerConfig = new RobotConfig(
-            kRobotMassKg,
-            kRobotMOI,
-            new ModuleConfig(
-                    FrontLeft.WheelRadius,
-                    kSpeedAt12Volts.in(MetersPerSecond),
-                    kWheelCof,
-                    DCMotor.getKrakenX60Foc(1)
-                            .withReduction(FrontLeft.DriveMotorGearRatio),
-                    FrontLeft.SlipCurrent,
-                    1),
-            kModuleTranslations);
+
+    public static class PathPlanner {
+        public static final PIDConstants TranslationGains = new PIDConstants(5.0, 0.0, 0.0);
+        public static final PIDConstants RotationGains = new PIDConstants(5.0, 0.0, 0.0);
+
+        public static final RobotConfig Config = new RobotConfig(
+                kRobotMassKg,
+                kRobotMOI,
+                new ModuleConfig(
+                        FrontLeft.WheelRadius,
+                        kSpeedAt12Volts.in(MetersPerSecond),
+                        kWheelCof,
+                        DCMotor.getKrakenX60Foc(1)
+                                .withReduction(FrontLeft.DriveMotorGearRatio),
+                        FrontLeft.SlipCurrent,
+                        1),
+                kModuleTranslations);
+    }
+
+    public static class Simulation {
+        public static class DriveGains {
+            public static final double kP = 0.05;
+            public static final double kD = 0.0;
+            public static final double kS = 0.0;
+            public static final double kVRotation = 0.91035;
+            public static final double kV = 1.0 / Units.rotationsToRadians(1.0 / kVRotation);
+        }
+
+        public static class SteerGains {
+            public static final double kP = 8.0;
+            public static final double kD = 0.0;
+        }
+
+        public static final DCMotor kDriveMotor = DCMotor.getKrakenX60(1);
+        public static final DCMotor kSteerMotor = DCMotor.getKrakenX44(1);
+    }
 }

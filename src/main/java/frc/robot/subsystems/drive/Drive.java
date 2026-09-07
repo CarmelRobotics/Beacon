@@ -10,7 +10,6 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -28,11 +27,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.module.Module;
@@ -49,12 +51,16 @@ public class Drive extends SubsystemBase {
 
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs;
+
+  private final Alert gyroDisconnected;
+
   private final Module[] modules;
   private final SysIdRoutine sysId;
-  private SwerveDriveKinematics kinematics;
+  private final SwerveDriveKinematics kinematics;
+  private final SwerveDrivePoseEstimator poseEstimator;
+  
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
-  private SwerveDrivePoseEstimator poseEstimator;
 
   public Drive(
       GyroIO gyroIO,
@@ -71,9 +77,13 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(backLeftModuleIO, 2, DriveConstants.BackLeft);
     modules[3] = new Module(backRightModuleIO, 3, DriveConstants.BackRight);
 
+    this.gyroDisconnected = new Alert("[Swerve Drive] Gyro disconnected. Falling back to kinematics.", AlertType.kError);
+
     this.kinematics = new SwerveDriveKinematics(DriveConstants.kModuleTranslations);
+
     this.rawGyroRotation = Rotation2d.kZero;
     this.lastModulePositions = getModulePositions();
+
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -86,8 +96,8 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-        DriveConstants.PathPlannerConfig,
+            DriveConstants.PathPlanner.TranslationGains, DriveConstants.PathPlanner.RotationGains),
+        DriveConstants.PathPlanner.Config,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     PathPlannerLogging.setLogActivePathCallback(
@@ -110,7 +120,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void runVelocity(ChassisSpeeds speeds) {
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, DriveConstants.kDeltaTime.in(Seconds));
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.kSpeedAt12Volts);
 
@@ -268,5 +278,7 @@ public class Drive extends SubsystemBase {
 
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    gyroDisconnected.set(!gyroInputs.connected && Constants.kIsReal);
   }
 }

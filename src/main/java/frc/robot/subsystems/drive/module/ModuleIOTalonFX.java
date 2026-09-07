@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drive.module;
 
-import static edu.wpi.first.units.Units.Radians;
-
 import java.util.Queue;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -153,7 +151,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         inputs.driveTemperature = driveMotorStatus.getTemperature();
 
         inputs.steerConnected = steerMotorStatus.getConnected();
-        inputs.steerPosition = Rotation2d.fromRadians(steerMotorStatus.getPosition().in(Radians));
+        inputs.steerPosition = new Rotation2d(steerMotorStatus.getPosition());
         inputs.steerVelocity = steerMotorStatus.getVelocity();
         inputs.steerAppliedVoltage = steerMotorStatus.getAppliedVoltage();
         inputs.steerSupplyCurrent = steerMotorStatus.getSupplyCurrent();
@@ -162,7 +160,7 @@ public class ModuleIOTalonFX implements ModuleIO {
 
         inputs.encoderConnected = encoder.isConnected();
         inputs.encoderMagnetIsOk = encoderMagnetHealth.getValue() == MagnetHealthValue.Magnet_Green;
-        inputs.encoderPosition = Rotation2d.fromRadians(encoderPosition.getValue().in(Radians));
+        inputs.encoderPosition = new Rotation2d(encoderPosition.getValue());
 
         inputs.odometryTimestamps = timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryDrivePositionsRads = drivePositionQueue.stream()
