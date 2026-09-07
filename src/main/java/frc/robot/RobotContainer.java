@@ -34,6 +34,8 @@ public class RobotContainer {
         () -> -controller.getLeftX(),
         () -> -controller.getRightX(),
         0.1));
+
+    controller.povDown().onTrue(drive.seedFieldCentric());
   }
 
   public Command getAutonomousCommand() {
