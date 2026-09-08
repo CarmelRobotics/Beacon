@@ -2,16 +2,20 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.util.CameraInfo;
 
 public class VisionConstants {
   public static final AprilTagFieldLayout kAprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
+  public static final CameraInfo kLimelightLeft = new CameraInfo("limelight-left", new Transform3d(), 1.0);
+  public static final CameraInfo kLimelightRight = new CameraInfo("limelight-right", new Transform3d(), 1.0);
+
   public static final CameraInfo[] kCameraInfo = 
     new CameraInfo[] {
-      new CameraInfo("limelight-left", 0, 0, 0, 0, 0, 0, 1.0),
-      new CameraInfo("limelight-right", 0, 0, 0, 0, 0, 0, 1.0)
+      kLimelightLeft,
+      kLimelightRight
     };
 
   public static final double kMaxAmbiguity = 0.3;

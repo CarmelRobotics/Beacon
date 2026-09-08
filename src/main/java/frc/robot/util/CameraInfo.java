@@ -1,12 +1,9 @@
 package frc.robot.util;
 
+import edu.wpi.first.math.geometry.Transform3d;
+
 public record CameraInfo(
     String name,
-    double forward,
-    double side,
-    double up,
-    double roll,
-    double pitch,
-    double yaw,
+    Transform3d robotToCamera,
     double stdDev
 ) {}

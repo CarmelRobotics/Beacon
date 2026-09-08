@@ -50,9 +50,9 @@ public interface ModuleIO {
         public Rotation2d[] odometrySteerPositions = new Rotation2d[] {};
     }
 
-    public void setDriveVoltage(Voltage voltage);
-    public void setSteerVoltage(Voltage voltage);
-    public void setVelocity(AngularVelocity velocity);
-    public void setSteer(Rotation2d rotation);
-    public void updateInputs(ModuleIOInputsAutoLogged inputs);
+    public default void setDriveVoltage(Voltage voltage) {};
+    public default void setSteerVoltage(Voltage voltage) {};
+    public default void setVelocity(AngularVelocity velocity) {};
+    public default void setSteer(Rotation2d rotation) {};
+    public default void updateInputs(ModuleIOInputsAutoLogged inputs) {};
 }
