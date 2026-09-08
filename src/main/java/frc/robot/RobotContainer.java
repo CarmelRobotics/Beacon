@@ -53,8 +53,8 @@ public class RobotContainer {
 
         this.vision = new Vision(
           drive::addVisionMeasurement,
-          new VisionIOPhotonSim(VisionConstants.kLimelightLeft.name(), VisionConstants.kLimelightLeft.robotToCamera(), drive::getPose),
-          new VisionIOPhotonSim(VisionConstants.kLimelightRight.name(), VisionConstants.kLimelightRight.robotToCamera(), drive::getPose));
+          new VisionIO() {},
+          new VisionIO() {});
       }
       default -> {
         this.drive = new Drive(
