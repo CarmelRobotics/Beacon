@@ -80,7 +80,7 @@ public class AllianceFlip {
   }
 
   public static boolean shouldFlip() {
-    return !Constants.disableHAL
+    return !Constants.kDisableHAL
         && DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
   }

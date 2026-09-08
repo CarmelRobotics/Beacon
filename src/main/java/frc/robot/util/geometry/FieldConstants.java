@@ -310,7 +310,7 @@ public class FieldConstants {
           if (layout == null) {
             try {
               Path p =
-                  Constants.disableHAL
+                  Constants.kDisableHAL
                       ? Path.of(
                           "src",
                           "main",
