@@ -12,37 +12,37 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class SimMotorStatus implements MotorStatus {
-    private final DCMotorSim motor;
+  private final DCMotorSim motor;
 
-    public SimMotorStatus(final DCMotorSim motor) {
-        this.motor = motor;
-    }
+  public SimMotorStatus(final DCMotorSim motor) {
+    this.motor = motor;
+  }
 
-    public boolean getConnected() {
-        return true;
-    }
+  public boolean getConnected() {
+    return true;
+  }
 
-    public Angle getPosition() {
-        return motor.getAngularPosition();
-    }
+  public Angle getPosition() {
+    return motor.getAngularPosition();
+  }
 
-    public AngularVelocity getVelocity() {
-        return motor.getAngularVelocity();
-    }
+  public AngularVelocity getVelocity() {
+    return motor.getAngularVelocity();
+  }
 
-    public Voltage getAppliedVoltage() {
-        return Volts.of(motor.getInputVoltage());
-    }
+  public Voltage getAppliedVoltage() {
+    return Volts.of(motor.getInputVoltage());
+  }
 
-    public Current getSupplyCurrent() {
-        return Amps.of(motor.getCurrentDrawAmps());
-    }
+  public Current getSupplyCurrent() {
+    return Amps.of(motor.getCurrentDrawAmps());
+  }
 
-    public Current getStatorCurrent() {
-        return Amps.of(motor.getTorqueNewtonMeters() / motor.getGearbox().KtNMPerAmp);
-    }
+  public Current getStatorCurrent() {
+    return Amps.of(motor.getTorqueNewtonMeters() / motor.getGearbox().KtNMPerAmp);
+  }
 
-    public Temperature getTemperature() {
-        return Celsius.zero();
-    }
+  public Temperature getTemperature() {
+    return Celsius.zero();
+  }
 }

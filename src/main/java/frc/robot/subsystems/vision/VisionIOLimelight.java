@@ -42,21 +42,18 @@ public class VisionIOLimelight implements VisionIO {
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    megatag2Subscriber =
-        table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+    megatag2Subscriber = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
   }
 
   @Override
   public void updateInputs(VisionIOInputsAutoLogged inputs) {
-    inputs.connected =
-        ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
+    inputs.connected = ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
 
-    inputs.latestTargetObservation =
-        new TargetObservation(
-            Rotation2d.fromDegrees(txSubscriber.get()), Rotation2d.fromDegrees(tySubscriber.get()));
+    inputs.latestTargetObservation = new TargetObservation(
+        Rotation2d.fromDegrees(txSubscriber.get()), Rotation2d.fromDegrees(tySubscriber.get()));
 
     orientationPublisher.accept(
-        new double[] {rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+        new double[] { rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0 });
     NetworkTableInstance.getDefault()
         .flush(); // Increases network traffic but recommended by Limelight
 
@@ -64,7 +61,8 @@ public class VisionIOLimelight implements VisionIO {
     Set<Integer> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (TimestampedDoubleArray rawSample : megatag1Subscriber.readQueue()) {
-      if (rawSample.value.length == 0) continue;
+      if (rawSample.value.length == 0)
+        continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
       }
@@ -82,7 +80,8 @@ public class VisionIOLimelight implements VisionIO {
               PoseObservationType.MEGATAG_1));
     }
     for (TimestampedDoubleArray rawSample : megatag2Subscriber.readQueue()) {
-      if (rawSample.value.length == 0) continue;
+      if (rawSample.value.length == 0)
+        continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
       }

@@ -18,7 +18,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionIOPhotonSim;
 
 public class RobotContainer {
   private final CommandXboxController controller;
@@ -32,42 +31,52 @@ public class RobotContainer {
     switch (Constants.kCurrentMode) {
       case REAL -> {
         this.drive = new Drive(
-          new GyroIOPigeon2(), 
-          new ModuleIOTalonFX(DriveConstants.FrontLeft),
-          new ModuleIOTalonFX(DriveConstants.FrontRight),
-          new ModuleIOTalonFX(DriveConstants.BackLeft),
-          new ModuleIOTalonFX(DriveConstants.BackRight));
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(DriveConstants.FrontLeft),
+            new ModuleIOTalonFX(DriveConstants.FrontRight),
+            new ModuleIOTalonFX(DriveConstants.BackLeft),
+            new ModuleIOTalonFX(DriveConstants.BackRight));
 
         this.vision = new Vision(
-          drive::addVisionMeasurement,
-          new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
-          new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation));
+            drive::addVisionMeasurement,
+            new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
+            new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation));
       }
       case SIM -> {
         this.drive = new Drive(
-          new GyroIO() {},
-          new ModuleIOSim(DriveConstants.FrontLeft),
-          new ModuleIOSim(DriveConstants.FrontRight),
-          new ModuleIOSim(DriveConstants.BackLeft),
-          new ModuleIOSim(DriveConstants.BackRight));
+            new GyroIO() {
+            },
+            new ModuleIOSim(DriveConstants.FrontLeft),
+            new ModuleIOSim(DriveConstants.FrontRight),
+            new ModuleIOSim(DriveConstants.BackLeft),
+            new ModuleIOSim(DriveConstants.BackRight));
 
         this.vision = new Vision(
-          drive::addVisionMeasurement,
-          new VisionIO() {},
-          new VisionIO() {});
+            drive::addVisionMeasurement,
+            new VisionIO() {
+            },
+            new VisionIO() {
+            });
       }
       default -> {
         this.drive = new Drive(
-          new GyroIO() {},
-          new ModuleIO() {},
-          new ModuleIO() {},
-          new ModuleIO() {},
-          new ModuleIO() {});
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
 
         this.vision = new Vision(
-          drive::addVisionMeasurement,
-          new VisionIO() {},
-          new VisionIO() {});
+            drive::addVisionMeasurement,
+            new VisionIO() {
+            },
+            new VisionIO() {
+            });
       }
     }
 
@@ -76,11 +85,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     drive.setDefaultCommand(
-      drive.fieldCentricDrive(
-        () -> -controller.getLeftY(),
-        () -> -controller.getLeftX(),
-        () -> -controller.getRightX(),
-        0.1));
+        drive.fieldCentricDrive(
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX(),
+            0.1));
 
     controller.povDown().onTrue(drive.seedFieldCentric());
   }

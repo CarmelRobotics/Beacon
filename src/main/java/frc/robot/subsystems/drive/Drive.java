@@ -69,7 +69,7 @@ public class Drive extends SubsystemBase {
   private final SwerveDriveKinematics kinematics;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d;
-  
+
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
@@ -88,7 +88,8 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(backLeftModuleIO, 2, DriveConstants.BackLeft);
     modules[3] = new Module(backRightModuleIO, 3, DriveConstants.BackRight);
 
-    this.gyroDisconnected = new Alert("[Swerve Drive] Gyro disconnected. Falling back to kinematics.", AlertType.kError);
+    this.gyroDisconnected = new Alert("[Swerve Drive] Gyro disconnected. Falling back to kinematics.",
+        AlertType.kError);
 
     this.kinematics = new SwerveDriveKinematics(DriveConstants.kModuleTranslations);
 
@@ -130,7 +131,7 @@ public class Drive extends SubsystemBase {
             (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
         new SysIdRoutine.Mechanism(
             (voltage) -> runCharacterization(voltage), null, this));
-    
+
     SmartDashboard.putData(field2d);
   }
 
@@ -178,7 +179,8 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(Volts.zero())).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
-  public Command fieldCentricDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier, double deadband) {
+  public Command fieldCentricDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
+      double deadband) {
     return run(() -> {
       final double x = xSupplier.getAsDouble();
       final double y = ySupplier.getAsDouble();

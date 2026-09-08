@@ -22,44 +22,45 @@ import frc.robot.util.PhoenixUtil;
 import java.util.Queue;
 
 public class GyroIOPigeon2 implements GyroIO {
-    private final Pigeon2 pigeon;
-    
-    private final StatusSignal<Angle> yaw;
-    private final StatusSignal<AngularVelocity> yawVelocity;
+  private final Pigeon2 pigeon;
 
-    private final Queue<Double> yawPositionQueue;
-    private final Queue<Double> yawTimestampQueue;
+  private final StatusSignal<Angle> yaw;
+  private final StatusSignal<AngularVelocity> yawVelocity;
 
-    public GyroIOPigeon2() {
-        this.pigeon = new Pigeon2(DriveConstants.kPigeonId, DriveConstants.kCANBus);
+  private final Queue<Double> yawPositionQueue;
+  private final Queue<Double> yawTimestampQueue;
 
-        this.yaw = pigeon.getYaw();
-        this.yawVelocity = pigeon.getAngularVelocityZWorld();
+  public GyroIOPigeon2() {
+    this.pigeon = new Pigeon2(DriveConstants.kPigeonId, DriveConstants.kCANBus);
 
-        this.yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
-        this.yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(yaw.clone());
+    this.yaw = pigeon.getYaw();
+    this.yawVelocity = pigeon.getAngularVelocityZWorld();
 
-        PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-            () -> pigeon.getConfigurator().apply(DriveConstants.DrivetrainConstants.Pigeon2Configs, Constants.kTimeoutSeconds));
-        
-        pigeon.getConfigurator().setYaw(0.0);
-        
-        BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, yaw, yawVelocity);
-        pigeon.optimizeBusUtilization();
-    }
+    this.yawTimestampQueue = PhoenixOdometryThread.getInstance().makeTimestampQueue();
+    this.yawPositionQueue = PhoenixOdometryThread.getInstance().registerSignal(yaw.clone());
 
-    @Override
-    public void updateInputs(GyroIOInputsAutoLogged inputs) {
-        inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
-        inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
-        inputs.yawVelocity = yawVelocity.getValue();
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> pigeon.getConfigurator().apply(DriveConstants.DrivetrainConstants.Pigeon2Configs,
+            Constants.kTimeoutSeconds));
 
-        inputs.odometryYawTimestamps = yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
-        inputs.odometryYawPositions = yawPositionQueue.stream()
-                .map((Double value) -> Rotation2d.fromDegrees(value))
-                .toArray(Rotation2d[]::new);
+    pigeon.getConfigurator().setYaw(0.0);
 
-        yawTimestampQueue.clear();
-        yawPositionQueue.clear();
-    }
+    BaseStatusSignal.setUpdateFrequencyForAll(DriveConstants.kStatusFrequency, yaw, yawVelocity);
+    pigeon.optimizeBusUtilization();
+  }
+
+  @Override
+  public void updateInputs(GyroIOInputsAutoLogged inputs) {
+    inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);
+    inputs.yawPosition = Rotation2d.fromDegrees(yaw.getValueAsDouble());
+    inputs.yawVelocity = yawVelocity.getValue();
+
+    inputs.odometryYawTimestamps = yawTimestampQueue.stream().mapToDouble((Double value) -> value).toArray();
+    inputs.odometryYawPositions = yawPositionQueue.stream()
+        .map((Double value) -> Rotation2d.fromDegrees(value))
+        .toArray(Rotation2d[]::new);
+
+    yawTimestampQueue.clear();
+    yawPositionQueue.clear();
+  }
 }

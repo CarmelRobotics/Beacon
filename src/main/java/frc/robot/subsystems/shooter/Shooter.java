@@ -15,33 +15,34 @@ import frc.robot.subsystems.shooter.roller.ShooterRoller;
 import frc.robot.subsystems.shooter.roller.ShooterRollerIO;
 
 public class Shooter {
-    private final ShooterKicker kicker;
-    private final ShooterPivot pivot;
-    private final ShooterRoller roller;
+  private final ShooterKicker kicker;
+  private final ShooterPivot pivot;
+  private final ShooterRoller roller;
 
-    public Shooter(ShooterKickerIO kickerio, ShooterPivotIO pivotio, ShooterRollerIO rollerio, Supplier<Pose2d> poseSupplier) {
-        this.kicker = new ShooterKicker(kickerio, poseSupplier);
-        this.pivot = new ShooterPivot(pivotio, poseSupplier);
-        this.roller = new ShooterRoller(rollerio, poseSupplier);
-    }
+  public Shooter(ShooterKickerIO kickerio, ShooterPivotIO pivotio, ShooterRollerIO rollerio,
+      Supplier<Pose2d> poseSupplier) {
+    this.kicker = new ShooterKicker(kickerio, poseSupplier);
+    this.pivot = new ShooterPivot(pivotio, poseSupplier);
+    this.roller = new ShooterRoller(rollerio, poseSupplier);
+  }
 
-    public Command setState(KickerState state) {
-        return kicker.setState(state);
-    }
+  public Command setState(KickerState state) {
+    return kicker.setState(state);
+  }
 
-    public Command setState(PivotState state) {
-        return pivot.setState(state);
-    }
+  public Command setState(PivotState state) {
+    return pivot.setState(state);
+  }
 
-    public Command setState(RollerState state) {
-        return roller.setState(state);
-    }
+  public Command setState(RollerState state) {
+    return roller.setState(state);
+  }
 
-    public Command setState(KickerState kickerState, PivotState pivotState, RollerState rollerState) {
-        return kicker.setState(kickerState).alongWith(pivot.setState(pivotState)).alongWith(roller.setState(rollerState));
-    }
+  public Command setState(KickerState kickerState, PivotState pivotState, RollerState rollerState) {
+    return kicker.setState(kickerState).alongWith(pivot.setState(pivotState)).alongWith(roller.setState(rollerState));
+  }
 
-    public Command zeroPivotHere() {
-        return pivot.zeroHere();
-    }
+  public Command zeroPivotHere() {
+    return pivot.zeroHere();
+  }
 }

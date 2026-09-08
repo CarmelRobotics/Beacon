@@ -9,27 +9,27 @@ import frc.robot.subsystems.intake.roller.IntakeRoller;
 import frc.robot.subsystems.intake.roller.IntakeRollerIO;
 
 public class Intake {
-    private final IntakePivot pivot;
-    private final IntakeRoller roller;
+  private final IntakePivot pivot;
+  private final IntakeRoller roller;
 
-    public Intake(IntakePivotIO pivotio, IntakeRollerIO rollerio) {
-        this.pivot = new IntakePivot(pivotio);
-        this.roller = new IntakeRoller(rollerio);
-    }
+  public Intake(IntakePivotIO pivotio, IntakeRollerIO rollerio) {
+    this.pivot = new IntakePivot(pivotio);
+    this.roller = new IntakeRoller(rollerio);
+  }
 
-    public Command setState(PivotState pivotState) {
-        return pivot.setState(pivotState);
-    }
+  public Command setState(PivotState pivotState) {
+    return pivot.setState(pivotState);
+  }
 
-    public Command setState(RollerState rollerState) {
-        return roller.setState(rollerState);
-    }
+  public Command setState(RollerState rollerState) {
+    return roller.setState(rollerState);
+  }
 
-    public Command setState(PivotState pivotState, RollerState rollerState) {
-        return pivot.setState(pivotState).alongWith(roller.setState(rollerState)); 
-    }
+  public Command setState(PivotState pivotState, RollerState rollerState) {
+    return pivot.setState(pivotState).alongWith(roller.setState(rollerState));
+  }
 
-    public Command zeroPivotHere() {
-        return pivot.zeroHere();
-    }
+  public Command zeroPivotHere() {
+    return pivot.zeroHere();
+  }
 }
