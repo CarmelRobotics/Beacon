@@ -18,6 +18,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.geometry.AllianceFlip;
 import frc.robot.util.geometry.FieldConstants;
 
 public class RobotContainer {
@@ -84,12 +85,12 @@ public class RobotContainer {
             () -> -controller.getRightX(),
             0.1));
 
-    controller.leftTrigger().onTrue(
+    controller.leftTrigger().whileTrue(
       drive.lockedDrive(
         () -> -controller.getLeftY(),
         () -> -controller.getLeftX(),
         0.1,
-        () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+        () -> AllianceFlip.apply(FieldConstants.Hub.innerCenterPoint.toTranslation2d())));
 
     controller.povDown().onTrue(drive.seedFieldCentric());
   }
