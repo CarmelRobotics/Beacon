@@ -1,6 +1,7 @@
 package frc.robot.subsystems.indexer;
 
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Voltage;
@@ -17,7 +18,8 @@ public class IndexerIOTalonFX implements IndexerIO {
     this.voltageRequest = new VoltageOut(0);
 
     motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration);
-    motorStatus.setUpdateFrequency(IndexerConstants.kStatusUpdateFrequency);
+    motorStatus.setUpdateFrequency(IndexerConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override

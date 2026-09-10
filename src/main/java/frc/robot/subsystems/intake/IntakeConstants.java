@@ -23,7 +23,7 @@ public final class IntakeConstants {
   public static final int kPivotMotorId = 1;
   public static final int kRollerMotorId = 2;
 
-  public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
+  public static final Frequency kStatusFrequency = Hertz.of(50);
 
   public static final class PivotConfigs {
     public static final double kA = 0.01;

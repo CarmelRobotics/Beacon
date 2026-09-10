@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter.kicker;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -23,7 +24,8 @@ public class ShooterKickerIOTalonFX implements ShooterKickerIO {
 
     motor.getConfigurator().apply(ShooterConstants.KickerConfigs.TalonFXConfiguration);
 
-    motorStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
+    motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override

@@ -16,7 +16,7 @@ public final class IndexerConstants {
 
   public static final int kMotorId = 3;
 
-  public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
+  public static final Frequency kStatusFrequency = Hertz.of(50);
 
   public static final Voltage kIdleVoltage = Volts.zero();
   public static final Voltage kFeedVoltage = Volts.of(12);

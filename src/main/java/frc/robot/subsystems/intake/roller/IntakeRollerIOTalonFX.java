@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake.roller;
 
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Voltage;
@@ -19,7 +20,8 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
     this.voltageRequest = new VoltageOut(0);
 
     motor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
-    motorStatus.setUpdateFrequency(IntakeConstants.kStatusUpdateFrequency);
+    motorStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override

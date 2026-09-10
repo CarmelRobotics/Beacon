@@ -1,7 +1,11 @@
 package frc.robot.subsystems.intake.pivot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +30,9 @@ public class IntakePivot extends SubsystemBase {
   private final LoggedTunableNumber kAcceleration;
   private final LoggedTunableNumber kJerk;
 
+  @AutoLogOutput
+  private Angle targetPosition;
+
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
     this.inputs = new IntakePivotIOInputsAutoLogged();
@@ -44,6 +51,8 @@ public class IntakePivot extends SubsystemBase {
         IntakeConstants.PivotConfigs.kMotionMagicAcceleration);
     this.kJerk = new LoggedTunableNumber("Intake/Pivot/kJerk", IntakeConstants.PivotConfigs.kMotionMagicJerk);
 
+    this.targetPosition = Degrees.zero();
+
     io.zeroHere();
   }
 
@@ -53,9 +62,14 @@ public class IntakePivot extends SubsystemBase {
 
   public Command setState(PivotState state) {
     return (switch (state) {
-      case kStow -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
-      case kDeploy -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
+      case kStow -> run(() -> setPosition(IntakeConstants.kStowAngle));
+      case kDeploy -> run(() -> setPosition(IntakeConstants.kDeployAngle));
     }).withName("[Intake/Pivot] Run from state: " + state.toString());
+  }
+
+  private void setPosition(Angle position) {
+    targetPosition = position;
+    io.setPosition(position);
   }
 
   private boolean hasPIDChanged() {

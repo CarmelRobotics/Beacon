@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
@@ -45,10 +46,11 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     backRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 
-    frontLeftLeaderStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
-    backLeftFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
-    frontRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
-    backRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
+    frontLeftLeaderStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    backLeftFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    frontRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    backRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(frontLeftLeaderMotor, backLeftFollowerMotor, frontRightFollowerMotor, backRightFollowerMotor);
   }
 
   @Override

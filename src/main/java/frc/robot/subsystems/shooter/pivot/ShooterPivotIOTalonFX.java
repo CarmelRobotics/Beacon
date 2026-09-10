@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter.pivot;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
@@ -20,7 +21,8 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     this.positionRequest = new MotionMagicVoltage(0);
 
     motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration);
-    motorStatus.setUpdateFrequency(ShooterConstants.kStatusUpdateFrequency);
+    motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override

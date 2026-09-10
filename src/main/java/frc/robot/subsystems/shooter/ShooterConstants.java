@@ -26,7 +26,7 @@ public final class ShooterConstants {
   public static final int kFrontRightFollowerRollerMotorId = 6;
   public static final int kBackRightFollowerRollerMotorId = 7;
 
-  public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
+  public static final Frequency kStatusFrequency = Hertz.of(50);
 
   /* Distance in Meters -> Degrees */
   public static final InterpolatingDoubleTreeMap PivotPassingMap = new InterpolatingDoubleTreeMap();

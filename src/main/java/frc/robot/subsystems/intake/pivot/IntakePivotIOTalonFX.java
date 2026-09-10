@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake.pivot;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
@@ -21,7 +22,8 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
     this.positionRequest = new MotionMagicVoltage(0);
 
     motor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
-    motorStatus.setUpdateFrequency(IntakeConstants.kStatusUpdateFrequency);
+    motorStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
+    ParentDevice.optimizeBusUtilizationForAll(motor);
   }
 
   @Override
@@ -43,8 +45,8 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
   }
 
   @Override
-  public void setAngle(Angle angle) {
-    motor.setControl(positionRequest.withPosition(angle));
+  public void setPosition(Angle position) {
+    motor.setControl(positionRequest.withPosition(position));
   }
 
   @Override

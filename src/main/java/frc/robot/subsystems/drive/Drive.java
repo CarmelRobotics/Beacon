@@ -35,7 +35,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,6 +47,7 @@ import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.module.Module;
 import frc.robot.subsystems.drive.module.ModuleIO;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.geometry.AllianceFlip;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -116,6 +116,7 @@ public class Drive extends SubsystemBase {
         DriveConstants.PathPlanner.RotationGains.kP,
         0.0,
         DriveConstants.PathPlanner.RotationGains.kD);
+    assistController.enableContinuousInput(-Math.PI, Math.PI);
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
@@ -129,7 +130,7 @@ public class Drive extends SubsystemBase {
         new PPHolonomicDriveController(
             DriveConstants.PathPlanner.TranslationGains, DriveConstants.PathPlanner.RotationGains),
         DriveConstants.PathPlanner.Config,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        AllianceFlip::shouldFlip,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -191,8 +192,8 @@ public class Drive extends SubsystemBase {
   public Command lockedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband, Supplier<Translation2d> lock) {
     return runOnce(() -> assistController.reset())
         .andThen(run(() -> {
-          final double x = xSupplier.getAsDouble();
-          final double y = ySupplier.getAsDouble();
+          double x = xSupplier.getAsDouble();
+          double y = ySupplier.getAsDouble();
 
           double linearMagnitude = Math.min(MathUtil.applyDeadband(Math.hypot(x, y), deadband), 1.0);
           Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
@@ -202,7 +203,7 @@ public class Drive extends SubsystemBase {
               .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
               .getTranslation();
 
-          Translation2d toLock = lock.get().minus(getPose().getTranslation());
+          Translation2d toLock = AllianceFlip.apply(lock.get()).minus(getPose().getTranslation());
           Rotation2d targetHeading = toLock.getNorm() > 1e-6
               ? toLock.getAngle()
               : getRotation();
@@ -227,8 +228,8 @@ public class Drive extends SubsystemBase {
   public Command fieldCentricDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
       double deadband) {
     return run(() -> {
-      final double x = xSupplier.getAsDouble();
-      final double y = ySupplier.getAsDouble();
+      double x = xSupplier.getAsDouble();
+      double y = ySupplier.getAsDouble();
 
       double linearMagnitude = Math.min(MathUtil.applyDeadband(Math.hypot(x, y), deadband), 1.0);
       double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), deadband);
@@ -256,10 +257,7 @@ public class Drive extends SubsystemBase {
 
   public Command seedFieldCentric() {
     return runOnce(() -> {
-      Rotation2d operatorForward = DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get() == Alliance.Red
-        ? new Rotation2d(Math.PI)
-        : Rotation2d.kZero;
+      Rotation2d operatorForward = AllianceFlip.shouldFlip() ? new Rotation2d(Math.PI) : Rotation2d.kZero;
       setPose(new Pose2d(getPose().getTranslation(), operatorForward));
     });
   }

@@ -23,16 +23,14 @@ public class IntakePivotIOSim implements IntakePivotIO {
   }
 
   @Override
-  public void zeroHere() {
-  }
+  public void zeroHere() {}
 
   @Override
-  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {
-  }
+  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
 
   @Override
-  public void setAngle(Angle angle) {
-    pivotMotor.setAngle(angle.in(Radians));
+  public void setPosition(Angle position) {
+    pivotMotor.setAngle(position.in(Radians));
   }
 
   @Override

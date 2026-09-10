@@ -24,7 +24,7 @@ public interface IntakePivotIO {
 
   public default void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
 
-  public default void setAngle(Angle angle) {}
+  public default void setPosition(Angle position) {}
 
   public default void updateInputs(IntakePivotIOInputsAutoLogged inputs) {}
 }
