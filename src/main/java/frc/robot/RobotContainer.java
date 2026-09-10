@@ -19,6 +19,8 @@ import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.intake.pivot.IntakePivotIO;
 import frc.robot.subsystems.intake.pivot.IntakePivotIOSim;
 import frc.robot.subsystems.intake.pivot.IntakePivotIOTalonFX;
@@ -107,12 +109,16 @@ public class RobotContainer {
             () -> -controller.getRightX(),
             0.1));
 
-    controller.leftTrigger().whileTrue(
+    controller.rightTrigger().whileTrue(
       drive.lockedDrive(
         () -> -controller.getLeftY(),
         () -> -controller.getLeftX(),
         0.1,
         () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+    controller.leftTrigger()
+      .onTrue(intake.setState(IntakePivotState.kDeploy, IntakeRollerState.kIntake))
+      .onFalse(intake.setState(IntakeRollerState.kIdle));
+    controller.povLeft().onTrue(intake.setState(IntakePivotState.kStow));
 
     controller.povDown().onTrue(drive.seedFieldCentric());
   }

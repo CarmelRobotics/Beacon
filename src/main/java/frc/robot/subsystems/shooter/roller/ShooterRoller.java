@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.shooter.ShooterConstants.RollerState;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterRollerState;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterRoller extends SubsystemBase {
@@ -37,10 +37,12 @@ public class ShooterRoller extends SubsystemBase {
   private final LoggedTunableNumber kS;
   private final LoggedTunableNumber kV;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Roller/Velocity")
   private AngularVelocity targetVelocity;
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Roller/Output")
   private double targetOutput;
+  @AutoLogOutput(key = "Shooter/Roller/State")
+  private ShooterRollerState state;
 
   public ShooterRoller(ShooterRollerIO io, BooleanSupplier facingTarget, DoubleSupplier targetDistance) {
     this.io = io;
@@ -67,6 +69,24 @@ public class ShooterRoller extends SubsystemBase {
 
     this.targetVelocity = RotationsPerSecond.zero();
     this.targetOutput = 0.0;
+    this.state = ShooterRollerState.kIdle;
+  }
+
+  public Command setState(ShooterRollerState state) {
+    return (switch (state) {
+      case kIdle -> runOnce(() -> setVelocity(ShooterConstants.kRollerIdleVelocity));
+      case kStaticScore -> runOnce(() -> setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
+      case kStaticSend -> runOnce(() -> setOutput(ShooterConstants.kRollerStaticSendOutput));
+      case kPass -> 
+        Commands.waitUntil(facingTarget)
+          .andThen(runOnce(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble())))));
+      case kScore -> 
+        Commands.waitUntil(facingTarget)
+          .andThen(runOnce(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble())))));
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Shooter/Roller] Run from state: " + state.toString());
   }
 
   public AngularVelocity getTargetVelocity() {
@@ -77,20 +97,8 @@ public class ShooterRoller extends SubsystemBase {
     return inputs.reachedTarget && facingTarget.getAsBoolean();
   }
 
-  public Command setState(RollerState state) {
-    return (switch (state) {
-      case kIdle -> run(() -> setVelocity(ShooterConstants.kRollerIdleVelocity));
-      case kStaticScore -> run(() -> setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
-      case kStaticSend -> run(() -> setOutput(ShooterConstants.kRollerStaticSendOutput));
-      case kPass -> 
-        Commands.waitUntil(facingTarget)
-          .andThen(run(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble())))));
-      case kScore -> 
-        Commands.waitUntil(facingTarget)
-          .andThen(run(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble())))));
-    }).withName("[Shooter/Roller] Run from state: " + state.toString());
+  public ShooterRollerState getState() {
+    return state;
   }
 
   private void setVelocity(AngularVelocity velocity) {

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.intake.IntakeConstants.PivotState;
+import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
 import frc.robot.util.LoggedTunableNumber;
 
 public class IntakePivot extends SubsystemBase {
@@ -30,8 +30,10 @@ public class IntakePivot extends SubsystemBase {
   private final LoggedTunableNumber kAcceleration;
   private final LoggedTunableNumber kJerk;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Intake/Pivot/Position")
   private Angle targetPosition;
+  @AutoLogOutput(key = "Intake/Pivot/State")
+  private IntakePivotState state;
 
   public IntakePivot(IntakePivotIO io) {
     this.io = io;
@@ -52,6 +54,7 @@ public class IntakePivot extends SubsystemBase {
     this.kJerk = new LoggedTunableNumber("Intake/Pivot/kJerk", IntakeConstants.PivotConfigs.kMotionMagicJerk);
 
     this.targetPosition = Degrees.zero();
+    this.state = IntakePivotState.kStow;
 
     io.zeroHere();
   }
@@ -60,11 +63,16 @@ public class IntakePivot extends SubsystemBase {
     return run(() -> io.zeroHere());
   }
 
-  public Command setState(PivotState state) {
+  public Command setState(IntakePivotState state) {
     return (switch (state) {
-      case kStow -> run(() -> setPosition(IntakeConstants.kStowAngle));
-      case kDeploy -> run(() -> setPosition(IntakeConstants.kDeployAngle));
-    }).withName("[Intake/Pivot] Run from state: " + state.toString());
+      case kStow -> runOnce(() -> setPosition(IntakeConstants.kStowAngle));
+      case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Intake/Pivot] Run from state: " + state.toString());
+  }
+
+  public IntakePivotState getState() {
+    return state;
   }
 
   private void setPosition(Angle position) {

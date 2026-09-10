@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.shooter.ShooterConstants.PivotState;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterPivotState;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterPivot extends SubsystemBase {
@@ -34,8 +34,10 @@ public class ShooterPivot extends SubsystemBase {
   private final LoggedTunableNumber kAcceleration;
   private final LoggedTunableNumber kJerk;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Pivot/Position")
   private Angle targetPosition;
+  @AutoLogOutput(key = "Shooter/Pivot/State")
+  private ShooterPivotState state;
 
   public ShooterPivot(ShooterPivotIO io, DoubleSupplier targetDistanceSupplier) {
     this.io = io;
@@ -58,6 +60,7 @@ public class ShooterPivot extends SubsystemBase {
     this.kJerk = new LoggedTunableNumber("Shooter/Pivot/kJerk", ShooterConstants.PivotConfigs.kMotionMagicJerk);
 
     this.targetPosition = Degrees.zero();
+    this.state = ShooterPivotState.kStow;
 
     io.zeroHere();
   }
@@ -66,13 +69,18 @@ public class ShooterPivot extends SubsystemBase {
     return run(() -> io.zeroHere());
   }
 
-  public Command setState(PivotState state) {
+  public Command setState(ShooterPivotState state) {
     return (switch (state) {
-      case kStow -> run(() -> setPosition(ShooterConstants.kPivotStowAngle));
-      case kStaticScore -> run(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
-      case kPass -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotPassingMap.get(targetDistance.getAsDouble()))));
-      case kScore -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
-    }).withName("[Shooter/Pivot] Run from state: " + state.toString());
+      case kStow -> runOnce(() -> setPosition(ShooterConstants.kPivotStowAngle));
+      case kStaticScore -> runOnce(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
+      case kPass -> runOnce(() -> setPosition(Degrees.of(ShooterConstants.PivotPassingMap.get(targetDistance.getAsDouble()))));
+      case kScore -> runOnce(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Shooter/Pivot] Run from state: " + state.toString());
+  }
+
+  public ShooterPivotState getState() {
+    return state;
   }
 
   private void setPosition(Angle position) {

@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants;
-import frc.robot.subsystems.shooter.ShooterConstants.KickerState;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterKickerState;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterKicker extends SubsystemBase {
@@ -34,10 +34,12 @@ public class ShooterKicker extends SubsystemBase {
   private final LoggedTunableNumber kS;
   private final LoggedTunableNumber kV;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Kicker/Velocity")
   private AngularVelocity targetVelocity;
-  @AutoLogOutput
+  @AutoLogOutput(key = "Shooter/Kicker/Output")
   private double targetOutput;
+  @AutoLogOutput(key = "Shooter/Kicker/State")
+  private ShooterKickerState state;
 
   public ShooterKicker(
     ShooterKickerIO io,
@@ -60,19 +62,25 @@ public class ShooterKicker extends SubsystemBase {
 
     this.targetVelocity = RotationsPerSecond.zero();
     this.targetOutput = 0.0;
+    this.state = ShooterKickerState.kIdle;
   }
 
-  public Command setState(KickerState state) {
+  public Command setState(ShooterKickerState state) {
     return (switch (state) {
-      case kIdle -> run(() -> setOutput(ShooterConstants.kKickerIdleOutput));
-      case kEject -> run(() -> setOutput(ShooterConstants.kKickerEjectOutput));
-      case kStaticScore -> run(() -> setVelocity(ShooterConstants.kKickerStaticScoreVelocity));
+      case kIdle -> runOnce(() -> setOutput(ShooterConstants.kKickerIdleOutput));
+      case kEject -> runOnce(() -> setOutput(ShooterConstants.kKickerEjectOutput));
+      case kStaticScore -> runOnce(() -> setVelocity(ShooterConstants.kKickerStaticScoreVelocity));
       case kPass, kScore -> 
         Commands.waitUntil(readyToFeed)
           .andThen(run(() -> setVelocity(RotationsPerSecond.of(
             ShooterConstants.KickerMap.get(
               rollerVelocity.get().in(RotationsPerSecond))))));
-    }).withName("[Shooter/Kicker] Run from state: " + state.toString());
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Shooter/Kicker] Run from state: " + state.toString());
+  }
+
+  public ShooterKickerState getState() {
+    return state;
   }
 
   private void setVelocity(AngularVelocity velocity) {

@@ -121,7 +121,7 @@ public final class ShooterConstants {
   public static final AngularVelocity kRollerStaticScoreVelocity = RotationsPerSecond.of(40);
   public static final double kRollerStaticSendOutput = 1.0;
 
-  public enum KickerState {
+  public enum ShooterKickerState {
     kIdle,
     kEject,
     kStaticScore,
@@ -129,14 +129,14 @@ public final class ShooterConstants {
     kScore;
   }
 
-  public enum PivotState {
+  public enum ShooterPivotState {
     kStow,
     kStaticScore,
     kPass,
     kScore;
   }
 
-  public enum RollerState {
+  public enum ShooterRollerState {
     kIdle,
     kStaticScore,
     kStaticSend,

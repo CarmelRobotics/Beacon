@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.IntakeConstants;
-import frc.robot.subsystems.intake.IntakeConstants.RollerState;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerState;
 
 public class IntakeRoller extends SubsystemBase {
   private final IntakeRollerIO io;
@@ -19,8 +19,10 @@ public class IntakeRoller extends SubsystemBase {
 
   private final Alert motorDisconnected;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Intake/Roller/Voltage")
   private Voltage targetVoltage;
+  @AutoLogOutput(key = "Intake/Roller/State")
+  private IntakeRollerState state;
 
   public IntakeRoller(IntakeRollerIO io) {
     this.io = io;
@@ -29,14 +31,20 @@ public class IntakeRoller extends SubsystemBase {
     this.motorDisconnected = new Alert("[Intake/Roller] Roller Motor Disconnected.", AlertType.kError);
 
     this.targetVoltage = Volts.zero();
+    this.state = IntakeRollerState.kIdle;
   }
 
-  public Command setState(RollerState state) {
+  public Command setState(IntakeRollerState state) {
     return (switch (state) {
-      case kIdle -> run(() -> setVoltage(IntakeConstants.kIdleVoltage));
-      case kIntake -> run(() -> setVoltage(IntakeConstants.kIntakeVoltage));
-      case kEject -> run(() -> setVoltage(IntakeConstants.kEjectVoltage));
-    }).withName("[Intake/Roller] Run from state: " + state.toString());
+      case kIdle -> runOnce(() -> setVoltage(IntakeConstants.kIdleVoltage));
+      case kIntake -> runOnce(() -> setVoltage(IntakeConstants.kIntakeVoltage));
+      case kEject -> runOnce(() -> setVoltage(IntakeConstants.kEjectVoltage));
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Intake/Roller] Run from state: " + state.toString());
+  }
+
+  public IntakeRollerState getState() {
+    return state;
   }
 
   private void setVoltage(Voltage voltage) {

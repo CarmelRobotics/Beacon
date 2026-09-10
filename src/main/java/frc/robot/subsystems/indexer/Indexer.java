@@ -17,8 +17,10 @@ public class Indexer extends SubsystemBase {
 
   private final Alert motorDisconnected;
 
-  @AutoLogOutput
+  @AutoLogOutput(key = "Indexer/Voltage")
   private Voltage targetVoltage;
+  @AutoLogOutput(key = "Indexer/State")
+  private IndexerState state;
 
   public Indexer(IndexerIO io) {
     this.io = io;
@@ -27,14 +29,20 @@ public class Indexer extends SubsystemBase {
     this.motorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
 
     this.targetVoltage = Volts.zero();
+    this.state = IndexerConstants.IndexerState.kIdle;
   }
 
   public Command setState(IndexerState state) {
     return (switch (state) {
-      case kIdle -> run(() -> setVoltage(IndexerConstants.kIdleVoltage));
-      case kFeed -> run(() -> setVoltage(IndexerConstants.kFeedVoltage));
-      case kEject -> run(() -> setVoltage(IndexerConstants.kEjectVoltage));
-    }).withName("[Indexer] Run from state: " + state.toString());
+      case kIdle -> runOnce(() -> setVoltage(IndexerConstants.kIdleVoltage));
+      case kFeed -> runOnce(() -> setVoltage(IndexerConstants.kFeedVoltage));
+      case kEject -> runOnce(() -> setVoltage(IndexerConstants.kEjectVoltage));
+    }).beforeStarting(() -> {this.state = state;})
+      .withName("[Indexer] Run from state: " + state.toString());
+  }
+
+  public IndexerState getState() {
+    return state;
   }
 
   private void setVoltage(Voltage voltage) {

@@ -74,13 +74,13 @@ public final class IntakeConstants {
   public static final Angle kStowAngle = Degrees.zero();
   public static final Angle kDeployAngle = Degrees.of(360);
 
-  public enum RollerState {
+  public enum IntakeRollerState {
     kIdle,
     kIntake,
     kEject;
   }
 
-  public enum PivotState {
+  public enum IntakePivotState {
     kStow,
     kDeploy;
   }
