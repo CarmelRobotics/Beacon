@@ -18,7 +18,7 @@ public interface IndexerIO {
     public Temperature temperature;
   }
 
-  public void setVoltage(Voltage voltage);
+  public default void setVoltage(Voltage voltage) {}
 
-  public void updateInputs(IndexerIOInputsAutoLogged inputs);
+  public default void updateInputs(IndexerIOInputsAutoLogged inputs) {}
 }

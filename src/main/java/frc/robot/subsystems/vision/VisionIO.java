@@ -34,11 +34,10 @@ public interface VisionIO {
   }
 
   public static enum PoseObservationType {
-    MEGATAG_1,
-    MEGATAG_2,
-    PHOTONVISION
+    kMegaTag1,
+    kMegaTag2,
+    kPhotonVision
   }
 
-  public default void updateInputs(VisionIOInputsAutoLogged inputs) {
-  };
+  public default void updateInputs(VisionIOInputsAutoLogged inputs) {}
 }

@@ -24,14 +24,6 @@ public class ShooterPivotIOSim implements ShooterPivotIO {
   }
 
   @Override
-  public void zeroHere() {
-  }
-
-  @Override
-  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {
-  }
-
-  @Override
   public void setPosition(Angle position) {
     motor.setAngle(position.in(Radians));
   }

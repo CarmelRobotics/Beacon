@@ -77,7 +77,7 @@ public class VisionIOLimelight implements VisionIO {
               (int) rawSample.value[7],
               // Average tag distance
               rawSample.value[9],
-              PoseObservationType.MEGATAG_1));
+              PoseObservationType.kMegaTag1));
     }
     for (TimestampedDoubleArray rawSample : megatag2Subscriber.readQueue()) {
       if (rawSample.value.length == 0)
@@ -94,7 +94,7 @@ public class VisionIOLimelight implements VisionIO {
               (int) rawSample.value[7],
               // Average tag distance
               rawSample.value[9],
-              PoseObservationType.MEGATAG_2));
+              PoseObservationType.kMegaTag2));
     }
     inputs.poseObservations = new PoseObservation[poseObservations.size()];
     for (int i = 0; i < poseObservations.size(); i++) {

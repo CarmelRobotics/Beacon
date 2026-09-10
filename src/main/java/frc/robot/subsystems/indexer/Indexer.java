@@ -21,9 +21,9 @@ public class Indexer extends SubsystemBase {
 
   public Command setState(IndexerState state) {
     return (switch (state) {
-      case IDLE -> run(() -> io.setVoltage(IndexerConstants.kIdleVoltage));
-      case FEED -> run(() -> io.setVoltage(IndexerConstants.kFeedVoltage));
-      case EJECT -> run(() -> io.setVoltage(IndexerConstants.kEjectVoltage));
+      case kIdle -> run(() -> io.setVoltage(IndexerConstants.kIdleVoltage));
+      case kFeed -> run(() -> io.setVoltage(IndexerConstants.kFeedVoltage));
+      case kEject -> run(() -> io.setVoltage(IndexerConstants.kEjectVoltage));
     }).withName("[Indexer] Run from state: " + state.toString());
   }
 

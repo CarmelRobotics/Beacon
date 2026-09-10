@@ -28,8 +28,13 @@ public final class ShooterConstants {
 
   public static final Frequency kStatusUpdateFrequency = Hertz.of(60);
 
-  public static final InterpolatingDoubleTreeMap PivotMap = new InterpolatingDoubleTreeMap();
-  public static final InterpolatingDoubleTreeMap RollerMap = new InterpolatingDoubleTreeMap();
+  /* Distance in Meters -> Degrees */
+  public static final InterpolatingDoubleTreeMap PivotPassingMap = new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap PivotScoringMap = new InterpolatingDoubleTreeMap();
+  /* Distance in Meters -> RotationsPerSecond */
+  public static final InterpolatingDoubleTreeMap RollerPassingMap = new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap RollerScoringMap = new InterpolatingDoubleTreeMap();
+  /* RollerVelocity in RotationsPerSecond -> RotationsPerSecond */
   public static final InterpolatingDoubleTreeMap KickerMap = new InterpolatingDoubleTreeMap();
   static {
     // put data here
@@ -114,28 +119,28 @@ public final class ShooterConstants {
 
   public static final AngularVelocity kRollerIdleVelocity = RotationsPerSecond.of(0.5);
   public static final AngularVelocity kRollerStaticScoreVelocity = RotationsPerSecond.of(40);
-  public static final double kRollerSendOutput = 1.0;
+  public static final double kRollerStaticSendOutput = 1.0;
 
   public enum KickerState {
-    IDLE,
-    EJECT,
-    STATIC_SCORE,
-    PASS,
-    SCORE;
+    kIdle,
+    kEject,
+    kStaticScore,
+    kPass,
+    kScore;
   }
 
   public enum PivotState {
-    STOW,
-    STATIC_SCORE,
-    PASS,
-    SCORE;
+    kStow,
+    kStaticScore,
+    kPass,
+    kScore;
   }
 
   public enum RollerState {
-    IDLE,
-    STATIC_SCORE,
-    STATIC_SEND,
-    PASS,
-    SCORE;
+    kIdle,
+    kStaticScore,
+    kStaticSend,
+    kPass,
+    kScore;
   }
 }

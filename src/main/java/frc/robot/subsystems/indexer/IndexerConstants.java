@@ -23,9 +23,9 @@ public final class IndexerConstants {
   public static final Voltage kEjectVoltage = Volts.of(-12);
 
   public enum IndexerState {
-    IDLE,
-    FEED,
-    EJECT;
+    kIdle,
+    kFeed,
+    kEject;
   }
 
   public static final class Configs {

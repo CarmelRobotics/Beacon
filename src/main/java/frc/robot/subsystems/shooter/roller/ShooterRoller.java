@@ -1,10 +1,14 @@
 package frc.robot.subsystems.shooter.roller;
 
-import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,7 +27,8 @@ public class ShooterRoller extends SubsystemBase {
   private final Alert frontRightMotorDisconnected;
   private final Alert backRightMotorDisconnected;
 
-  private final Supplier<Pose2d> poseSupplier;
+  private final BooleanSupplier facingTarget;
+  private final DoubleSupplier targetDistance;
 
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
@@ -32,7 +37,12 @@ public class ShooterRoller extends SubsystemBase {
   private final LoggedTunableNumber kS;
   private final LoggedTunableNumber kV;
 
-  public ShooterRoller(ShooterRollerIO io, Supplier<Pose2d> poseSupplier) {
+  @AutoLogOutput
+  private AngularVelocity targetVelocity;
+  @AutoLogOutput
+  private double targetOutput;
+
+  public ShooterRoller(ShooterRollerIO io, BooleanSupplier facingTarget, DoubleSupplier targetDistance) {
     this.io = io;
     this.inputs = new ShooterRollerIOInputsAutoLogged();
 
@@ -45,7 +55,8 @@ public class ShooterRoller extends SubsystemBase {
     this.backRightMotorDisconnected = new Alert("[Shooter/Roller] Back Right Roller Motor Disconnected.",
         AlertType.kError);
 
-    this.poseSupplier = poseSupplier;
+    this.facingTarget = facingTarget;
+    this.targetDistance = targetDistance;
 
     this.kA = new LoggedTunableNumber("Shooter/Roller/kA", ShooterConstants.PivotConfigs.kA);
     this.kD = new LoggedTunableNumber("Shooter/Roller/kD", ShooterConstants.PivotConfigs.kD);
@@ -53,17 +64,45 @@ public class ShooterRoller extends SubsystemBase {
     this.kP = new LoggedTunableNumber("Shooter/Roller/kP", ShooterConstants.PivotConfigs.kP);
     this.kS = new LoggedTunableNumber("Shooter/Roller/kS", ShooterConstants.PivotConfigs.kS);
     this.kV = new LoggedTunableNumber("Shooter/Roller/kV", ShooterConstants.PivotConfigs.kV);
+
+    this.targetVelocity = RotationsPerSecond.zero();
+    this.targetOutput = 0.0;
+  }
+
+  public AngularVelocity getTargetVelocity() {
+    return targetVelocity;
+  }
+
+  public boolean isReadyToScore() {
+    return inputs.reachedTarget && facingTarget.getAsBoolean();
   }
 
   public Command setState(RollerState state) {
     return (switch (state) {
-      case IDLE -> run(() -> io.setVelocity(ShooterConstants.kRollerIdleVelocity));
-      case STATIC_SCORE -> run(() -> io.setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
-      case STATIC_SEND -> run(() -> io.setOutput(ShooterConstants.kRollerSendOutput));
-      /* unimplemented */
-      case PASS -> Commands.none();
-      case SCORE -> Commands.none();
+      case kIdle -> run(() -> setVelocity(ShooterConstants.kRollerIdleVelocity));
+      case kStaticScore -> run(() -> setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
+      case kStaticSend -> run(() -> setOutput(ShooterConstants.kRollerStaticSendOutput));
+      case kPass -> 
+        Commands.waitUntil(facingTarget)
+          .andThen(run(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble())))));
+      case kScore -> 
+        Commands.waitUntil(facingTarget)
+          .andThen(run(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble())))));
     }).withName("[Shooter/Roller] Run from state: " + state.toString());
+  }
+
+  private void setVelocity(AngularVelocity velocity) {
+    targetOutput = 0.0;
+    targetVelocity = velocity;
+    io.setVelocity(velocity);
+  }
+
+  private void setOutput(double output) {
+    targetVelocity = RotationsPerSecond.zero();
+    targetOutput = output;
+    io.setOutput(output);
   }
 
   private boolean hasPIDChanged() {

@@ -66,7 +66,7 @@ public class VisionIOPhoton implements VisionIO {
                 multitagResult.estimatedPose.ambiguity,
                 multitagResult.fiducialIDsUsed.size(),
                 totalTagDistance / result.targets.size(), // Average tag distance
-                PoseObservationType.PHOTONVISION));
+                PoseObservationType.kPhotonVision));
 
       } else if (!result.targets.isEmpty()) { // Single tag result
         PhotonTrackedTarget target = result.targets.get(0);
@@ -88,7 +88,7 @@ public class VisionIOPhoton implements VisionIO {
                   target.poseAmbiguity,
                   1,
                   cameraToTarget.getTranslation().getNorm(),
-                  PoseObservationType.PHOTONVISION));
+                  PoseObservationType.kPhotonVision));
         }
       }
     }

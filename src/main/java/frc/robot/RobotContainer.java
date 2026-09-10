@@ -18,18 +18,20 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.geometry.FieldConstants;
 
 public class RobotContainer {
   private final CommandXboxController controller;
 
   private final Drive drive;
+  @SuppressWarnings("unused")
   private final Vision vision;
 
   public RobotContainer() {
     this.controller = new CommandXboxController(0);
 
     switch (Constants.kCurrentMode) {
-      case REAL -> {
+      case kReal -> {
         this.drive = new Drive(
             new GyroIOPigeon2(),
             new ModuleIOTalonFX(DriveConstants.FrontLeft),
@@ -42,7 +44,7 @@ public class RobotContainer {
             new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
             new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation));
       }
-      case SIM -> {
+      case kSim -> {
         this.drive = new Drive(
             new GyroIO() {
             },
@@ -53,30 +55,21 @@ public class RobotContainer {
 
         this.vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIO() {
-            },
-            new VisionIO() {
-            });
+            new VisionIO() {},
+            new VisionIO() {});
       }
       default -> {
         this.drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            });
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {});
 
         this.vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIO() {
-            },
-            new VisionIO() {
-            });
+            new VisionIO() {},
+            new VisionIO() {});
       }
     }
 
@@ -90,6 +83,13 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX(),
             0.1));
+
+    controller.leftTrigger().onTrue(
+      drive.lockedDrive(
+        () -> -controller.getLeftY(),
+        () -> -controller.getLeftX(),
+        0.1,
+        () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
 
     controller.povDown().onTrue(drive.seedFieldCentric());
   }

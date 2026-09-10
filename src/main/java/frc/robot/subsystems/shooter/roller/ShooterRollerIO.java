@@ -10,6 +10,8 @@ import edu.wpi.first.units.measure.Voltage;
 public interface ShooterRollerIO {
   @AutoLog
   public static class ShooterRollerIOInputs {
+    public boolean reachedTarget;
+
     public boolean frontLeftConnected;
     public AngularVelocity frontLeftVelocity;
     public Voltage frontLeftAppliedVoltage;
@@ -39,11 +41,11 @@ public interface ShooterRollerIO {
     public Temperature backRightTemperature;
   }
 
-  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV);
+  public default void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
 
-  public void setVelocity(AngularVelocity velocity);
+  public default void setVelocity(AngularVelocity velocity) {}
 
-  public void setOutput(double output);
+  public default void setOutput(double output) {}
 
-  public void updateInputs(ShooterRollerIOInputsAutoLogged inputs);
+  public default void updateInputs(ShooterRollerIOInputsAutoLogged inputs) {}
 }

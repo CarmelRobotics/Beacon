@@ -18,11 +18,11 @@ public interface ShooterKickerIO {
     public Temperature temperature;
   }
 
-  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV);
+  public default void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
 
-  public void setVelocity(AngularVelocity velocity);
+  public default void setVelocity(AngularVelocity velocity) {}
 
-  public void setOutput(double output);
+  public default void setOutput(double output) {}
 
-  public void updateInputs(ShooterKickerIOInputsAutoLogged inputs);
+  public default void updateInputs(ShooterKickerIOInputsAutoLogged inputs) {}
 }

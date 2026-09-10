@@ -34,7 +34,6 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
         .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV));
   }
 
-  @Override
   public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
     motor.getConfigurator().apply(new MotionMagicConfigs()
         .withMotionMagicCruiseVelocity(kCruiseVelocity)

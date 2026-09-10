@@ -3,14 +3,14 @@ package frc.robot;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class Constants {
-  public static final Mode kSimulationMode = Mode.SIM;
-  public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : kSimulationMode;
-  public static final boolean kDisableHAL = kCurrentMode == Mode.REPLAY;
+  public static final Mode kSimulationMode = Mode.kSim;
+  public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.kReal : kSimulationMode;
+  public static final boolean kDisableHAL = kCurrentMode == Mode.kReplay;
 
   public enum Mode {
-    REAL,
-    SIM,
-    REPLAY;
+    kReal,
+    kSim,
+    kReplay;
   }
 
   public static final double kTimeoutSeconds = 0.25;

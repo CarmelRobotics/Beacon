@@ -24,9 +24,9 @@ public class IntakeRoller extends SubsystemBase {
 
   public Command setState(RollerState state) {
     return (switch (state) {
-      case IDLE -> run(() -> io.setVoltage(IntakeConstants.kIdleVoltage));
-      case INTAKE -> run(() -> io.setVoltage(IntakeConstants.kIntakeVoltage));
-      case EJECT -> run(() -> io.setVoltage(IntakeConstants.kEjectVoltage));
+      case kIdle -> run(() -> io.setVoltage(IntakeConstants.kIdleVoltage));
+      case kIntake -> run(() -> io.setVoltage(IntakeConstants.kIntakeVoltage));
+      case kEject -> run(() -> io.setVoltage(IntakeConstants.kEjectVoltage));
     }).withName("[Intake/Roller] Run from state: " + state.toString());
   }
 

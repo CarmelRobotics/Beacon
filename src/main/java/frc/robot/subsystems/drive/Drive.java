@@ -18,6 +18,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -73,6 +75,8 @@ public class Drive extends SubsystemBase {
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
 
+  private final PIDController assistController;
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO frontLeftModuleIO,
@@ -82,14 +86,23 @@ public class Drive extends SubsystemBase {
     this.gyroIO = gyroIO;
     this.gyroInputs = new GyroIOInputsAutoLogged();
 
+    this.gyroDisconnected = new Alert("[Swerve Drive] Gyro disconnected. Falling back to kinematics.",
+        AlertType.kError);
+
     this.modules = new Module[4];
     modules[0] = new Module(frontLeftModuleIO, 0, DriveConstants.FrontLeft);
     modules[1] = new Module(frontRightModuleIO, 1, DriveConstants.FrontRight);
     modules[2] = new Module(backLeftModuleIO, 2, DriveConstants.BackLeft);
     modules[3] = new Module(backRightModuleIO, 3, DriveConstants.BackRight);
 
-    this.gyroDisconnected = new Alert("[Swerve Drive] Gyro disconnected. Falling back to kinematics.",
-        AlertType.kError);
+    this.sysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            null,
+            (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism(
+            (voltage) -> runCharacterization(voltage), null, this));
 
     this.kinematics = new SwerveDriveKinematics(DriveConstants.kModuleTranslations);
 
@@ -98,6 +111,11 @@ public class Drive extends SubsystemBase {
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
     this.field2d = new Field2d();
+
+    this.assistController = new PIDController(
+        DriveConstants.PathPlanner.RotationGains.kP,
+        0.0,
+        DriveConstants.PathPlanner.RotationGains.kD);
 
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
@@ -122,15 +140,6 @@ public class Drive extends SubsystemBase {
         (Pose2d targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
-
-    sysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism(
-            (voltage) -> runCharacterization(voltage), null, this));
 
     SmartDashboard.putData(field2d);
   }
@@ -179,6 +188,42 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(Volts.zero())).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
+  public Command lockedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband, Supplier<Translation2d> lock) {
+    return runOnce(() -> assistController.reset())
+        .andThen(run(() -> {
+          final double x = xSupplier.getAsDouble();
+          final double y = ySupplier.getAsDouble();
+
+          double linearMagnitude = Math.min(MathUtil.applyDeadband(Math.hypot(x, y), deadband), 1.0);
+          Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
+          linearMagnitude = linearMagnitude * linearMagnitude;
+
+          Translation2d linearVelocity = new Pose2d(Translation2d.kZero, linearDirection)
+              .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
+              .getTranslation();
+
+          Translation2d toLock = lock.get().minus(getPose().getTranslation());
+          Rotation2d targetHeading = toLock.getNorm() > 1e-6
+              ? toLock.getAngle()
+              : getRotation();
+
+          double omega = assistController.calculate(
+              getRotation().getRadians(), targetHeading.getRadians());
+          omega = MathUtil.clamp(
+              omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
+
+          ChassisSpeeds speeds = new ChassisSpeeds(
+              linearVelocity.getX() * getMaxLinearSpeedMetersPerSec(),
+              linearVelocity.getY() * getMaxLinearSpeedMetersPerSec(),
+              omega);
+
+          runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  speeds,
+                  getRotation()));
+        }));
+  }
+
   public Command fieldCentricDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier,
       double deadband) {
     return run(() -> {
@@ -202,20 +247,21 @@ public class Drive extends SubsystemBase {
           linearVelocity.getY() * getMaxLinearSpeedMetersPerSec(),
           omega * getMaxAngularSpeedRadPerSec());
 
-      boolean isFlipped = DriverStation.getAlliance().isPresent()
-          && DriverStation.getAlliance().get() == Alliance.Red;
-
       runVelocity(
           ChassisSpeeds.fromFieldRelativeSpeeds(
               speeds,
-              isFlipped
-                  ? getRotation().plus(new Rotation2d(Math.PI))
-                  : getRotation()));
+              getRotation()));
     });
   }
 
   public Command seedFieldCentric() {
-    return runOnce(() -> setPose(new Pose2d(getPose().getTranslation(), Rotation2d.kZero)));
+    return runOnce(() -> {
+      Rotation2d operatorForward = DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get() == Alliance.Red
+        ? new Rotation2d(Math.PI)
+        : Rotation2d.kZero;
+      setPose(new Pose2d(getPose().getTranslation(), operatorForward));
+    });
   }
 
   @AutoLogOutput(key = "SwerveStates/Measured")
@@ -332,7 +378,7 @@ public class Drive extends SubsystemBase {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    gyroDisconnected.set(!gyroInputs.connected && Constants.kCurrentMode == Mode.REAL);
+    gyroDisconnected.set(!gyroInputs.connected && Constants.kCurrentMode == Mode.kReal);
     field2d.setRobotPose(getPose());
   }
 }

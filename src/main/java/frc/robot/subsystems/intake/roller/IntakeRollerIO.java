@@ -18,7 +18,7 @@ public interface IntakeRollerIO {
     public Temperature temperature;
   }
 
-  public void setVoltage(Voltage voltage);
+  public default void setVoltage(Voltage voltage) {}
 
-  public void updateInputs(IntakeRollerIOInputs inputs);
+  public default void updateInputs(IntakeRollerIOInputs inputs) {}
 }

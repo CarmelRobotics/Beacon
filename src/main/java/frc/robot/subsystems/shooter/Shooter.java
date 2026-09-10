@@ -1,8 +1,8 @@
 package frc.robot.subsystems.shooter;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.ShooterConstants.KickerState;
 import frc.robot.subsystems.shooter.ShooterConstants.PivotState;
@@ -15,15 +15,19 @@ import frc.robot.subsystems.shooter.roller.ShooterRoller;
 import frc.robot.subsystems.shooter.roller.ShooterRollerIO;
 
 public class Shooter {
-  private final ShooterKicker kicker;
   private final ShooterPivot pivot;
   private final ShooterRoller roller;
+  private final ShooterKicker kicker;
 
-  public Shooter(ShooterKickerIO kickerio, ShooterPivotIO pivotio, ShooterRollerIO rollerio,
-      Supplier<Pose2d> poseSupplier) {
-    this.kicker = new ShooterKicker(kickerio, poseSupplier);
-    this.pivot = new ShooterPivot(pivotio, poseSupplier);
-    this.roller = new ShooterRoller(rollerio, poseSupplier);
+  public Shooter(
+    ShooterKickerIO kickerio,
+    ShooterPivotIO pivotio,
+    ShooterRollerIO rollerio,
+    BooleanSupplier facingTarget,
+    DoubleSupplier targetDistance) {
+    this.pivot = new ShooterPivot(pivotio, targetDistance);
+    this.roller = new ShooterRoller(rollerio, facingTarget, targetDistance);
+    this.kicker = new ShooterKicker(kickerio, roller::isReadyToScore, roller::getTargetVelocity);
   }
 
   public Command setState(KickerState state) {

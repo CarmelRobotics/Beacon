@@ -53,8 +53,8 @@ public class IntakePivot extends SubsystemBase {
 
   public Command setState(PivotState state) {
     return (switch (state) {
-      case STOW -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
-      case DEPLOY -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
+      case kStow -> run(() -> io.setAngle(IntakeConstants.kStowAngle));
+      case kDeploy -> run(() -> io.setAngle(IntakeConstants.kDeployAngle));
     }).withName("[Intake/Pivot] Run from state: " + state.toString());
   }
 

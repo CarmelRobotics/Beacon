@@ -20,11 +20,11 @@ public interface IntakePivotIO {
     public Temperature temperature;
   }
 
-  public void zeroHere();
+  public default void zeroHere() {};
 
-  public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV);
+  public default void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {}
 
-  public void setAngle(Angle angle);
+  public default void setAngle(Angle angle) {}
 
-  public void updateInputs(IntakePivotIOInputsAutoLogged inputs);
+  public default void updateInputs(IntakePivotIOInputsAutoLogged inputs) {}
 }

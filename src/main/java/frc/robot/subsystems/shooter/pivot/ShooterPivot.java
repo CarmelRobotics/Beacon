@@ -1,14 +1,16 @@
 package frc.robot.subsystems.shooter.pivot;
 
-import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.PivotState;
@@ -20,7 +22,7 @@ public class ShooterPivot extends SubsystemBase {
 
   private final Alert motorDisconnected;
 
-  private final Supplier<Pose2d> poseSupplier;
+  private final DoubleSupplier targetDistance;
 
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
@@ -32,13 +34,16 @@ public class ShooterPivot extends SubsystemBase {
   private final LoggedTunableNumber kAcceleration;
   private final LoggedTunableNumber kJerk;
 
-  public ShooterPivot(ShooterPivotIO io, Supplier<Pose2d> poseSupplier) {
+  @AutoLogOutput
+  private Angle targetPosition;
+
+  public ShooterPivot(ShooterPivotIO io, DoubleSupplier targetDistanceSupplier) {
     this.io = io;
     this.inputs = new ShooterPivotIOInputsAutoLogged();
 
     this.motorDisconnected = new Alert("[Shooter/Pivot] Pivot Motor Disconnected.", AlertType.kError);
 
-    this.poseSupplier = poseSupplier;
+    this.targetDistance = targetDistanceSupplier;
 
     this.kA = new LoggedTunableNumber("Shooter/Pivot/kA", ShooterConstants.PivotConfigs.kA);
     this.kD = new LoggedTunableNumber("Shooter/Pivot/kD", ShooterConstants.PivotConfigs.kD);
@@ -52,6 +57,8 @@ public class ShooterPivot extends SubsystemBase {
         ShooterConstants.PivotConfigs.kMotionMagicAcceleration);
     this.kJerk = new LoggedTunableNumber("Shooter/Pivot/kJerk", ShooterConstants.PivotConfigs.kMotionMagicJerk);
 
+    this.targetPosition = Degrees.zero();
+
     io.zeroHere();
   }
 
@@ -61,12 +68,16 @@ public class ShooterPivot extends SubsystemBase {
 
   public Command setState(PivotState state) {
     return (switch (state) {
-      case STOW -> run(() -> io.setPosition(ShooterConstants.kPivotStowAngle));
-      case STATIC_SCORE -> run(() -> io.setPosition(ShooterConstants.kPivotStaticScoreAngle));
-      /* unimplemented */
-      case PASS -> Commands.none();
-      case SCORE -> Commands.none();
+      case kStow -> run(() -> setPosition(ShooterConstants.kPivotStowAngle));
+      case kStaticScore -> run(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
+      case kPass -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotPassingMap.get(targetDistance.getAsDouble()))));
+      case kScore -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
     }).withName("[Shooter/Pivot] Run from state: " + state.toString());
+  }
+
+  private void setPosition(Angle position) {
+    targetPosition = position;
+    io.setPosition(position);
   }
 
   private boolean hasPIDChanged() {
@@ -99,7 +110,8 @@ public class ShooterPivot extends SubsystemBase {
           kV.get());
     }
     if (io instanceof ShooterPivotIOTalonFX && hasMotionMagicChanged()) {
-      io.updateMotionMagic(
+      ShooterPivotIOTalonFX talonFXIO = (ShooterPivotIOTalonFX) io;
+      talonFXIO.updateMotionMagic(
           kCruiseVelocity.get(),
           kAcceleration.get(),
           kJerk.get());
