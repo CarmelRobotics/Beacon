@@ -74,6 +74,8 @@ public class Drive extends SubsystemBase {
 
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
+  @AutoLogOutput(key = "Drive/OperatorForward")
+  private Rotation2d operatorForward;
 
   private final PIDController assistController;
 
@@ -108,6 +110,7 @@ public class Drive extends SubsystemBase {
 
     this.rawGyroRotation = Rotation2d.kZero;
     this.lastModulePositions = getModulePositions();
+    this.operatorForward = Rotation2d.kZero;
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
     this.field2d = new Field2d();
@@ -221,7 +224,7 @@ public class Drive extends SubsystemBase {
           runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds,
-                  getRotation()));
+                  getRotation().minus(operatorForward)));
         }));
   }
 
@@ -251,14 +254,13 @@ public class Drive extends SubsystemBase {
       runVelocity(
           ChassisSpeeds.fromFieldRelativeSpeeds(
               speeds,
-              getRotation()));
+              getRotation().minus(operatorForward)));
     });
   }
 
   public Command seedFieldCentric() {
     return runOnce(() -> {
-      Rotation2d operatorForward = AllianceFlip.shouldFlip() ? new Rotation2d(Math.PI) : Rotation2d.kZero;
-      setPose(new Pose2d(getPose().getTranslation(), operatorForward));
+      operatorForward = getRotation();
     });
   }
 
