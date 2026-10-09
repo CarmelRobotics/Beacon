@@ -35,8 +35,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -70,7 +68,6 @@ public class Drive extends SubsystemBase {
   private final SysIdRoutine sysId;
   private final SwerveDriveKinematics kinematics;
   private final SwerveDrivePoseEstimator poseEstimator;
-  private final Field2d field2d;
 
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
@@ -113,7 +110,6 @@ public class Drive extends SubsystemBase {
     this.operatorForward = Rotation2d.kZero;
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
-    this.field2d = new Field2d();
 
     this.assistController = new PIDController(
         DriveConstants.PathPlanner.RotationGains.kP,
@@ -144,8 +140,6 @@ public class Drive extends SubsystemBase {
         (Pose2d targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
-
-    SmartDashboard.putData(field2d);
   }
 
   public void runVelocity(ChassisSpeeds speeds) {
@@ -336,12 +330,11 @@ public class Drive extends SubsystemBase {
     odometryLock.lock();
 
     gyroIO.updateInputs(gyroInputs);
-    Logger.processInputs("Drive/Gyro", gyroInputs);
 
     for (Module module : modules) {
       module.periodic();
     }
-
+    
     odometryLock.unlock();
 
     if (DriverStation.isDisabled()) {
@@ -379,6 +372,5 @@ public class Drive extends SubsystemBase {
     }
 
     gyroDisconnected.set(!gyroInputs.connected && Constants.kCurrentMode == Mode.kReal);
-    field2d.setRobotPose(getPose());
   }
 }

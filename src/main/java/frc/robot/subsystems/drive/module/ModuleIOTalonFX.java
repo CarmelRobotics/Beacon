@@ -60,9 +60,9 @@ public class ModuleIOTalonFX implements ModuleIO {
       SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants) {
     this.constants = constants;
 
-    this.driveMotor = new TalonFX(constants.DriveMotorId);
-    this.steerMotor = new TalonFX(constants.SteerMotorId);
-    this.encoder = new CANcoder(constants.EncoderId);
+    this.driveMotor = new TalonFX(constants.DriveMotorId, DriveConstants.kCANBus);
+    this.steerMotor = new TalonFX(constants.SteerMotorId, DriveConstants.kCANBus);
+    this.encoder = new CANcoder(constants.EncoderId, DriveConstants.kCANBus);
 
     this.driveMotorStatus = new TalonFXStatus(driveMotor);
     this.steerMotorStatus = new TalonFXStatus(steerMotor);
@@ -150,10 +150,6 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputsAutoLogged inputs) {
-    driveMotorStatus.refresh();
-    steerMotorStatus.refresh();
-    BaseStatusSignal.refreshAll(encoderMagnetHealth, encoderPosition);
-
     inputs.driveConnected = driveMotorStatus.getConnected();
     inputs.drivePosition = driveMotorStatus.getPosition();
     inputs.driveVelocity = driveMotorStatus.getVelocity();
