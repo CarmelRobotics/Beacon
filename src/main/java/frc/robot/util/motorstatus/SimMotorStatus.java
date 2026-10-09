@@ -18,30 +18,37 @@ public class SimMotorStatus implements MotorStatus {
     this.motor = motor;
   }
 
+  @Override
   public boolean getConnected() {
     return true;
   }
 
+  @Override
   public Angle getPosition() {
     return motor.getAngularPosition();
   }
 
+  @Override
   public AngularVelocity getVelocity() {
     return motor.getAngularVelocity();
   }
 
+  @Override
   public Voltage getAppliedVoltage() {
     return Volts.of(motor.getInputVoltage());
   }
 
+  @Override
   public Current getSupplyCurrent() {
     return Amps.of(motor.getCurrentDrawAmps());
   }
 
+  @Override
   public Current getStatorCurrent() {
     return Amps.of(motor.getTorqueNewtonMeters() / motor.getGearbox().KtNMPerAmp);
   }
 
+  @Override
   public Temperature getTemperature() {
     return Celsius.zero();
   }

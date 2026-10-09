@@ -42,30 +42,37 @@ public class TalonFXStatus implements MotorStatus {
         supplyCurrent, statorCurrent, temperature);
   }
 
+  @Override
   public boolean getConnected() {
     return motor.isConnected();
   }
 
+  @Override
   public Angle getPosition() {
     return position.getValue();
   }
 
+  @Override
   public AngularVelocity getVelocity() {
     return velocity.getValue();
   }
 
+  @Override
   public Voltage getAppliedVoltage() {
     return appliedVoltage.getValue();
   }
 
+  @Override
   public Current getSupplyCurrent() {
     return supplyCurrent.getValue();
   }
 
+  @Override
   public Current getStatorCurrent() {
     return statorCurrent.getValue();
   }
 
+  @Override
   public Temperature getTemperature() {
     return temperature.getValue();
   }
