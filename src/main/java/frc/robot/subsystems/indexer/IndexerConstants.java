@@ -10,11 +10,7 @@ import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.Voltage;
 
 public final class IndexerConstants {
-  /*
-   * TODO: Tune constants
-   */
-
-  public static final int kMotorId = 3;
+  public static final int kMotorId = 15;
 
   public static final Frequency kStatusFrequency = Hertz.of(50);
 
