@@ -10,12 +10,19 @@ import edu.wpi.first.units.measure.Voltage;
 public interface IntakeRollerIO {
   @AutoLog
   public static class IntakeRollerIOInputs {
-    public boolean connected;
-    public AngularVelocity velocity;
-    public Voltage appliedVoltage;
-    public Current supplyCurrent;
-    public Current statorCurrent;
-    public Temperature temperature;
+    public boolean leaderConnected;
+    public AngularVelocity leaderVelocity;
+    public Voltage leaderAppliedVoltage;
+    public Current leaderSupplyCurrent;
+    public Current leaderStatorCurrent;
+    public Temperature leaderTemperature;
+
+    public boolean followerConnected;
+    public AngularVelocity followerVelocity;
+    public Voltage followerAppliedVoltage;
+    public Current followerSupplyCurrent;
+    public Current followerStatorCurrent;
+    public Temperature followerTemperature;
   }
 
   public default void setVoltage(Voltage voltage) {}

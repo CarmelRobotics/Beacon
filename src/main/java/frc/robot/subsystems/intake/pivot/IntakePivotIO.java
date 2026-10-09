@@ -11,13 +11,21 @@ import edu.wpi.first.units.measure.Voltage;
 public interface IntakePivotIO {
   @AutoLog
   public static class IntakePivotIOInputs {
-    public boolean connected;
-    public Angle position;
-    public AngularVelocity velocity;
-    public Voltage appliedVoltage;
-    public Current supplyCurrent;
-    public Current statorCurrent;
-    public Temperature temperature;
+    public boolean leaderConnected;
+    public Angle leaderPosition;
+    public AngularVelocity leaderVelocity;
+    public Voltage leaderAppliedVoltage;
+    public Current leaderSupplyCurrent;
+    public Current leaderStatorCurrent;
+    public Temperature leaderTemperature;
+
+    public boolean followerConnected;
+    public Angle followerPosition;
+    public AngularVelocity followerVelocity;
+    public Voltage followerAppliedVoltage;
+    public Current followerSupplyCurrent;
+    public Current followerStatorCurrent;
+    public Temperature followerTemperature;
   }
 
   public default void zeroHere() {};

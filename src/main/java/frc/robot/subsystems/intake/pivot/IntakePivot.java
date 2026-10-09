@@ -18,7 +18,8 @@ public class IntakePivot extends SubsystemBase {
   private final IntakePivotIO io;
   private final IntakePivotIOInputsAutoLogged inputs;
 
-  private final Alert motorDisconnected;
+  private final Alert leaderDisconnected;
+  private final Alert followerDisconnected;
 
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
@@ -39,7 +40,8 @@ public class IntakePivot extends SubsystemBase {
     this.io = io;
     this.inputs = new IntakePivotIOInputsAutoLogged();
 
-    this.motorDisconnected = new Alert("[Intake/Pivot] Pivot Motor Disconnected.", AlertType.kError);
+    this.leaderDisconnected = new Alert("[Intake/Pivot] Leader Pivot Motor Disconnected.", AlertType.kError);
+    this.followerDisconnected = new Alert("[Intake/Pivot] Follower Pivot Motor Disconnected.", AlertType.kError);
 
     this.kA = new LoggedTunableNumber("Intake/Pivot/kA", IntakeConstants.PivotConfigs.kA);
     this.kD = new LoggedTunableNumber("Intake/Pivot/kD", IntakeConstants.PivotConfigs.kD);
@@ -55,8 +57,6 @@ public class IntakePivot extends SubsystemBase {
 
     this.targetPosition = Degrees.zero();
     this.state = IntakePivotState.kStow;
-
-    io.zeroHere();
   }
 
   public Command zeroHere() {
@@ -76,8 +76,8 @@ public class IntakePivot extends SubsystemBase {
   }
 
   private void setPosition(Angle position) {
+    io.setPosition(targetPosition);
     targetPosition = position;
-    io.setPosition(position);
   }
 
   private boolean hasPIDChanged() {
@@ -116,6 +116,7 @@ public class IntakePivot extends SubsystemBase {
           kJerk.get());
     }
 
-    motorDisconnected.set(!inputs.connected);
+    leaderDisconnected.set(!inputs.leaderConnected);
+    followerDisconnected.set(!inputs.followerConnected);
   }
 }

@@ -9,17 +9,27 @@ import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.util.motorstatus.SimMotorStatus;
 
 public class IntakePivotIOSim implements IntakePivotIO {
-  private final DCMotorSim pivotMotor;
-  private final SimMotorStatus pivotStatus;
+  private final DCMotorSim leftMotor;
+  private final DCMotorSim rightMotor;
+
+  private final SimMotorStatus leftStatus;
+  private final SimMotorStatus rightStatus;
 
   public IntakePivotIOSim() {
-    this.pivotMotor = new DCMotorSim(
+    this.leftMotor = new DCMotorSim(
         LinearSystemId.createDCMotorSystem(
             IntakeConstants.PivotConfigs.kSimMotor,
             IntakeConstants.PivotConfigs.kSimMotorMOIJ,
             IntakeConstants.PivotConfigs.kSimMotorGearRatio),
         IntakeConstants.PivotConfigs.kSimMotor);
-    this.pivotStatus = new SimMotorStatus(pivotMotor);
+    this.rightMotor = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            IntakeConstants.PivotConfigs.kSimMotor,
+            IntakeConstants.PivotConfigs.kSimMotorMOIJ,
+            IntakeConstants.PivotConfigs.kSimMotorGearRatio),
+        IntakeConstants.PivotConfigs.kSimMotor);
+    this.leftStatus = new SimMotorStatus(leftMotor);
+    this.rightStatus = new SimMotorStatus(rightMotor);
   }
 
   @Override
@@ -30,16 +40,24 @@ public class IntakePivotIOSim implements IntakePivotIO {
 
   @Override
   public void setPosition(Angle position) {
-    pivotMotor.setAngle(position.in(Radians));
+    leftMotor.setAngle(position.in(Radians));
+    rightMotor.setAngle(-position.in(Radians));
   }
 
   @Override
   public void updateInputs(IntakePivotIOInputsAutoLogged inputs) {
-    inputs.connected = pivotStatus.getConnected();
-    inputs.position = pivotStatus.getPosition();
-    inputs.velocity = pivotStatus.getVelocity();
-    inputs.appliedVoltage = pivotStatus.getAppliedVoltage();
-    inputs.statorCurrent = pivotStatus.getSupplyCurrent();
-    inputs.temperature = pivotStatus.getTemperature();
+    inputs.leaderConnected = leftStatus.getConnected();
+    inputs.leaderPosition = leftStatus.getPosition();
+    inputs.leaderVelocity = leftStatus.getVelocity();
+    inputs.leaderAppliedVoltage = leftStatus.getAppliedVoltage();
+    inputs.leaderStatorCurrent = leftStatus.getSupplyCurrent();
+    inputs.leaderTemperature = leftStatus.getTemperature();
+
+    inputs.followerConnected = rightStatus.getConnected();
+    inputs.followerPosition = rightStatus.getPosition();
+    inputs.followerVelocity = rightStatus.getVelocity();
+    inputs.followerAppliedVoltage = rightStatus.getAppliedVoltage();
+    inputs.followerStatorCurrent = rightStatus.getSupplyCurrent();
+    inputs.followerTemperature = rightStatus.getTemperature();
   }
 }

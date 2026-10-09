@@ -17,7 +17,8 @@ public class IntakeRoller extends SubsystemBase {
   private final IntakeRollerIO io;
   private final IntakeRollerIOInputsAutoLogged inputs;
 
-  private final Alert motorDisconnected;
+  private final Alert leaderDisconnected;
+  private final Alert followerDisconnected;
 
   @AutoLogOutput(key = "Intake/Roller/Voltage")
   private Voltage targetVoltage;
@@ -28,7 +29,8 @@ public class IntakeRoller extends SubsystemBase {
     this.io = io;
     this.inputs = new IntakeRollerIOInputsAutoLogged();
 
-    this.motorDisconnected = new Alert("[Intake/Roller] Roller Motor Disconnected.", AlertType.kError);
+    this.leaderDisconnected = new Alert("[Intake/Roller] Leader Roller Motor Disconnected.", AlertType.kError);
+    this.followerDisconnected = new Alert("[Intake/Roller] Follower Roller Motor Disconnected.", AlertType.kError);
 
     this.targetVoltage = Volts.zero();
     this.state = IntakeRollerState.kIdle;
@@ -56,6 +58,7 @@ public class IntakeRoller extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake/Roller/Inputs", inputs);
-    motorDisconnected.set(!inputs.connected);
+    leaderDisconnected.set(!inputs.leaderConnected);
+    followerDisconnected.set(!inputs.followerConnected);
   }
 }
