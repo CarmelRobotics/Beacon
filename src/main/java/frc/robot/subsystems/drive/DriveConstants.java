@@ -48,8 +48,8 @@ public class DriveConstants {
   public static final Frequency kStatusFrequency = Hertz.of(50.0);
   public static final Frequency kOdometryFrequency = Hertz.of(kCANBus.isNetworkFD() ? 50.0 : 50.0);
 
-  public static final FeedbackSensorSourceValue kFeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-  public static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
+  public static final FeedbackSensorSourceValue kFeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+  public static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.RemoteCANcoder;
 
   private static final Slot0Configs SteerGains = new Slot0Configs()
       .withKP(33)
@@ -60,8 +60,9 @@ public class DriveConstants {
       .withKA(0)
       .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
-  private static final Slot0Configs DriveGains = new Slot0Configs().withKP(0.1).withKI(0).withKD(0).withKS(0)
-      .withKV(0.124);
+  private static final Slot0Configs DriveGains = new Slot0Configs()
+    .withKP(0.1).withKI(0).withKD(0)
+    .withKS(0).withKV(0.124);
 
   private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
   private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -92,8 +93,8 @@ public class DriveConstants {
 
   public static final int kPigeonId = 12;
 
-  private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.004);
-  private static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.025);
+  private static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.001);
+  private static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.035);
   private static final Voltage kSteerFrictionVoltage = Volts.of(0.2);
   private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 

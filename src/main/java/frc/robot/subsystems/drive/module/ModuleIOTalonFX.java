@@ -150,6 +150,10 @@ public class ModuleIOTalonFX implements ModuleIO {
 
   @Override
   public void updateInputs(ModuleIOInputsAutoLogged inputs) {
+    driveMotorStatus.refresh();
+    steerMotorStatus.refresh();
+    BaseStatusSignal.refreshAll(encoderMagnetHealth, encoderPosition);
+
     inputs.driveConnected = driveMotorStatus.getConnected();
     inputs.drivePosition = driveMotorStatus.getPosition();
     inputs.driveVelocity = driveMotorStatus.getVelocity();

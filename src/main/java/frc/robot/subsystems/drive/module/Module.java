@@ -76,7 +76,7 @@ public class Module {
 
   public void runSetpoint(SwerveModuleState state) {
     state.optimize(getSteerAngle());
-    state.cosineScale(inputs.steerPosition);
+    state.cosineScale(getSteerAngle());
 
     io.setVelocity(RadiansPerSecond.of(state.speedMetersPerSecond / constants.WheelRadius));
     io.setSteer(state.angle);
