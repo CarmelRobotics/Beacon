@@ -32,7 +32,6 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleSubscriber txSubscriber;
   private final DoubleSubscriber tySubscriber;
   private final DoubleArraySubscriber megatag1Subscriber;
-  private final DoubleArraySubscriber megatag2Subscriber;
 
   public VisionIOLimelight(String name, Supplier<Rotation2d> rotationSupplier) {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
@@ -42,7 +41,6 @@ public class VisionIOLimelight implements VisionIO {
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    megatag2Subscriber = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
   }
 
   @Override
@@ -78,23 +76,6 @@ public class VisionIOLimelight implements VisionIO {
               // Average tag distance
               rawSample.value[9],
               PoseObservationType.kMegaTag1));
-    }
-    for (TimestampedDoubleArray rawSample : megatag2Subscriber.readQueue()) {
-      if (rawSample.value.length == 0)
-        continue;
-      for (int i = 11; i < rawSample.value.length; i += 7) {
-        tagIds.add((int) rawSample.value[i]);
-      }
-      poseObservations.add(
-          new PoseObservation(
-              rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
-              parsePose(rawSample.value),
-              0.0,
-              // Tag count
-              (int) rawSample.value[7],
-              // Average tag distance
-              rawSample.value[9],
-              PoseObservationType.kMegaTag2));
     }
     inputs.poseObservations = new PoseObservation[poseObservations.size()];
     for (int i = 0; i < poseObservations.size(); i++) {

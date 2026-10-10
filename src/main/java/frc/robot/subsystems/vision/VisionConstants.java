@@ -1,15 +1,40 @@
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.util.CameraInfo;
 
 public class VisionConstants {
   public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-  public static final CameraInfo kLimelightLeft = new CameraInfo("limelight-left", new Transform3d(), 1.0);
-  public static final CameraInfo kLimelightRight = new CameraInfo("limelight-right", new Transform3d(), 1.0);
+  public static final CameraInfo kLimelightLeft = 
+    new CameraInfo(
+      "limelight-left",
+      new Transform3d(
+        Meters.of(-0.266),
+        Meters.of(-0.146),
+        Meters.of(0.2),
+        new Rotation3d(
+          Degrees.zero(), 
+          Degrees.of(9.7), 
+          Degrees.of(20.2))),
+      1.0);
+  public static final CameraInfo kLimelightRight = new CameraInfo(
+    "limelight-right",
+    new Transform3d(
+        Meters.of(0.266),
+        Meters.of(0.146),
+        Meters.of(0.2),
+        new Rotation3d(
+          Degrees.zero(), 
+          Degrees.of(9.7), 
+          Degrees.of(-20.2))),
+    1.0);
 
   public static final CameraInfo[] kCameraInfo = new CameraInfo[] {
       kLimelightLeft,
