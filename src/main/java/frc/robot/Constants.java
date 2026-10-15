@@ -6,6 +6,7 @@ public class Constants {
   public static final Mode kSimulationMode = Mode.kSim;
   public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.kReal : kSimulationMode;
   public static final boolean kDisableHAL = kCurrentMode == Mode.kReplay;
+  public static final boolean kUseStaticSetpoints = false;
 
   public enum Mode {
     kReal,

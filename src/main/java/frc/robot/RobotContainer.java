@@ -18,7 +18,9 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIO;
 import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
+import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.intake.pivot.IntakePivotIO;
@@ -27,6 +29,19 @@ import frc.robot.subsystems.intake.pivot.IntakePivotIOTalonFX;
 import frc.robot.subsystems.intake.roller.IntakeRollerIO;
 import frc.robot.subsystems.intake.roller.IntakeRollerIOSim;
 import frc.robot.subsystems.intake.roller.IntakeRollerIOTalonFX;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterKickerState;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterPivotState;
+import frc.robot.subsystems.shooter.ShooterConstants.ShooterRollerState;
+import frc.robot.subsystems.shooter.kicker.ShooterKickerIO;
+import frc.robot.subsystems.shooter.kicker.ShooterKickerIOSim;
+import frc.robot.subsystems.shooter.kicker.ShooterKickerIOTalonFX;
+import frc.robot.subsystems.shooter.pivot.ShooterPivotIO;
+import frc.robot.subsystems.shooter.pivot.ShooterPivotIOSim;
+import frc.robot.subsystems.shooter.pivot.ShooterPivotIOTalonFX;
+import frc.robot.subsystems.shooter.roller.ShooterRollerIO;
+import frc.robot.subsystems.shooter.roller.ShooterRollerIOSim;
+import frc.robot.subsystems.shooter.roller.ShooterRollerIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
@@ -39,7 +54,7 @@ public class RobotContainer {
   private final Drive drive;
   @SuppressWarnings("unused")
   private final Vision vision;
-
+  private final Shooter shooter;
   private final Indexer indexer;
   private final Intake intake;
 
@@ -54,13 +69,17 @@ public class RobotContainer {
             new ModuleIOTalonFX(DriveConstants.FrontRight),
             new ModuleIOTalonFX(DriveConstants.BackLeft),
             new ModuleIOTalonFX(DriveConstants.BackRight));
-
         this.vision = new Vision(
             drive::addVisionMeasurement,
             new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
             new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation));
-        
-        this.indexer = new Indexer(new IndexerIOTalonFX());
+        this.shooter = new Shooter(
+          new ShooterKickerIOTalonFX(),
+          new ShooterPivotIOTalonFX(),
+          new ShooterRollerIOTalonFX(),
+          drive::getPose,
+          drive::isFacingTarget);
+        this.indexer = new Indexer(new IndexerIOTalonFX(), shooter::isReadyToFeed);
         this.intake = new Intake(new IntakePivotIOTalonFX(), new IntakeRollerIOTalonFX());
       }
       case kSim -> {
@@ -71,13 +90,19 @@ public class RobotContainer {
             new ModuleIOSim(DriveConstants.FrontRight),
             new ModuleIOSim(DriveConstants.BackLeft),
             new ModuleIOSim(DriveConstants.BackRight));
-
+        // Vision disabled in simulator.
         this.vision = new Vision(
             drive::addVisionMeasurement,
             new VisionIO() {},
             new VisionIO() {});
-
-        this.indexer = new Indexer(new IndexerIOSim());
+        this.shooter = new Shooter(
+          new ShooterKickerIOSim(),
+          new ShooterPivotIOSim(),
+          new ShooterRollerIOSim(),
+          drive::getPose,
+          drive::isFacingTarget
+        );
+        this.indexer = new Indexer(new IndexerIOSim(), shooter::isReadyToFeed);
         this.intake = new Intake(new IntakePivotIOSim(), new IntakeRollerIOSim());
       }
       default -> {
@@ -87,13 +112,17 @@ public class RobotContainer {
             new ModuleIO() {},
             new ModuleIO() {},
             new ModuleIO() {});
-
         this.vision = new Vision(
             drive::addVisionMeasurement,
             new VisionIO() {},
             new VisionIO() {});
-
-        this.indexer = new Indexer(new IndexerIO() {});
+        this.shooter = new Shooter(
+          new ShooterKickerIO() {},
+          new ShooterPivotIO() {},
+          new ShooterRollerIO() {},
+          drive::getPose,
+          drive::isFacingTarget);
+        this.indexer = new Indexer(new IndexerIO() {}, shooter::isReadyToFeed);
         this.intake = new Intake(new IntakePivotIO() {}, new IntakeRollerIO() {});
       }
     }
@@ -102,25 +131,60 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    /*
+     * Left Joystick: Swerve Translation
+     * Right Joystick: Swerve Rotation
+     * POV Down: Seed Field Centric
+     * 
+     * Left Trigger: Deploy intake, while held, run intake rollers.
+     * Right Trigger: Shoot fuel.
+     * Left Bumper: Agitate.
+     * POV Up: Toggle Deploy/Stow intake.
+     */
+
     drive.setDefaultCommand(
         drive.fieldCentricDrive(
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX(),
             0.1));
-
-    controller.rightTrigger().whileTrue(
-      drive.lockedDrive(
-        () -> -controller.getLeftY(),
-        () -> -controller.getLeftX(),
-        0.1,
-        () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
-    controller.leftTrigger()
-      .onTrue(intake.setState(IntakePivotState.kDeploy, IntakeRollerState.kIntake))
-      .onFalse(intake.setState(IntakeRollerState.kIdle));
-    controller.povLeft().onTrue(intake.setState(IntakePivotState.kStow));
-
     controller.povDown().onTrue(drive.seedFieldCentric());
+
+    controller.leftTrigger().onTrue(intake.setState(IntakePivotState.kDeploy));
+    controller.leftTrigger()
+      .onTrue(intake.setState(IntakeRollerState.kIntake))
+      .onFalse(intake.setState(IntakeRollerState.kIdle));
+
+    controller.leftBumper().whileTrue(intake.setState(IntakePivotState.kAgitate))
+      .onFalse(intake.setState(IntakePivotState.kDeploy));
+    controller.leftBumper().whileTrue(indexer.setState(IndexerState.kAgitate))
+      .onFalse(indexer.setState(IndexerState.kIdle));
+
+    if (Constants.kUseStaticSetpoints) {
+      controller.rightTrigger().onTrue(
+        shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
+        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
+    } else {
+      controller.rightTrigger().whileTrue(
+        drive.lockedDrive(
+          () -> -controller.getLeftY(),
+          () -> -controller.getLeftX(),
+          0.1,
+          () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+      controller.rightTrigger().onTrue(
+        shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
+        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
+      controller.rightTrigger().whileTrue(indexer.setState(IndexerState.kFeed))
+        .onFalse(indexer.setState(IndexerState.kIdle));
+      controller.rightTrigger().whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay).andThen(intake.setState(IntakePivotState.kAgitate)))
+        .onFalse(intake.setState(IntakePivotState.kDeploy));
+    }
+
+    controller.povUp().onTrue(
+      intake.setState(
+        () -> intake.getPivotState() == IntakePivotState.kStow 
+          ? IntakePivotState.kDeploy
+          : IntakePivotState.kStow));
   }
 
   public Command getAutonomousCommand() {
