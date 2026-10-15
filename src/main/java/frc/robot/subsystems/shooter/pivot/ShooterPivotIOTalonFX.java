@@ -50,6 +50,8 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
 
   @Override
   public void updateInputs(ShooterPivotIOInputsAutoLogged inputs) {
+    motorStatus.refresh();
+
     inputs.connected = motorStatus.getConnected();
     inputs.position = motorStatus.getPosition();
     inputs.velocity = motorStatus.getVelocity();

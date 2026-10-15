@@ -73,8 +73,8 @@ public class ShooterPivot extends SubsystemBase {
     return (switch (state) {
       case kStow -> runOnce(() -> setPosition(ShooterConstants.kPivotStowAngle));
       case kStaticScore -> runOnce(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
-      case kPass -> runOnce(() -> setPosition(Degrees.of(ShooterConstants.PivotPassingMap.get(targetDistance.getAsDouble()))));
-      case kScore -> runOnce(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
+      case kPass -> run(() -> setPosition(ShooterConstants.kPivotPassAngle));
+      case kScore -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Shooter/Pivot] Run from state: " + state.toString());
   }

@@ -1,8 +1,10 @@
 package frc.robot.subsystems.shooter;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.shooter.kicker.ShooterKicker;
 import frc.robot.subsystems.shooter.kicker.ShooterKickerIO;
@@ -10,6 +12,8 @@ import frc.robot.subsystems.shooter.pivot.ShooterPivot;
 import frc.robot.subsystems.shooter.pivot.ShooterPivotIO;
 import frc.robot.subsystems.shooter.roller.ShooterRoller;
 import frc.robot.subsystems.shooter.roller.ShooterRollerIO;
+import frc.robot.util.geometry.AllianceFlip;
+import frc.robot.util.geometry.FieldConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterKickerState;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterPivotState;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterRollerState;
@@ -19,15 +23,18 @@ public class Shooter {
   private final ShooterRoller roller;
   private final ShooterKicker kicker;
 
+  private final Supplier<Pose2d> pose;
+
   public Shooter(
     ShooterKickerIO kickerio,
     ShooterPivotIO pivotio,
     ShooterRollerIO rollerio,
-    BooleanSupplier facingTarget,
-    DoubleSupplier targetDistance) {
-    this.pivot = new ShooterPivot(pivotio, targetDistance);
-    this.roller = new ShooterRoller(rollerio, facingTarget, targetDistance);
-    this.kicker = new ShooterKicker(kickerio, roller::isReadyToScore, roller::getTargetVelocity);
+    Supplier<Pose2d> pose,
+    BooleanSupplier facingTarget) {
+    this.pose = pose;
+    this.pivot = new ShooterPivot(pivotio, this::getScoreDistance);
+    this.roller = new ShooterRoller(rollerio, facingTarget, this::getScoreDistance);
+    this.kicker = new ShooterKicker(kickerio, roller::isReadyToFeed);
   }
 
   public Command setState(ShooterKickerState state) {
@@ -56,6 +63,20 @@ public class Shooter {
 
   public ShooterRollerState getRollerState() {
     return roller.getState();
+  }
+
+  public double getScoreDistance() {
+    return pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.topCenterPoint).toTranslation2d());
+  }
+
+  public double getPassDistance() {
+    double zoneLineX = AllianceFlip.apply(
+      new Translation2d(FieldConstants.LinesVertical.allianceZone, 0.0)).getX();
+    return Math.abs(pose.get().getX() - zoneLineX);
+  }
+
+  public boolean isReadyToFeed() {
+    return roller.isReadyToFeed();
   }
 
   public Command zeroPivotHere() {

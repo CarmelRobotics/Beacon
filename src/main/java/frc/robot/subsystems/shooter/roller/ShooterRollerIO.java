@@ -10,8 +10,6 @@ import edu.wpi.first.units.measure.Voltage;
 public interface ShooterRollerIO {
   @AutoLog
   public static class ShooterRollerIOInputs {
-    public boolean reachedTarget;
-
     public boolean frontLeftConnected;
     public AngularVelocity frontLeftVelocity;
     public Voltage frontLeftAppliedVoltage;
@@ -46,6 +44,8 @@ public interface ShooterRollerIO {
   public default void setVelocity(AngularVelocity velocity) {}
 
   public default void setOutput(double output) {}
+
+  public default void setVoltage(Voltage voltage) {}
 
   public default void updateInputs(ShooterRollerIOInputsAutoLogged inputs) {}
 }

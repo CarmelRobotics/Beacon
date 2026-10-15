@@ -3,7 +3,6 @@ package frc.robot.subsystems.shooter.kicker;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -25,7 +24,6 @@ public class ShooterKicker extends SubsystemBase {
   private final Alert motorDisconnected;
 
   private final BooleanSupplier readyToFeed;
-  private final Supplier<AngularVelocity> rollerVelocity;
 
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
@@ -43,22 +41,20 @@ public class ShooterKicker extends SubsystemBase {
 
   public ShooterKicker(
     ShooterKickerIO io,
-    BooleanSupplier readyToFeed,
-    Supplier<AngularVelocity> rollerVelocity) {
+    BooleanSupplier readyToFeed) {
     this.io = io;
     this.inputs = new ShooterKickerIOInputsAutoLogged();
 
     this.motorDisconnected = new Alert("[Shooter/Kicker] Kicker Motor Disconnected.", AlertType.kError);
 
     this.readyToFeed = readyToFeed;
-    this.rollerVelocity = rollerVelocity;
 
-    this.kA = new LoggedTunableNumber("Shooter/Kicker/kA", ShooterConstants.PivotConfigs.kA);
-    this.kD = new LoggedTunableNumber("Shooter/Kicker/kD", ShooterConstants.PivotConfigs.kD);
-    this.kI = new LoggedTunableNumber("Shooter/Kicker/kI", ShooterConstants.PivotConfigs.kI);
-    this.kP = new LoggedTunableNumber("Shooter/Kicker/kP", ShooterConstants.PivotConfigs.kP);
-    this.kS = new LoggedTunableNumber("Shooter/Kicker/kS", ShooterConstants.PivotConfigs.kS);
-    this.kV = new LoggedTunableNumber("Shooter/Kicker/kV", ShooterConstants.PivotConfigs.kV);
+    this.kA = new LoggedTunableNumber("Shooter/Kicker/kA", ShooterConstants.KickerConfigs.kA);
+    this.kD = new LoggedTunableNumber("Shooter/Kicker/kD", ShooterConstants.KickerConfigs.kD);
+    this.kI = new LoggedTunableNumber("Shooter/Kicker/kI", ShooterConstants.KickerConfigs.kI);
+    this.kP = new LoggedTunableNumber("Shooter/Kicker/kP", ShooterConstants.KickerConfigs.kP);
+    this.kS = new LoggedTunableNumber("Shooter/Kicker/kS", ShooterConstants.KickerConfigs.kS);
+    this.kV = new LoggedTunableNumber("Shooter/Kicker/kV", ShooterConstants.KickerConfigs.kV);
 
     this.targetVelocity = RotationsPerSecond.zero();
     this.targetOutput = 0.0;
@@ -69,12 +65,9 @@ public class ShooterKicker extends SubsystemBase {
     return (switch (state) {
       case kIdle -> runOnce(() -> setOutput(ShooterConstants.kKickerIdleOutput));
       case kEject -> runOnce(() -> setOutput(ShooterConstants.kKickerEjectOutput));
-      case kStaticScore -> runOnce(() -> setVelocity(ShooterConstants.kKickerStaticScoreVelocity));
-      case kPass, kScore -> 
+      case kFeed ->
         Commands.waitUntil(readyToFeed)
-          .andThen(run(() -> setVelocity(RotationsPerSecond.of(
-            ShooterConstants.KickerMap.get(
-              rollerVelocity.get().in(RotationsPerSecond))))));
+          .andThen(runOnce(() -> setVelocity(ShooterConstants.kKickerFeedVelocity)));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Shooter/Kicker] Run from state: " + state.toString());
   }

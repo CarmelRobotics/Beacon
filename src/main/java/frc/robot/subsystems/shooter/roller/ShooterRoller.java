@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter.roller;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -9,10 +10,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterRollerState;
@@ -41,6 +42,8 @@ public class ShooterRoller extends SubsystemBase {
   private AngularVelocity targetVelocity;
   @AutoLogOutput(key = "Shooter/Roller/Output")
   private double targetOutput;
+  @AutoLogOutput(key = "Shooter/Roller/Voltage")
+  private Voltage targetVoltage;
   @AutoLogOutput(key = "Shooter/Roller/State")
   private ShooterRollerState state;
 
@@ -60,31 +63,28 @@ public class ShooterRoller extends SubsystemBase {
     this.facingTarget = facingTarget;
     this.targetDistance = targetDistance;
 
-    this.kA = new LoggedTunableNumber("Shooter/Roller/kA", ShooterConstants.PivotConfigs.kA);
-    this.kD = new LoggedTunableNumber("Shooter/Roller/kD", ShooterConstants.PivotConfigs.kD);
-    this.kI = new LoggedTunableNumber("Shooter/Roller/kI", ShooterConstants.PivotConfigs.kI);
-    this.kP = new LoggedTunableNumber("Shooter/Roller/kP", ShooterConstants.PivotConfigs.kP);
-    this.kS = new LoggedTunableNumber("Shooter/Roller/kS", ShooterConstants.PivotConfigs.kS);
-    this.kV = new LoggedTunableNumber("Shooter/Roller/kV", ShooterConstants.PivotConfigs.kV);
+    this.kA = new LoggedTunableNumber("Shooter/Roller/kA", ShooterConstants.RollerConfigs.kA);
+    this.kD = new LoggedTunableNumber("Shooter/Roller/kD", ShooterConstants.RollerConfigs.kD);
+    this.kI = new LoggedTunableNumber("Shooter/Roller/kI", ShooterConstants.RollerConfigs.kI);
+    this.kP = new LoggedTunableNumber("Shooter/Roller/kP", ShooterConstants.RollerConfigs.kP);
+    this.kS = new LoggedTunableNumber("Shooter/Roller/kS", ShooterConstants.RollerConfigs.kS);
+    this.kV = new LoggedTunableNumber("Shooter/Roller/kV", ShooterConstants.RollerConfigs.kV);
 
     this.targetVelocity = RotationsPerSecond.zero();
     this.targetOutput = 0.0;
+    this.targetVoltage = Volts.zero();
     this.state = ShooterRollerState.kIdle;
   }
 
   public Command setState(ShooterRollerState state) {
     return (switch (state) {
-      case kIdle -> runOnce(() -> setVelocity(ShooterConstants.kRollerIdleVelocity));
+      case kIdle -> runOnce(() -> setVoltage(Volts.zero()));
       case kStaticScore -> runOnce(() -> setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
-      case kStaticSend -> runOnce(() -> setOutput(ShooterConstants.kRollerStaticSendOutput));
       case kPass -> 
-        Commands.waitUntil(facingTarget)
-          .andThen(runOnce(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble())))));
-      case kScore -> 
-        Commands.waitUntil(facingTarget)
-          .andThen(runOnce(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble())))));
+        run(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble()))));
+      case kScore -> run(() -> setVelocity(RotationsPerSecond.of(
+              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble()))));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Shooter/Roller] Run from state: " + state.toString());
   }
@@ -93,8 +93,11 @@ public class ShooterRoller extends SubsystemBase {
     return targetVelocity;
   }
 
-  public boolean isReadyToScore() {
-    return inputs.reachedTarget && facingTarget.getAsBoolean();
+  @AutoLogOutput(key = "Shooter/Roller/ReadyToFeed")
+  public boolean isReadyToFeed() {
+    return 
+      inputs.frontLeftVelocity.isNear(targetVelocity, ShooterConstants.kRollerToleranceVelocity)
+      && facingTarget.getAsBoolean();
   }
 
   public ShooterRollerState getState() {
@@ -103,12 +106,20 @@ public class ShooterRoller extends SubsystemBase {
 
   private void setVelocity(AngularVelocity velocity) {
     targetOutput = 0.0;
+    targetVoltage = Volts.zero();
     targetVelocity = velocity;
     io.setVelocity(velocity);
   }
 
+  private void setVoltage(Voltage voltage) {
+    targetOutput = 0.0;
+    targetVelocity = RotationsPerSecond.zero();
+    io.setVoltage(voltage);
+  }
+
   private void setOutput(double output) {
     targetVelocity = RotationsPerSecond.zero();
+    targetVoltage = Volts.zero();
     targetOutput = output;
     io.setOutput(output);
   }
