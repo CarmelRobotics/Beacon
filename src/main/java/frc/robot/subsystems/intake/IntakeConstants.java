@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Hertz;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -14,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
 public final class IntakeConstants {
@@ -32,7 +34,7 @@ public final class IntakeConstants {
     public static final double kI = 0.0;
     public static final double kD = 0.1;
 
-    public static final double kMotionMagicCruiseVelocity = 80;
+    public static final double kMotionMagicCruiseVelocity = 40;
     public static final double kMotionMagicAcceleration = 160;
     public static final double kMotionMagicJerk = 1600;
 
@@ -50,7 +52,7 @@ public final class IntakeConstants {
 
     public static final SoftwareLimitSwitchConfigs SoftWareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
       .withForwardSoftLimitEnable(true)
-      .withForwardSoftLimitThreshold(Degrees.of(6300));
+      .withForwardSoftLimitThreshold(Degrees.of(6150));
 
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(PivotConfigs.Slot0Configs)
@@ -72,11 +74,15 @@ public final class IntakeConstants {
   }
 
   public static final Voltage kIdleVoltage = Volts.zero();
-  public static final Voltage kIntakeVoltage = Volts.of(12);
-  public static final Voltage kEjectVoltage = Volts.of(12);
-
+  public static final Voltage kIntakeVoltage = Volts.of(6);
+  public static final Voltage kEjectVoltage = Volts.of(-6);
+  
   public static final Angle kStowAngle = Degrees.of(0);
   public static final Angle kDeployAngle = Degrees.of(6000);
+
+  public static final Angle kToleranceAngle = Degrees.of(100);
+  public static final Time kToleranceTimeout = Seconds.of(0.75);
+  public static final Time kAgitateDelay = Seconds.of(1.5);
 
   public enum IntakeRollerState {
     kIdle,
@@ -86,6 +92,7 @@ public final class IntakeConstants {
 
   public enum IntakePivotState {
     kStow,
-    kDeploy;
+    kDeploy,
+    kAgitate;
   }
 }

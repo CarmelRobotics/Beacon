@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerState;
@@ -17,6 +19,10 @@ public class Intake {
     this.roller = new IntakeRoller(rollerio);
   }
 
+  public Command setState(Supplier<IntakePivotState> pivotState) {
+    return pivot.setState(pivotState);
+  }
+
   public Command setState(IntakePivotState pivotState) {
     return pivot.setState(pivotState);
   }
@@ -27,6 +33,14 @@ public class Intake {
 
   public Command setState(IntakePivotState pivotState, IntakeRollerState rollerState) {
     return pivot.setState(pivotState).alongWith(roller.setState(rollerState));
+  }
+
+  public IntakePivotState getPivotState() {
+    return pivot.getState();
+  }
+
+  public IntakeRollerState getRollerState() {
+    return roller.getState();
   }
 
   public Command zeroPivotHere() {

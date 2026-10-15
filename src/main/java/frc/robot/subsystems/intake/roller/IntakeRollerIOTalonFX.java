@@ -7,13 +7,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IntakeRollerIOTalonFX implements IntakeRollerIO {
-  private final TalonFX leaderMotor;
-  private final TalonFX followerMotor;
+  private final TalonFX leftLeaderMotor;
+  private final TalonFX rightFollowerMotor;
 
   private final TalonFXStatus leaderStatus;
   private final TalonFXStatus followerStatus;
@@ -21,25 +20,25 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
   private final VoltageOut voltageRequest;
 
   public IntakeRollerIOTalonFX() {
-    this.leaderMotor = new TalonFX(IntakeConstants.kLeftLeaderRollerMotorId, Constants.kRIOCANBus);
-    this.followerMotor = new TalonFX(IntakeConstants.kRightFollowerRollerMotorId, Constants.kRIOCANBus);
+    this.leftLeaderMotor = new TalonFX(IntakeConstants.kLeftLeaderRollerMotorId);
+    this.rightFollowerMotor = new TalonFX(IntakeConstants.kRightFollowerRollerMotorId);
 
-    this.leaderStatus = new TalonFXStatus(leaderMotor);
-    this.followerStatus = new TalonFXStatus(followerMotor);
+    this.leaderStatus = new TalonFXStatus(leftLeaderMotor);
+    this.followerStatus = new TalonFXStatus(rightFollowerMotor);
 
     this.voltageRequest = new VoltageOut(0);
 
-    leaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
-    followerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
-    followerMotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    leftLeaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
+    rightFollowerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
+    rightFollowerMotor.setControl(new Follower(leftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     leaderStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
     followerStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
-    ParentDevice.optimizeBusUtilizationForAll(leaderMotor, followerMotor);
+    ParentDevice.optimizeBusUtilizationForAll(leftLeaderMotor, rightFollowerMotor);
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
-    leaderMotor.setControl(voltageRequest.withOutput(voltage));
+    leftLeaderMotor.setControl(voltageRequest.withOutput(voltage));
   }
 
   @Override

@@ -9,13 +9,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Angle;
-import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IntakePivotIOTalonFX implements IntakePivotIO {
-  private final TalonFX leaderMotor;
-  private final TalonFX followerMotor;
+  private final TalonFX leftLeaderMotor;
+  private final TalonFX rightFollowerMotor;
 
   private final TalonFXStatus leaderStatus;
   private final TalonFXStatus followerStatus;
@@ -23,27 +22,27 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
   private final MotionMagicVoltage positionRequest;
 
   public IntakePivotIOTalonFX() {
-    this.leaderMotor = new TalonFX(IntakeConstants.kLeftLeaderPivotMotorId, Constants.kRIOCANBus);
-    this.followerMotor = new TalonFX(IntakeConstants.kRightFollowerPivotMotorId, Constants.kRIOCANBus);
+    this.leftLeaderMotor = new TalonFX(IntakeConstants.kLeftLeaderPivotMotorId);
+    this.rightFollowerMotor = new TalonFX(IntakeConstants.kRightFollowerPivotMotorId);
 
-    this.leaderStatus = new TalonFXStatus(leaderMotor);
-    this.followerStatus = new TalonFXStatus(followerMotor);
+    this.leaderStatus = new TalonFXStatus(leftLeaderMotor);
+    this.followerStatus = new TalonFXStatus(rightFollowerMotor);
 
     this.positionRequest = new MotionMagicVoltage(0);
 
-    leaderMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
-    followerMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
-    followerMotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    leftLeaderMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
+    rightFollowerMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration);
+    rightFollowerMotor.setControl(new Follower(leftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     leaderStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
     followerStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
-    ParentDevice.optimizeBusUtilizationForAll(leaderMotor, followerMotor);
-    leaderMotor.setControl(positionRequest);
+    ParentDevice.optimizeBusUtilizationForAll(leftLeaderMotor, rightFollowerMotor);
+    leftLeaderMotor.setControl(positionRequest);
   }
 
   @Override
   public void zeroHere() {
-    leaderMotor.setPosition(0);
-    followerMotor.setPosition(0);
+    leftLeaderMotor.setPosition(0);
+    rightFollowerMotor.setPosition(0);
   }
 
   @Override
@@ -51,8 +50,8 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
     final Slot0Configs config = new Slot0Configs()
       .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
 
-    leaderMotor.getConfigurator().apply(config);
-    followerMotor.getConfigurator().apply(config);
+    leftLeaderMotor.getConfigurator().apply(config);
+    rightFollowerMotor.getConfigurator().apply(config);
   }
 
   public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
@@ -61,13 +60,13 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
       .withMotionMagicAcceleration(kAcceleration)
       .withMotionMagicJerk(kJerk);
 
-    leaderMotor.getConfigurator().apply(config);
-    followerMotor.getConfigurator().apply(config);
+    leftLeaderMotor.getConfigurator().apply(config);
+    rightFollowerMotor.getConfigurator().apply(config);
   }
 
   @Override
   public void setPosition(Angle position) {
-    leaderMotor.setControl(positionRequest.withPosition(position));
+    leftLeaderMotor.setControl(positionRequest.withPosition(position));
   }
 
   @Override

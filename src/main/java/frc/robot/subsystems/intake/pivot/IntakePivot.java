@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -9,6 +11,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
@@ -63,12 +66,31 @@ public class IntakePivot extends SubsystemBase {
     return run(() -> io.zeroHere());
   }
 
+  public Command setState(Supplier<IntakePivotState> state) {
+    return defer(() -> setState(state.get()));
+  }
+
   public Command setState(IntakePivotState state) {
     return (switch (state) {
       case kStow -> runOnce(() -> setPosition(IntakeConstants.kStowAngle));
       case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
+      case kAgitate ->
+        Commands.repeatingSequence(
+          runOnce(() -> setPosition(IntakeConstants.kStowAngle)),
+          waitForTarget(),
+          runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
+          waitForTarget()
+        );
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Intake/Pivot] Run from state: " + state.toString());
+  }
+
+  private Command waitForTarget() {
+    return Commands.waitUntil(this::hasReachedTarget).withTimeout(IntakeConstants.kToleranceTimeout);
+  }
+
+  private boolean hasReachedTarget() {
+    return inputs.leaderPosition.isNear(targetPosition, IntakeConstants.kToleranceAngle);
   }
 
   public IntakePivotState getState() {
@@ -76,8 +98,8 @@ public class IntakePivot extends SubsystemBase {
   }
 
   private void setPosition(Angle position) {
-    io.setPosition(targetPosition);
     targetPosition = position;
+    io.setPosition(targetPosition);
   }
 
   private boolean hasPIDChanged() {
