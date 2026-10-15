@@ -2,6 +2,8 @@ package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.BooleanSupplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -9,12 +11,14 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 
 public class Indexer extends SubsystemBase {
   private final IndexerIO io;
   private final IndexerIOInputsAutoLogged inputs;
+  private final BooleanSupplier readyToFeed;
 
   private final Alert motorDisconnected;
 
@@ -23,9 +27,10 @@ public class Indexer extends SubsystemBase {
   @AutoLogOutput(key = "Indexer/State")
   private IndexerState state;
 
-  public Indexer(IndexerIO io) {
+  public Indexer(IndexerIO io, BooleanSupplier readyToFeed) {
     this.io = io;
     this.inputs = new IndexerIOInputsAutoLogged();
+    this.readyToFeed = readyToFeed;
 
     this.motorDisconnected = new Alert("[Indexer] Indexer Motor Disconnected.", AlertType.kError);
 
@@ -36,8 +41,15 @@ public class Indexer extends SubsystemBase {
   public Command setState(IndexerState state) {
     return (switch (state) {
       case kIdle -> runOnce(() -> setVoltage(IndexerConstants.kIdleVoltage));
-      case kFeed -> runOnce(() -> setVoltage(IndexerConstants.kFeedVoltage));
+      case kIntake -> runOnce(() -> setVoltage(IndexerConstants.kIntakeVoltage));
       case kEject -> runOnce(() -> setVoltage(IndexerConstants.kEjectVoltage));
+      case kAgitate -> Commands.repeatingSequence(
+        run(() -> setVoltage(IndexerConstants.kFeedVoltage)).withTimeout(IndexerConstants.kAgitateTimeout),
+        run(() -> setVoltage(IndexerConstants.kEjectVoltage)).withTimeout(IndexerConstants.kAgitateTimeout)
+      );
+      case kFeed ->
+        Commands.waitUntil(readyToFeed)
+          .andThen(runOnce(() -> setVoltage(IndexerConstants.kFeedVoltage)));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Indexer] Run from state: " + state.toString());
   }

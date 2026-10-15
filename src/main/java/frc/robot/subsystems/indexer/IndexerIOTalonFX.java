@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.Constants;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IndexerIOTalonFX implements IndexerIO {
@@ -14,7 +13,7 @@ public class IndexerIOTalonFX implements IndexerIO {
   private final VoltageOut voltageRequest;
 
   public IndexerIOTalonFX() {
-    this.motor = new TalonFX(IndexerConstants.kMotorId, Constants.kRIOCANBus);
+    this.motor = new TalonFX(IndexerConstants.kMotorId);
     this.motorStatus = new TalonFXStatus(motor);
     this.voltageRequest = new VoltageOut(0);
 
