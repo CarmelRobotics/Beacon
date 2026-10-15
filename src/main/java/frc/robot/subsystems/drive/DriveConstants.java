@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Hertz;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
@@ -223,6 +224,8 @@ public class DriveConstants {
   public static final double kRobotMassKg = 68.04;
   public static final double kRobotMOI = 6.883;
   public static final double kWheelCof = 1.2;
+
+  public static final Angle kAngleTolerance = Degrees.of(3.0);
 
   public static final Translation2d[] kModuleTranslations = {
       new Translation2d(FrontLeft.LocationX, FrontLeft.LocationY),

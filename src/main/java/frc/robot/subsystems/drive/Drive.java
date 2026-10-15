@@ -73,6 +73,8 @@ public class Drive extends SubsystemBase {
   private SwerveModulePosition[] lastModulePositions;
   @AutoLogOutput(key = "Drive/OperatorForward")
   private Rotation2d operatorForward;
+  @AutoLogOutput(key = "Drive/LockRotation")
+  private Rotation2d lockRotation;
 
   private final PIDController assistController;
 
@@ -108,6 +110,7 @@ public class Drive extends SubsystemBase {
     this.rawGyroRotation = Rotation2d.kZero;
     this.lastModulePositions = getModulePositions();
     this.operatorForward = Rotation2d.kZero;
+    this.lockRotation = Rotation2d.kZero;
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
@@ -201,12 +204,13 @@ public class Drive extends SubsystemBase {
               .getTranslation();
 
           Translation2d toLock = AllianceFlip.apply(lock.get()).minus(getPose().getTranslation());
-          Rotation2d targetHeading = toLock.getNorm() > 1e-6
+          Rotation2d targetRotation = toLock.getNorm() > 1e-6
               ? toLock.getAngle()
               : getRotation();
+          lockRotation = targetRotation;
 
           double omega = assistController.calculate(
-              getRotation().getRadians(), targetHeading.getRadians());
+              getRotation().getRadians(), targetRotation.getRadians());
           omega = MathUtil.clamp(
               omega, -getMaxAngularSpeedRadPerSec(), getMaxAngularSpeedRadPerSec());
 
@@ -303,6 +307,15 @@ public class Drive extends SubsystemBase {
 
   public Rotation2d getRotation() {
     return getPose().getRotation();
+  }
+
+  public Rotation2d getTargetLockRotation() {
+    return lockRotation;
+  }
+
+  @AutoLogOutput(key = "Drive/FacingTarget")
+  public boolean isFacingTarget() {
+    return Math.abs(getRotation().minus(lockRotation).getRadians()) <= DriveConstants.kAngleTolerance.in(Radians);
   }
 
   public void setPose(Pose2d pose) {
