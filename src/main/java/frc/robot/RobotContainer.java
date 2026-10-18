@@ -4,11 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.FieldRelative;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.drive.module.ModuleIO;
@@ -54,6 +56,7 @@ public class RobotContainer {
   private final Drive drive;
   @SuppressWarnings("unused")
   private final Vision vision;
+  private final FieldRelative field;
   private final Shooter shooter;
   private final Indexer indexer;
   private final Intake intake;
@@ -127,6 +130,8 @@ public class RobotContainer {
       }
     }
 
+    this.field = new FieldRelative(drive::getPose);
+
     configureBindings();
   }
 
@@ -142,6 +147,10 @@ public class RobotContainer {
      * POV Up: Toggle Deploy/Stow intake.
      */
 
+    final Command controllerWarn = Commands.runEnd(
+      () -> controller.setRumble(RumbleType.kBothRumble, 0.5),
+      () -> controller.setRumble(RumbleType.kBothRumble, 0));
+    
     drive.setDefaultCommand(
         drive.fieldCentricDrive(
             () -> -controller.getLeftY(),
@@ -165,12 +174,12 @@ public class RobotContainer {
         shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
     } else {
-      controller.rightTrigger().whileTrue(
+      controller.rightTrigger().and(field::isInAllianceZone).whileTrue(
         drive.lockedDrive(
           () -> -controller.getLeftY(),
           () -> -controller.getLeftX(),
           0.1,
-          () -> FieldConstants.Hub.innerCenterPoint.toTranslation2d()));
+          () -> FieldConstants.Hub.kInnerCenterPoint.toTranslation2d()));
       controller.rightTrigger().onTrue(
         shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
@@ -178,6 +187,7 @@ public class RobotContainer {
         .onFalse(indexer.setState(IndexerState.kIdle));
       controller.rightTrigger().whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay).andThen(intake.setState(IntakePivotState.kAgitate)))
         .onFalse(intake.setState(IntakePivotState.kDeploy));
+      controller.rightTrigger().and(() -> !field.isInAllianceZone()).whileTrue(controllerWarn);
     }
 
     controller.povUp().onTrue(

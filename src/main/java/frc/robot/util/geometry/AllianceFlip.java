@@ -13,11 +13,11 @@ import frc.robot.Constants;
 
 public class AllianceFlip {
   public static double flipX(double x) {
-    return FieldConstants.fieldLength - x;
+    return FieldConstants.kFieldLength - x;
   }
 
   public static double flipY(double y) {
-    return FieldConstants.fieldWidth - y;
+    return FieldConstants.kFieldWidth - y;
   }
 
   public static Translation2d flip(Translation2d translation) {
@@ -76,6 +76,17 @@ public class AllianceFlip {
           applyY(bounds.minY()));
     } else {
       return bounds;
+    }
+  }
+
+  public static Rectangle2d apply(Rectangle2d rect) {
+    if (shouldFlip()) {
+      return new Rectangle2d(
+        apply(rect.getCenter()),
+        rect.getXWidth(),
+        rect.getYWidth());
+    } else {
+      return rect;
     }
   }
 

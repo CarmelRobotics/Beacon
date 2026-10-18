@@ -10,8 +10,6 @@ package frc.robot.util.geometry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rectangle2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
@@ -271,23 +269,27 @@ public class FieldConstants {
         kFieldWidth / 2.0 - kWidth / 2.0);
   }
 
-  public static final List<Rectangle2d> kObstructions = List.of(
-    new Rectangle2d(FieldConstants.Hub.kNearLeftCorner, FieldConstants.Hub.kFarRightCorner),
-    new Rectangle2d(
-      new Pose2d(FieldConstants.LeftTrench.kCenter, Rotation2d.kZero),
-      FieldConstants.LeftTrench.kWidth,
-      FieldConstants.LeftTrench.kDepth
-    ),
-    new Rectangle2d(
-      new Pose2d(FieldConstants.RightTrench.kCenter, Rotation2d.kZero),
-      FieldConstants.RightTrench.kWidth,
-      FieldConstants.RightTrench.kDepth
-    ),
-    new Rectangle2d(
-      new Pose2d(FieldConstants.Tower.kCenterPoint, Rotation2d.kZero),
-      FieldConstants.Tower.kWidth,
-      FieldConstants.Tower.kDepth
-    )
+  public static final Bounds kAllianceZone =
+    new Bounds(0.0, LinesVertical.kAllianceZone, 0.0, kFieldWidth);
+
+  public static final List<Bounds> kObstructions = List.of(
+    new Bounds(
+      Hub.kNearRightCorner.getX(), Hub.kFarLeftCorner.getX(),
+      Hub.kNearRightCorner.getY(), Hub.kFarLeftCorner.getY()),
+    new Bounds(
+      0.0, Tower.kDepth,
+      Tower.kCenterPoint.getY() - (Tower.kWidth / 2.0),
+      Tower.kCenterPoint.getY() + (Tower.kWidth / 2.0)),
+    new Bounds(
+      LinesVertical.kHubCenter - (LeftTrench.kDepth / 2.0),
+      LinesVertical.kHubCenter + (LeftTrench.kDepth / 2.0),
+      kFieldWidth - LeftTrench.kWidth,
+      kFieldWidth),
+    new Bounds(
+      LinesVertical.kHubCenter - (RightTrench.kDepth / 2.0),
+      LinesVertical.kHubCenter + (RightTrench.kDepth / 2.0),
+      0.0,
+      RightTrench.kWidth)
   );
 
   public static final double kPassTargetX = LinesVertical.kAllianceZone / 2.0;

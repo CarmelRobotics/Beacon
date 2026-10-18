@@ -66,12 +66,12 @@ public class Shooter {
   }
 
   public double getScoreDistance() {
-    return pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.topCenterPoint).toTranslation2d());
+    return pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
   }
 
   public double getPassDistance() {
     double zoneLineX = AllianceFlip.apply(
-      new Translation2d(FieldConstants.LinesVertical.allianceZone, 0.0)).getX();
+      new Translation2d(FieldConstants.LinesVertical.kAllianceZone, 0.0)).getX();
     return Math.abs(pose.get().getX() - zoneLineX);
   }
 
