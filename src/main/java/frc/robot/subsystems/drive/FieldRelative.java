@@ -56,7 +56,7 @@ public class FieldRelative {
       }
 
       boolean blocked = false;
-      for (Bounds obstruction : FieldConstants.kObstructions) {
+      for (Bounds obstruction : FieldConstants.kHubObstructions) {
         if (blocks(obstruction, robot, target)) {
           blocked = true;
           break;

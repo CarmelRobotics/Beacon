@@ -272,17 +272,17 @@ public class FieldConstants {
   public static final Bounds kAllianceZone =
     new Bounds(0.0, LinesVertical.kHubCenter, 0.0, kFieldWidth);
 
-  public static final List<Bounds> kObstructions = List.of(
+  private static final Bounds kHubObstruction =
     new Bounds(
-      Hub.kNearRightCorner.getX(), Hub.kFarLeftCorner.getX(),
-      Hub.kNearRightCorner.getY(), Hub.kFarLeftCorner.getY()),
-    new Bounds(
-      0.0, Tower.kDepth,
-      Tower.kCenterPoint.getY() - (Tower.kWidth / 2.0),
-      Tower.kCenterPoint.getY() + (Tower.kWidth / 2.0))
+      Hub.kNearRightCorner.getX() - 0.4 , Hub.kFarLeftCorner.getX() + 0.4,
+      Hub.kNearRightCorner.getY() - 0.4, Hub.kFarLeftCorner.getY() + 0.4);
+
+  public static final List<Bounds> kHubObstructions = List.of(
+    kHubObstruction,
+    AllianceFlip.flip(kHubObstruction)
   );
 
-  public static final double kPassTargetX = LinesVertical.kAllianceZone / 2.0;
+  public static final double kPassTargetX = LinesVertical.kAllianceZone / 3.0;
 
   public static final List<Translation2d> kPassingTargets = List.of(
     new Translation2d(kPassTargetX, LinesHorizontal.kLeftTrenchMiddle),

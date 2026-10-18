@@ -32,6 +32,14 @@ public class AllianceFlip {
     return new Pose2d(flip(pose.getTranslation()), flip(pose.getRotation()));
   }
 
+  public static Bounds flip(Bounds bounds) {
+    return new Bounds(
+          flipX(bounds.maxX()),
+          flipX(bounds.minX()),
+          flipY(bounds.maxY()),
+          flipY(bounds.minY()));
+  }
+
   public static double applyX(double x) {
     return shouldFlip() ? flipX(x) : x;
   }
@@ -69,11 +77,7 @@ public class AllianceFlip {
 
   public static Bounds apply(Bounds bounds) {
     if (shouldFlip()) {
-      return new Bounds(
-          applyX(bounds.maxX()),
-          applyX(bounds.minX()),
-          applyY(bounds.maxY()),
-          applyY(bounds.minY()));
+      return flip(bounds);
     } else {
       return bounds;
     }
