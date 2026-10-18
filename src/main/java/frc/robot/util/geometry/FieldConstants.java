@@ -270,7 +270,7 @@ public class FieldConstants {
   }
 
   public static final Bounds kAllianceZone =
-    new Bounds(0.0, LinesVertical.kAllianceZone, 0.0, kFieldWidth);
+    new Bounds(0.0, LinesVertical.kHubCenter, 0.0, kFieldWidth);
 
   public static final List<Bounds> kObstructions = List.of(
     new Bounds(
