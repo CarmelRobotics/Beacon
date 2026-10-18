@@ -279,17 +279,7 @@ public class FieldConstants {
     new Bounds(
       0.0, Tower.kDepth,
       Tower.kCenterPoint.getY() - (Tower.kWidth / 2.0),
-      Tower.kCenterPoint.getY() + (Tower.kWidth / 2.0)),
-    new Bounds(
-      LinesVertical.kHubCenter - (LeftTrench.kDepth / 2.0),
-      LinesVertical.kHubCenter + (LeftTrench.kDepth / 2.0),
-      kFieldWidth - LeftTrench.kWidth,
-      kFieldWidth),
-    new Bounds(
-      LinesVertical.kHubCenter - (RightTrench.kDepth / 2.0),
-      LinesVertical.kHubCenter + (RightTrench.kDepth / 2.0),
-      0.0,
-      RightTrench.kWidth)
+      Tower.kCenterPoint.getY() + (Tower.kWidth / 2.0))
   );
 
   public static final double kPassTargetX = LinesVertical.kAllianceZone / 2.0;
