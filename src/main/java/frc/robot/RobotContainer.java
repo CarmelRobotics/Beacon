@@ -55,10 +55,11 @@ public class RobotContainer {
   private final Drive drive;
   @SuppressWarnings("unused")
   private final Vision vision;
-  private final FieldRelative field;
   private final Shooter shooter;
   private final Indexer indexer;
   private final Intake intake;
+  private final FieldRelative field;
+  private final Auto auto;
 
   public RobotContainer() {
     this.controller = new CommandXboxController(0);
@@ -130,6 +131,7 @@ public class RobotContainer {
     }
 
     this.field = new FieldRelative(drive::getPose);
+    this.auto = new Auto(drive, shooter, indexer, intake, field);
 
     configureBindings();
   }
@@ -223,6 +225,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return auto.getChooser().getSelected();
   }
 }
