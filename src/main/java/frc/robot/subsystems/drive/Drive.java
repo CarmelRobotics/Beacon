@@ -203,7 +203,7 @@ public class Drive extends SubsystemBase {
               .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
               .getTranslation();
 
-          Translation2d toLock = AllianceFlip.apply(lock.get()).minus(getPose().getTranslation());
+          Translation2d toLock = lock.get().minus(getPose().getTranslation());
           Rotation2d targetRotation = toLock.getNorm() > 1e-6
               ? toLock.getAngle()
               : getRotation();

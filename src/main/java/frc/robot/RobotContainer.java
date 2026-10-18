@@ -179,7 +179,7 @@ public class RobotContainer {
           () -> -controller.getLeftY(),
           () -> -controller.getLeftX(),
           0.1,
-          () -> FieldConstants.Hub.kInnerCenterPoint.toTranslation2d()));
+          field::hubTarget));
       controller.rightTrigger().onTrue(
         shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
