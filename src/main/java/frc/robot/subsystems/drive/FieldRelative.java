@@ -25,7 +25,7 @@ public class FieldRelative {
   }
 
   public boolean isPassable() {
-    return !isInAllianceZone() && passingTarget().isPresent();
+    return isNotInAllianceZone() && passingTarget().isPresent();
   }
 
   public boolean isNotPassable() {
@@ -95,7 +95,7 @@ public class FieldRelative {
         pathMin = Math.max(pathMin, Math.min(pathLow, pathHigh));
         pathMax = Math.min(pathMax, Math.max(pathLow, pathHigh));
 
-        if (pathLow > pathMax) {
+        if (pathMin > pathMax) {
           return false;
         }
       }
