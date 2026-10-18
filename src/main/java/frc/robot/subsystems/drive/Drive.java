@@ -48,6 +48,7 @@ import frc.robot.util.LocalADStarAK;
 import frc.robot.util.geometry.AllianceFlip;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
@@ -189,9 +190,15 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(Volts.zero())).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
-  public Command lockedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband, Supplier<Translation2d> lock) {
+  public Command targetedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband, Supplier<Optional<Translation2d>> target) {
     return runOnce(() -> assistController.reset())
         .andThen(run(() -> {
+          final Optional<Translation2d> targetRecieved = target.get();
+
+          if (targetRecieved.isEmpty()) {
+            return;
+          }
+
           double x = xSupplier.getAsDouble();
           double y = ySupplier.getAsDouble();
 
@@ -202,8 +209,8 @@ public class Drive extends SubsystemBase {
           Translation2d linearVelocity = new Pose2d(Translation2d.kZero, linearDirection)
               .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
               .getTranslation();
-
-          Translation2d toLock = lock.get().minus(getPose().getTranslation());
+          
+          Translation2d toLock = targetRecieved.get().minus(getPose().getTranslation());
           Rotation2d targetRotation = toLock.getNorm() > 1e-6
               ? toLock.getAngle()
               : getRotation();

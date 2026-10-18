@@ -20,8 +20,24 @@ public class FieldRelative {
     return FieldConstants.kAllianceZone.contains(AllianceFlip.apply(pose.get().getTranslation()));
   }
 
-  public Translation2d hubTarget() {
-    return AllianceFlip.apply(FieldConstants.Hub.kInnerCenterPoint.toTranslation2d());
+  public boolean isNotInAllianceZone() {
+    return !isInAllianceZone();
+  }
+
+  public boolean isPassable() {
+    return !isInAllianceZone() && passingTarget().isPresent();
+  }
+
+  public boolean isNotPassable() {
+    return !isPassable();
+  }
+
+  public Optional<Translation2d> hubTarget() {
+    if (isNotInAllianceZone()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(AllianceFlip.apply(FieldConstants.Hub.kInnerCenterPoint.toTranslation2d()));
   }
 
   public Optional<Translation2d> passingTarget() {

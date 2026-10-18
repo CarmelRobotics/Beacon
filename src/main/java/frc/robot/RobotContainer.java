@@ -172,9 +172,13 @@ public class RobotContainer {
       controller.rightTrigger()
         .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
+
+      controller.leftTrigger()
+        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
+        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
     } else {
       controller.rightTrigger().and(field::isInAllianceZone).whileTrue(
-        drive.lockedDrive(
+        drive.targetedDrive(
           () -> -controller.getLeftY(),
           () -> -controller.getLeftX(),
           0.1,
@@ -189,7 +193,26 @@ public class RobotContainer {
         .whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay)
         .andThen(intake.setState(IntakePivotState.kAgitate)))
         .onFalse(intake.setState(IntakePivotState.kDeploy));
-      controller.rightTrigger().and(() -> !field.isInAllianceZone()).whileTrue(controllerWarn);
+      controller.rightTrigger().and(field::isNotInAllianceZone).whileTrue(controllerWarn);
+
+      controller.rightBumper().and(field::isPassable).whileTrue(
+        drive.targetedDrive(
+          () -> -controller.getLeftY(),
+          () -> -controller.getLeftX(),
+          0.1,
+          field::passingTarget
+          ));
+      controller.rightBumper().and(field::isPassable)
+        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kPass, ShooterRollerState.kPass))
+        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
+      controller.rightBumper().and(field::isPassable)
+        .whileTrue(indexer.setState(IndexerState.kFeed))
+        .onFalse(indexer.setState(IndexerState.kIdle));
+      controller.rightBumper().and(field::isPassable)
+        .whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay)
+        .andThen(intake.setState(IntakePivotState.kAgitate)))
+        .onFalse(intake.setState(IntakePivotState.kDeploy));
+      controller.rightBumper().and(field::isNotPassable).whileTrue(controllerWarn);
     }
 
     controller.povUp().onTrue(
