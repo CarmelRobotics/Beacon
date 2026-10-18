@@ -74,8 +74,8 @@ public class Drive extends SubsystemBase {
   private SwerveModulePosition[] lastModulePositions;
   @AutoLogOutput(key = "Drive/OperatorForward")
   private Rotation2d operatorForward;
-  @AutoLogOutput(key = "Drive/LockRotation")
-  private Rotation2d lockRotation;
+  @AutoLogOutput(key = "Drive/TargetRotation")
+  private Rotation2d targetRotation;
 
   private final PIDController assistController;
 
@@ -111,7 +111,7 @@ public class Drive extends SubsystemBase {
     this.rawGyroRotation = Rotation2d.kZero;
     this.lastModulePositions = getModulePositions();
     this.operatorForward = Rotation2d.kZero;
-    this.lockRotation = Rotation2d.kZero;
+    this.targetRotation = Rotation2d.kZero;
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
 
@@ -210,11 +210,11 @@ public class Drive extends SubsystemBase {
               .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
               .getTranslation();
           
-          Translation2d toLock = targetRecieved.get().minus(getPose().getTranslation());
-          Rotation2d targetRotation = toLock.getNorm() > 1e-6
-              ? toLock.getAngle()
+          Translation2d toRotation = targetRecieved.get().minus(getPose().getTranslation());
+          Rotation2d targetRotation = toRotation.getNorm() > 1e-6
+              ? toRotation.getAngle().minus(Rotation2d.k180deg)
               : getRotation();
-          lockRotation = targetRotation;
+          this.targetRotation = targetRotation;
 
           double omega = assistController.calculate(
               getRotation().getRadians(), targetRotation.getRadians());
@@ -317,12 +317,12 @@ public class Drive extends SubsystemBase {
   }
 
   public Rotation2d getTargetLockRotation() {
-    return lockRotation;
+    return targetRotation;
   }
 
   @AutoLogOutput(key = "Drive/FacingTarget")
   public boolean isFacingTarget() {
-    return Math.abs(getRotation().minus(lockRotation).getRadians()) <= DriveConstants.kAngleTolerance.in(Radians);
+    return Math.abs(getRotation().minus(targetRotation).getRadians()) <= DriveConstants.kAngleTolerance.in(Radians);
   }
 
   public void setPose(Pose2d pose) {
