@@ -48,7 +48,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.util.geometry.FieldConstants;
 
 public class RobotContainer {
   private final CommandXboxController controller;
@@ -170,8 +169,8 @@ public class RobotContainer {
       .onFalse(indexer.setState(IndexerState.kIdle));
 
     if (Constants.kUseStaticSetpoints) {
-      controller.rightTrigger().onTrue(
-        shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
+      controller.rightTrigger()
+        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
     } else {
       controller.rightTrigger().and(field::isInAllianceZone).whileTrue(
@@ -180,12 +179,15 @@ public class RobotContainer {
           () -> -controller.getLeftX(),
           0.1,
           field::hubTarget));
-      controller.rightTrigger().onTrue(
-        shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
+      controller.rightTrigger().and(field::isInAllianceZone)
+        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
         .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
-      controller.rightTrigger().whileTrue(indexer.setState(IndexerState.kFeed))
+      controller.rightTrigger().and(field::isInAllianceZone)
+        .whileTrue(indexer.setState(IndexerState.kFeed))
         .onFalse(indexer.setState(IndexerState.kIdle));
-      controller.rightTrigger().whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay).andThen(intake.setState(IntakePivotState.kAgitate)))
+      controller.rightTrigger().and(field::isInAllianceZone)
+        .whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay)
+        .andThen(intake.setState(IntakePivotState.kAgitate)))
         .onFalse(intake.setState(IntakePivotState.kDeploy));
       controller.rightTrigger().and(() -> !field.isInAllianceZone()).whileTrue(controllerWarn);
     }
