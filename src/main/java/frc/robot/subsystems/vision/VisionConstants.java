@@ -17,23 +17,23 @@ public class VisionConstants {
       "limelight-left",
       new Transform3d(
         Meters.of(-0.266),
-        Meters.of(-0.146),
+        Meters.of(-0.14605),
         Meters.of(0.2),
         new Rotation3d(
           Degrees.zero(), 
           Degrees.of(9.7), 
-          Degrees.of(20.2))),
+          Degrees.of(-159.8))),
       1.0);
   public static final CameraInfo kLimelightRight = new CameraInfo(
     "limelight-right",
     new Transform3d(
-        Meters.of(0.266),
-        Meters.of(0.146),
+        Meters.of(-0.266),
+        Meters.of(0.14605),
         Meters.of(0.2),
         new Rotation3d(
           Degrees.zero(), 
           Degrees.of(9.7), 
-          Degrees.of(-20.2))),
+          Degrees.of(159.8))),
     1.0);
 
   public static final CameraInfo[] kCameraInfo = new CameraInfo[] {
