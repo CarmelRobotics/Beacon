@@ -34,6 +34,11 @@ public class SimMotorStatus implements MotorStatus {
   }
 
   @Override
+  public Double getOutput() {
+    return motor.getInputVoltage() / 12.0;
+  }
+
+  @Override
   public Voltage getAppliedVoltage() {
     return Volts.of(motor.getInputVoltage());
   }

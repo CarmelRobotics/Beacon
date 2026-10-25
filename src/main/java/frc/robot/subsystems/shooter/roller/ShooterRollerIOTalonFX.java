@@ -26,7 +26,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
   private final TalonFXStatus backRightFollowerStatus;
 
   private final VelocityVoltage velocityRequest;
-  private final DutyCycleOut dutyCycyleRequest;
+  private final DutyCycleOut dutyCycleRequest;
   private final VoltageOut voltageRequest;
 
   public ShooterRollerIOTalonFX() {
@@ -41,10 +41,10 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     this.backRightFollowerStatus = new TalonFXStatus(backRightFollowerMotor);
 
     this.velocityRequest = new VelocityVoltage(0);
-    this.dutyCycyleRequest = new DutyCycleOut(0);
+    this.dutyCycleRequest = new DutyCycleOut(0);
     this.voltageRequest = new VoltageOut(0);
 
-    frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.talonFXConfiguration);
+    frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration);
 
     backLeftFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -72,7 +72,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
 
   @Override
   public void setOutput(double output) {
-    frontLeftLeaderMotor.setControl(dutyCycyleRequest.withOutput(output));
+    frontLeftLeaderMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   @Override
@@ -82,8 +82,14 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
 
   @Override
   public void updateInputs(ShooterRollerIOInputsAutoLogged inputs) {
+    frontLeftLeaderStatus.refresh();
+    backLeftFollowerStatus.refresh();
+    frontRightFollowerStatus.refresh();
+    backRightFollowerStatus.refresh();
+
     inputs.frontLeftConnected = frontLeftLeaderStatus.getConnected();
     inputs.frontLeftVelocity = frontLeftLeaderStatus.getVelocity();
+    inputs.frontLeftOutput = frontLeftLeaderStatus.getOutput();
     inputs.frontLeftAppliedVoltage = frontLeftLeaderStatus.getAppliedVoltage();
     inputs.frontLeftSupplyCurrent = frontLeftLeaderStatus.getSupplyCurrent();
     inputs.frontLeftStatorCurrent = frontLeftLeaderStatus.getStatorCurrent();
@@ -91,6 +97,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
 
     inputs.backLeftConnected = backLeftFollowerStatus.getConnected();
     inputs.backLeftVelocity = backLeftFollowerStatus.getVelocity();
+    inputs.backLeftOutput = backLeftFollowerStatus.getOutput();
     inputs.backLeftAppliedVoltage = backLeftFollowerStatus.getAppliedVoltage();
     inputs.backLeftSupplyCurrent = backLeftFollowerStatus.getSupplyCurrent();
     inputs.backLeftStatorCurrent = backLeftFollowerStatus.getStatorCurrent();
@@ -98,6 +105,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
 
     inputs.frontRightConnected = frontRightFollowerStatus.getConnected();
     inputs.frontRightVelocity = frontRightFollowerStatus.getVelocity();
+    inputs.frontRightOutput = frontRightFollowerStatus.getOutput();
     inputs.frontRightAppliedVoltage = frontRightFollowerStatus.getAppliedVoltage();
     inputs.frontRightSupplyCurrent = frontRightFollowerStatus.getSupplyCurrent();
     inputs.frontRightStatorCurrent = frontRightFollowerStatus.getStatorCurrent();
@@ -105,6 +113,7 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
 
     inputs.backRightConnected = backRightFollowerStatus.getConnected();
     inputs.backRightVelocity = backRightFollowerStatus.getVelocity();
+    inputs.backRightOutput = backRightFollowerStatus.getOutput();
     inputs.backRightAppliedVoltage = backRightFollowerStatus.getAppliedVoltage();
     inputs.backRightSupplyCurrent = backRightFollowerStatus.getSupplyCurrent();
     inputs.backRightStatorCurrent = backRightFollowerStatus.getStatorCurrent();

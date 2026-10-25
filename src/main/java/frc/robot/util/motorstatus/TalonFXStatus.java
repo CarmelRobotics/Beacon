@@ -15,6 +15,7 @@ public class TalonFXStatus implements MotorStatus {
   private final TalonFX motor;
   private final StatusSignal<Angle> position;
   private final StatusSignal<AngularVelocity> velocity;
+  private final StatusSignal<Double> output;
   private final StatusSignal<Voltage> appliedVoltage;
   private final StatusSignal<Current> supplyCurrent;
   private final StatusSignal<Current> statorCurrent;
@@ -24,6 +25,7 @@ public class TalonFXStatus implements MotorStatus {
     this.motor = motor;
     this.position = motor.getPosition();
     this.velocity = motor.getVelocity();
+    this.output = motor.getDutyCycle();
     this.appliedVoltage = motor.getMotorVoltage();
     this.supplyCurrent = motor.getSupplyCurrent();
     this.statorCurrent = motor.getStatorCurrent();
@@ -32,13 +34,13 @@ public class TalonFXStatus implements MotorStatus {
 
   public void setUpdateFrequency(Frequency frequency) {
     BaseStatusSignal.setUpdateFrequencyForAll(
-        frequency, position, velocity, appliedVoltage,
-        supplyCurrent, statorCurrent, temperature);
+        frequency, position, velocity, output,
+        appliedVoltage, supplyCurrent, statorCurrent, temperature);
   }
 
   public void refresh() {
     BaseStatusSignal.refreshAll(
-        position, velocity, appliedVoltage,
+        position, velocity, output, appliedVoltage,
         supplyCurrent, statorCurrent, temperature);
   }
 
@@ -55,6 +57,11 @@ public class TalonFXStatus implements MotorStatus {
   @Override
   public AngularVelocity getVelocity() {
     return velocity.getValue();
+  }
+
+  @Override
+  public Double getOutput() {
+    return output.getValue();
   }
 
   @Override

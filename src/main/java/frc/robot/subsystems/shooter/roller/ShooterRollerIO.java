@@ -12,6 +12,7 @@ public interface ShooterRollerIO {
   public static class ShooterRollerIOInputs {
     public boolean frontLeftConnected;
     public AngularVelocity frontLeftVelocity;
+    public double frontLeftOutput;
     public Voltage frontLeftAppliedVoltage;
     public Current frontLeftSupplyCurrent;
     public Current frontLeftStatorCurrent;
@@ -19,6 +20,7 @@ public interface ShooterRollerIO {
 
     public boolean backLeftConnected;
     public AngularVelocity backLeftVelocity;
+    public double backLeftOutput;
     public Voltage backLeftAppliedVoltage;
     public Current backLeftSupplyCurrent;
     public Current backLeftStatorCurrent;
@@ -26,6 +28,7 @@ public interface ShooterRollerIO {
 
     public boolean frontRightConnected;
     public AngularVelocity frontRightVelocity;
+    public double frontRightOutput;
     public Voltage frontRightAppliedVoltage;
     public Current frontRightSupplyCurrent;
     public Current frontRightStatorCurrent;
@@ -33,6 +36,7 @@ public interface ShooterRollerIO {
 
     public boolean backRightConnected;
     public AngularVelocity backRightVelocity;
+    public double backRightOutput;
     public Voltage backRightAppliedVoltage;
     public Current backRightSupplyCurrent;
     public Current backRightStatorCurrent;

@@ -43,6 +43,7 @@ public class IntakeRollerIOSim implements IntakeRollerIO {
   public void updateInputs(IntakeRollerIOInputs inputs) {
     inputs.leaderConnected = leftStatus.getConnected();
     inputs.leaderVelocity = leftStatus.getVelocity();
+    inputs.leaderOutput = leftStatus.getOutput();
     inputs.leaderAppliedVoltage = leftStatus.getAppliedVoltage();
     inputs.leaderSupplyCurrent = leftStatus.getSupplyCurrent();
     inputs.leaderStatorCurrent = leftStatus.getStatorCurrent();
@@ -50,6 +51,7 @@ public class IntakeRollerIOSim implements IntakeRollerIO {
 
     inputs.followerConnected = rightStatus.getConnected();
     inputs.followerVelocity = rightStatus.getVelocity();
+    inputs.followerOutput = rightStatus.getOutput();
     inputs.followerAppliedVoltage = rightStatus.getAppliedVoltage();
     inputs.followerSupplyCurrent = rightStatus.getSupplyCurrent();
     inputs.followerStatorCurrent = rightStatus.getStatorCurrent();

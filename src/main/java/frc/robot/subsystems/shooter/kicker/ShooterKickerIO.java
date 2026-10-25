@@ -12,6 +12,7 @@ public interface ShooterKickerIO {
   public static class ShooterKickerIOInputs {
     public boolean connected;
     public AngularVelocity velocity;
+    public double output;
     public Voltage appliedVoltage;
     public Current supplyCurrent;
     public Current statorCurrent;

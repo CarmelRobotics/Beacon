@@ -14,6 +14,7 @@ public interface ShooterPivotIO {
     public boolean connected;
     public Angle position;
     public AngularVelocity velocity;
+    public double output;
     public Voltage appliedVoltage;
     public Current supplyCurrent;
     public Current statorCurrent;

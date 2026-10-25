@@ -78,6 +78,7 @@ public class ShooterRollerIOSim implements ShooterRollerIO {
   public void updateInputs(ShooterRollerIOInputsAutoLogged inputs) {
     inputs.frontLeftConnected = frontLeftStatus.getConnected();
     inputs.frontLeftVelocity = frontLeftStatus.getVelocity();
+    inputs.frontLeftOutput = frontLeftStatus.getOutput();
     inputs.frontLeftAppliedVoltage = frontLeftStatus.getAppliedVoltage();
     inputs.frontLeftSupplyCurrent = frontLeftStatus.getSupplyCurrent();
     inputs.frontLeftStatorCurrent = frontLeftStatus.getStatorCurrent();
@@ -85,6 +86,7 @@ public class ShooterRollerIOSim implements ShooterRollerIO {
 
     inputs.backLeftConnected = backLeftStatus.getConnected();
     inputs.backLeftVelocity = backLeftStatus.getVelocity();
+    inputs.backLeftOutput = backLeftStatus.getOutput();
     inputs.backLeftAppliedVoltage = backLeftStatus.getAppliedVoltage();
     inputs.backLeftSupplyCurrent = backLeftStatus.getSupplyCurrent();
     inputs.backLeftStatorCurrent = backLeftStatus.getStatorCurrent();
@@ -92,6 +94,7 @@ public class ShooterRollerIOSim implements ShooterRollerIO {
 
     inputs.frontRightConnected = frontRightStatus.getConnected();
     inputs.frontRightVelocity = frontRightStatus.getVelocity();
+    inputs.frontRightOutput = frontRightStatus.getOutput();
     inputs.frontRightAppliedVoltage = frontRightStatus.getAppliedVoltage();
     inputs.frontRightSupplyCurrent = frontRightStatus.getSupplyCurrent();
     inputs.frontRightStatorCurrent = frontRightStatus.getStatorCurrent();
@@ -99,6 +102,7 @@ public class ShooterRollerIOSim implements ShooterRollerIO {
 
     inputs.backRightConnected = backRightStatus.getConnected();
     inputs.backRightVelocity = backRightStatus.getVelocity();
+    inputs.backRightOutput = backRightStatus.getOutput();
     inputs.backRightAppliedVoltage = backRightStatus.getAppliedVoltage();
     inputs.backRightSupplyCurrent = backRightStatus.getSupplyCurrent();
     inputs.backRightStatorCurrent = backRightStatus.getStatorCurrent();

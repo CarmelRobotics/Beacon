@@ -14,6 +14,7 @@ public interface IntakePivotIO {
     public boolean leaderConnected;
     public Angle leaderPosition;
     public AngularVelocity leaderVelocity;
+    public double leaderOutput;
     public Voltage leaderAppliedVoltage;
     public Current leaderSupplyCurrent;
     public Current leaderStatorCurrent;
@@ -22,6 +23,7 @@ public interface IntakePivotIO {
     public boolean followerConnected;
     public Angle followerPosition;
     public AngularVelocity followerVelocity;
+    public double followerOutput;
     public Voltage followerAppliedVoltage;
     public Current followerSupplyCurrent;
     public Current followerStatorCurrent;

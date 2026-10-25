@@ -12,6 +12,7 @@ public interface IndexerIO {
   public static class IndexerIOInputs {
     public boolean connected;
     public AngularVelocity velocity;
+    public double output;
     public Voltage appliedVoltage;
     public Current supplyCurrent;
     public Current statorCurrent;

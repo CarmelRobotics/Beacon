@@ -33,6 +33,7 @@ public class IndexerIOTalonFX implements IndexerIO {
 
     inputs.connected = motorStatus.getConnected();
     inputs.velocity = motorStatus.getVelocity();
+    inputs.output = motorStatus.getOutput();
     inputs.appliedVoltage = motorStatus.getAppliedVoltage();
     inputs.supplyCurrent = motorStatus.getSupplyCurrent();
     inputs.statorCurrent = motorStatus.getStatorCurrent();

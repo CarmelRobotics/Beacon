@@ -41,6 +41,7 @@ public class ShooterKickerIOSim implements ShooterKickerIO {
   public void updateInputs(ShooterKickerIOInputsAutoLogged inputs) {
     inputs.connected = motorStatus.getConnected();
     inputs.velocity = motorStatus.getVelocity();
+    inputs.output = motorStatus.getOutput();
     inputs.appliedVoltage = motorStatus.getAppliedVoltage();
     inputs.supplyCurrent = motorStatus.getSupplyCurrent();
     inputs.statorCurrent = motorStatus.getStatorCurrent();

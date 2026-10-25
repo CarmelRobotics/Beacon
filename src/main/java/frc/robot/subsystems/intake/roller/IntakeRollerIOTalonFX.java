@@ -48,6 +48,7 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
 
     inputs.leaderConnected = leaderStatus.getConnected();
     inputs.leaderVelocity = leaderStatus.getVelocity();
+    inputs.leaderOutput = leaderStatus.getOutput();
     inputs.leaderAppliedVoltage = leaderStatus.getAppliedVoltage();
     inputs.leaderSupplyCurrent = leaderStatus.getSupplyCurrent();
     inputs.leaderStatorCurrent = leaderStatus.getStatorCurrent();
@@ -55,6 +56,7 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
 
     inputs.followerConnected = followerStatus.getConnected();
     inputs.followerVelocity = followerStatus.getVelocity();
+    inputs.leaderOutput = followerStatus.getOutput();
     inputs.followerAppliedVoltage = followerStatus.getAppliedVoltage();
     inputs.followerSupplyCurrent = followerStatus.getSupplyCurrent();
     inputs.followerStatorCurrent = followerStatus.getStatorCurrent();

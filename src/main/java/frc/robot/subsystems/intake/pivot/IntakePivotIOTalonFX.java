@@ -77,6 +77,7 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
     inputs.leaderConnected = leaderStatus.getConnected();
     inputs.leaderPosition = leaderStatus.getPosition();
     inputs.leaderVelocity = leaderStatus.getVelocity();
+    inputs.leaderOutput = leaderStatus.getOutput();
     inputs.leaderAppliedVoltage = leaderStatus.getAppliedVoltage();
     inputs.leaderStatorCurrent = leaderStatus.getSupplyCurrent();
     inputs.leaderTemperature = leaderStatus.getTemperature();
@@ -84,6 +85,7 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
     inputs.followerConnected = followerStatus.getConnected();
     inputs.followerPosition = followerStatus.getPosition();
     inputs.followerVelocity = followerStatus.getVelocity();
+    inputs.followerOutput = followerStatus.getOutput();
     inputs.followerAppliedVoltage = followerStatus.getAppliedVoltage();
     inputs.followerStatorCurrent = followerStatus.getSupplyCurrent();
     inputs.followerTemperature = followerStatus.getTemperature();

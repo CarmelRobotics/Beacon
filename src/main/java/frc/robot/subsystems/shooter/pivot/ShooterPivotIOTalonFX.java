@@ -55,6 +55,7 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     inputs.connected = motorStatus.getConnected();
     inputs.position = motorStatus.getPosition();
     inputs.velocity = motorStatus.getVelocity();
+    inputs.output = motorStatus.getOutput();
     inputs.appliedVoltage = motorStatus.getAppliedVoltage();
     inputs.statorCurrent = motorStatus.getSupplyCurrent();
     inputs.temperature = motorStatus.getTemperature();

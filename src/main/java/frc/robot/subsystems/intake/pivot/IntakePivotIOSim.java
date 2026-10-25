@@ -49,6 +49,7 @@ public class IntakePivotIOSim implements IntakePivotIO {
     inputs.leaderConnected = leftStatus.getConnected();
     inputs.leaderPosition = leftStatus.getPosition();
     inputs.leaderVelocity = leftStatus.getVelocity();
+    inputs.leaderOutput = leftStatus.getOutput();
     inputs.leaderAppliedVoltage = leftStatus.getAppliedVoltage();
     inputs.leaderStatorCurrent = leftStatus.getSupplyCurrent();
     inputs.leaderTemperature = leftStatus.getTemperature();
@@ -56,6 +57,7 @@ public class IntakePivotIOSim implements IntakePivotIO {
     inputs.followerConnected = rightStatus.getConnected();
     inputs.followerPosition = rightStatus.getPosition();
     inputs.followerVelocity = rightStatus.getVelocity();
+    inputs.leaderOutput = rightStatus.getOutput();
     inputs.followerAppliedVoltage = rightStatus.getAppliedVoltage();
     inputs.followerStatorCurrent = rightStatus.getSupplyCurrent();
     inputs.followerTemperature = rightStatus.getTemperature();

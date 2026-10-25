@@ -11,6 +11,8 @@ public interface MotorStatus {
 
   public Angle getPosition();
 
+  public Double getOutput();
+
   public AngularVelocity getVelocity();
 
   public Voltage getAppliedVoltage();

@@ -12,6 +12,7 @@ public interface IntakeRollerIO {
   public static class IntakeRollerIOInputs {
     public boolean leaderConnected;
     public AngularVelocity leaderVelocity;
+    public double leaderOutput;
     public Voltage leaderAppliedVoltage;
     public Current leaderSupplyCurrent;
     public Current leaderStatorCurrent;
@@ -19,6 +20,7 @@ public interface IntakeRollerIO {
 
     public boolean followerConnected;
     public AngularVelocity followerVelocity;
+    public double followerOutput;
     public Voltage followerAppliedVoltage;
     public Current followerSupplyCurrent;
     public Current followerStatorCurrent;
