@@ -10,6 +10,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -32,10 +33,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -69,6 +75,7 @@ public class Drive extends SubsystemBase {
   private final SysIdRoutine sysId;
   private final SwerveDriveKinematics kinematics;
   private final SwerveDrivePoseEstimator poseEstimator;
+  private final Field2d field2d;
 
   private Rotation2d rawGyroRotation;
   private SwerveModulePosition[] lastModulePositions;
@@ -114,6 +121,29 @@ public class Drive extends SubsystemBase {
     this.targetRotation = Rotation2d.kZero;
 
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+    this.field2d = new Field2d();
+
+    SmartDashboard.putData("Drive/Field2d", field2d);
+    SmartDashboard.putData("Drive/Swerve", new Sendable() {
+      @Override
+      public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("SwerveDrive");
+
+        builder.addDoubleProperty("Front Left Angle", () -> modules[0].getSteerAngle().getRadians(), null);
+        builder.addDoubleProperty("Front Left Velocity", () -> modules[0].getDriveVelocity().in(MetersPerSecond), null);
+
+        builder.addDoubleProperty("Front Right Angle", () -> modules[1].getSteerAngle().getRadians(), null);
+        builder.addDoubleProperty("Front Right Velocity", () -> modules[1].getDriveVelocity().in(MetersPerSecond), null);
+
+        builder.addDoubleProperty("Back Left Angle", () -> modules[2].getSteerAngle().getRadians(), null);
+        builder.addDoubleProperty("Back Left Velocity", () -> modules[2].getDriveVelocity().in(MetersPerSecond), null);
+
+        builder.addDoubleProperty("Back Right Angle", () -> modules[3].getSteerAngle().getRadians(), null);
+        builder.addDoubleProperty("Back Right Velocity", () -> modules[3].getDriveVelocity().in(MetersPerSecond), null);
+
+        builder.addDoubleProperty("Robot Angle", () -> getRotation().getRadians(), null);
+      }
+    });
 
     this.assistController = new PIDController(
         DriveConstants.PathPlanner.RotationGains.kP,
@@ -138,12 +168,13 @@ public class Drive extends SubsystemBase {
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (List<Pose2d> activePath) -> {
-          Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
+          Logger.recordOutput("Drive/Trajectory", activePath.toArray(new Pose2d[0]));
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (Pose2d targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+          Logger.recordOutput("Drive/TrajectorySetpoint", targetPose);
         });
+    CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
   }
 
   public void runVelocity(ChassisSpeeds speeds) {
@@ -151,14 +182,14 @@ public class Drive extends SubsystemBase {
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DriveConstants.kSpeedAt12Volts);
 
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput("Drive/SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("Drive/SwerveChassisSpeeds/Setpoints", discreteSpeeds);
 
     for (int i = 0; i < 4; i++) {
       modules[i].runSetpoint(setpointStates[i]);
     }
 
-    Logger.recordOutput("SwerveStates/SetpointsOptimized", setpointStates);
+    Logger.recordOutput("Drive/SwerveStates/SetpointsOptimized", setpointStates);
   }
 
   public void runCharacterization(Voltage voltage) {
@@ -286,7 +317,7 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  @AutoLogOutput(key = "SwerveChassisSpeeds/Measured")
+  @AutoLogOutput(key = "Drive/SwerveChassisSpeeds/Measured")
   private ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
@@ -307,7 +338,7 @@ public class Drive extends SubsystemBase {
     return output;
   }
 
-  @AutoLogOutput(key = "Odometry/Robot")
+  @AutoLogOutput(key = "Drive/Robot")
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
@@ -342,7 +373,7 @@ public class Drive extends SubsystemBase {
   }
 
   public double getMaxAngularSpeedRadPerSec() {
-    return getMaxLinearSpeedMetersPerSec() / DriveConstants.kDriveBaseRadius;
+    return DriveConstants.kMaxAngularRate.in(RadiansPerSecond);
   }
 
   @Override
@@ -392,5 +423,6 @@ public class Drive extends SubsystemBase {
     }
 
     gyroDisconnected.set(!gyroInputs.connected && Constants.kCurrentMode == Mode.kReal);
+    field2d.setRobotPose(getPose());
   }
 }

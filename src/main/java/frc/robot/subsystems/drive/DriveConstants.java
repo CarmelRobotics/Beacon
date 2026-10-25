@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -33,6 +34,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
@@ -63,7 +65,7 @@ public class DriveConstants {
 
   private static final Slot0Configs DriveGains = new Slot0Configs()
     .withKP(0.1).withKI(0).withKD(0)
-    .withKS(0).withKV(0.124);
+    .withKS(0).withKV(0.747);
 
   private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
   private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -71,17 +73,23 @@ public class DriveConstants {
   private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
   private static final SteerMotorArrangement kSteerMotorType = SteerMotorArrangement.TalonFX_Integrated;
 
-  private static final TalonFXConfiguration DriveInitialConfigs = new TalonFXConfiguration();
+  private static final TalonFXConfiguration DriveInitialConfigs = new TalonFXConfiguration()
+    .withCurrentLimits(
+      new CurrentLimitsConfigs()
+        .withStatorCurrentLimit(Amps.of(40))
+        .withStatorCurrentLimitEnable(true)
+    );
   private static final TalonFXConfiguration SteerInitialConfigs = new TalonFXConfiguration()
       .withCurrentLimits(
           new CurrentLimitsConfigs()
-              .withStatorCurrentLimit(Amps.of(60))
+              .withStatorCurrentLimit(Amps.of(40))
               .withStatorCurrentLimitEnable(true));
   private static final CANcoderConfiguration EncoderInitialConfigs = new CANcoderConfiguration();
   private static final Pigeon2Configuration Pigeon2InitialConfigs = new Pigeon2Configuration();
 
   private static final Current kSlipCurrent = Amps.of(120.0);
   public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(5.25);
+  public static final AngularVelocity kMaxAngularRate = RotationsPerSecond.of(0.75);
 
   private static final double kCoupleRatio = 3.857142857142857;
   private static final double kDriveGearRatio = 6.026785714285714;
@@ -129,7 +137,7 @@ public class DriveConstants {
   private static final int kFrontLeftDriveMotorId = 9;
   private static final int kFrontLeftSteerMotorId = 11;
   private static final int kFrontLeftEncoderId = 10;
-  private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.288818359375);
+  private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.297607421875);
   private static final boolean kFrontLeftSteerMotorInverted = false;
   private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -139,7 +147,7 @@ public class DriveConstants {
   private static final int kFrontRightDriveMotorId = 6;
   private static final int kFrontRightSteerMotorId = 8;
   private static final int kFrontRightEncoderId = 7;
-  private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.447509765625);
+  private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.43798828125);
   private static final boolean kFrontRightSteerMotorInverted = false;
   private static final boolean kFrontRightEncoderInverted = false;
 
@@ -149,7 +157,7 @@ public class DriveConstants {
   private static final int kBackLeftDriveMotorId = 0;
   private static final int kBackLeftSteerMotorId = 2;
   private static final int kBackLeftEncoderId = 1;
-  private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.30810546875);
+  private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.31298828125);
   private static final boolean kBackLeftSteerMotorInverted = false;
   private static final boolean kBackLeftEncoderInverted = false;
 
@@ -159,7 +167,7 @@ public class DriveConstants {
   private static final int kBackRightDriveMotorId = 3;
   private static final int kBackRightSteerMotorId = 5;
   private static final int kBackRightEncoderId = 4;
-  private static final Angle kBackRightEncoderOffset = Rotations.of(0.00732421875);
+  private static final Angle kBackRightEncoderOffset = Rotations.of(0.01171875);
   private static final boolean kBackRightSteerMotorInverted = false;
   private static final boolean kBackRightEncoderInverted = false;
 
