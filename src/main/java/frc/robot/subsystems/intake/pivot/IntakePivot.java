@@ -76,7 +76,7 @@ public class IntakePivot extends SubsystemBase {
       case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
       case kAgitate ->
         Commands.repeatingSequence(
-          runOnce(() -> setPosition(IntakeConstants.kStowAngle)),
+          runOnce(() -> setPosition(Degrees.of(4700))),
           waitForTarget(),
           runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
           waitForTarget()
@@ -91,6 +91,10 @@ public class IntakePivot extends SubsystemBase {
 
   private boolean hasReachedTarget() {
     return inputs.leaderPosition.isNear(targetPosition, IntakeConstants.kToleranceAngle);
+  }
+
+  public boolean isDeployed() {
+    return inputs.leaderPosition.isNear(IntakeConstants.kDeployAngle, IntakeConstants.kToleranceAngle);
   }
 
   public IntakePivotState getState() {

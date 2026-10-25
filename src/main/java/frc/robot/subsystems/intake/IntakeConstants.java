@@ -52,7 +52,7 @@ public final class IntakeConstants {
 
     public static final SoftwareLimitSwitchConfigs SoftWareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
       .withForwardSoftLimitEnable(true)
-      .withForwardSoftLimitThreshold(Degrees.of(6150));
+      .withForwardSoftLimitThreshold(Degrees.of(6600));
 
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(PivotConfigs.Slot0Configs)
@@ -74,15 +74,14 @@ public final class IntakeConstants {
   }
 
   public static final Voltage kIdleVoltage = Volts.zero();
-  public static final Voltage kIntakeVoltage = Volts.of(6);
-  public static final Voltage kEjectVoltage = Volts.of(-6);
+  public static final Voltage kIntakeVoltage = Volts.of(6.5);
+  public static final Voltage kEjectVoltage = Volts.of(-7);
   
   public static final Angle kStowAngle = Degrees.of(0);
-  public static final Angle kDeployAngle = Degrees.of(6000);
+  public static final Angle kDeployAngle = Degrees.of(6450);
 
   public static final Angle kToleranceAngle = Degrees.of(100);
   public static final Time kToleranceTimeout = Seconds.of(0.75);
-  public static final Time kAgitateDelay = Seconds.of(1.5);
 
   public enum IntakeRollerState {
     kIdle,

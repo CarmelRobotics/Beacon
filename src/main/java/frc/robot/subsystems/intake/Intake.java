@@ -16,7 +16,7 @@ public class Intake {
 
   public Intake(IntakePivotIO pivotio, IntakeRollerIO rollerio) {
     this.pivot = new IntakePivot(pivotio);
-    this.roller = new IntakeRoller(rollerio);
+    this.roller = new IntakeRoller(rollerio, pivot::isDeployed);
   }
 
   public Command setState(Supplier<IntakePivotState> pivotState) {
@@ -33,6 +33,10 @@ public class Intake {
 
   public Command setState(IntakePivotState pivotState, IntakeRollerState rollerState) {
     return pivot.setState(pivotState).alongWith(roller.setState(rollerState));
+  }
+
+  public void setIdle() {
+    roller.setIdle();
   }
 
   public IntakePivotState getPivotState() {
