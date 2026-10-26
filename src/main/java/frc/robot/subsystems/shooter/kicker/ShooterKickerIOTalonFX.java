@@ -9,7 +9,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterKickerIOTalonFX implements ShooterKickerIO {
@@ -23,8 +25,9 @@ public class ShooterKickerIOTalonFX implements ShooterKickerIO {
     this.motorStatus = new TalonFXStatus(motor);
     this.velocityRequest = new VelocityVoltage(0);
     this.dutyCycleRequest = new DutyCycleOut(0);
-
-    motor.getConfigurator().apply(ShooterConstants.KickerConfigs.TalonFXConfiguration);
+    
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+      () -> motor.getConfigurator().apply(ShooterConstants.KickerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
 
     motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);

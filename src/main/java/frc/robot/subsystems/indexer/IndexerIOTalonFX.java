@@ -5,6 +5,8 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IndexerIOTalonFX implements IndexerIO {
@@ -17,7 +19,8 @@ public class IndexerIOTalonFX implements IndexerIO {
     this.motorStatus = new TalonFXStatus(motor);
     this.voltageRequest = new VoltageOut(0);
 
-    motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration);
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, 
+      () -> motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration, Constants.kTimeoutSeconds));
     motorStatus.setUpdateFrequency(IndexerConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }

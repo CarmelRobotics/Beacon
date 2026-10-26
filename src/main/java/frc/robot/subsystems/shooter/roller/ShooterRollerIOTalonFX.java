@@ -11,7 +11,9 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterRollerIOTalonFX implements ShooterRollerIO {
@@ -44,7 +46,8 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     this.dutyCycleRequest = new DutyCycleOut(0);
     this.voltageRequest = new VoltageOut(0);
 
-    frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration);
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+      () -> frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
 
     backLeftFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));

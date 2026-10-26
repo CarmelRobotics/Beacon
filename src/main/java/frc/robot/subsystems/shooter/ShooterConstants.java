@@ -96,7 +96,7 @@ public final class ShooterConstants {
         .withKA(kA).withKD(kD).withKI(kI).withKP(kP)
         .withKS(kS).withKV(kV);
 
-    public static final TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration()
+    public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(RollerConfigs.Slot0Configs);
 
     public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);

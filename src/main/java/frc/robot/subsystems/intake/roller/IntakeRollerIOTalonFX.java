@@ -7,7 +7,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class IntakeRollerIOTalonFX implements IntakeRollerIO {
@@ -28,8 +30,11 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
 
     this.voltageRequest = new VoltageOut(0);
 
-    leftLeaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
-    rightFollowerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration);
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, 
+      () -> leftLeaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+      () -> rightFollowerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+
     rightFollowerMotor.setControl(new Follower(leftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     leaderStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
     followerStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);

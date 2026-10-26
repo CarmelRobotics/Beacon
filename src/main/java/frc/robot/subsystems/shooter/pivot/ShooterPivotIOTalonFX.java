@@ -7,7 +7,9 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants;
+import frc.robot.util.PhoenixUtil;
 import frc.robot.util.motorstatus.TalonFXStatus;
 
 public class ShooterPivotIOTalonFX implements ShooterPivotIO {
@@ -20,7 +22,9 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     this.motorStatus = new TalonFXStatus(motor);
     this.positionRequest = new MotionMagicVoltage(0);
 
-    motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration);
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+      () -> motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+
     motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
