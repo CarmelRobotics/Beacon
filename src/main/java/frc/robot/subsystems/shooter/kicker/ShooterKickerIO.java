@@ -23,6 +23,8 @@ public interface ShooterKickerIO {
 
   public default void setVelocity(AngularVelocity velocity) {}
 
+  public default void setVoltage(Voltage voltage) {}
+
   public default void setOutput(double output) {}
 
   public default void updateInputs(ShooterKickerIOInputsAutoLogged inputs) {}

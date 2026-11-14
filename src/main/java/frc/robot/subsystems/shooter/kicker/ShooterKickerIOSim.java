@@ -1,9 +1,11 @@
 package frc.robot.subsystems.shooter.kicker;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.util.motorstatus.SimMotorStatus;
@@ -30,6 +32,11 @@ public class ShooterKickerIOSim implements ShooterKickerIO {
   @Override
   public void setVelocity(AngularVelocity velocity) {
     motor.setAngularVelocity(velocity.in(RadiansPerSecond));
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    motor.setInputVoltage(voltage.in(Volts));
   }
 
   @Override

@@ -18,12 +18,14 @@ public class ShooterKickerIOTalonFX implements ShooterKickerIO {
   private final TalonFX motor;
   private final TalonFXStatus motorStatus;
   private final VelocityVoltage velocityRequest;
+  private final VoltageOut voltageRequest;
   private final DutyCycleOut dutyCycleRequest;
 
   public ShooterKickerIOTalonFX() {
     this.motor = new TalonFX(ShooterConstants.kKickerMotorId);
     this.motorStatus = new TalonFXStatus(motor);
     this.velocityRequest = new VelocityVoltage(0);
+    this.voltageRequest = new VoltageOut(0);
     this.dutyCycleRequest = new DutyCycleOut(0);
     
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
@@ -42,6 +44,11 @@ public class ShooterKickerIOTalonFX implements ShooterKickerIO {
   @Override
   public void setVelocity(AngularVelocity velocity) {
     motor.setControl(velocityRequest.withVelocity(velocity));
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    motor.setControl(voltageRequest.withOutput(voltage));
   }
 
   @Override
