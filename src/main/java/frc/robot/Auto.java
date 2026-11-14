@@ -2,11 +2,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.FieldRelative;
 import frc.robot.subsystems.indexer.Indexer;
@@ -33,41 +35,44 @@ public class Auto {
     this.field = field;
     this.chooser = new SendableChooser<>();
 
-    chooser.addOption("EightAuto", eightAuto());
+    chooser.addOption("LarpAuto", larpAuto());
+    chooser.addOption("None", Commands.none());
+
+    SmartDashboard.putBoolean("Auto/MirrorPath", false);
+    SmartDashboard.putData("Auto/AutoChooser", chooser);
   }
 
-  public SendableChooser<Command> getChooser() {
-    return this.chooser;
-  } 
+  public Command getSelected() {
+    return chooser.getSelected();
+  }
 
-  public Command eightAuto() {
-    final double rotateCoeff =
-      Constants.kCurrentMode == Mode.kReal
-      ? 0.3
-      : 0.2;
-
+  public Command larpAuto() {
     return Commands.sequence(
       drive.seedFieldCentric(),
 
       drive.run(() -> drive.runVelocity(new ChassisSpeeds(-1.0, 0.0, 0.0)))
         .withTimeout(Seconds.of(1)),
-      
-      drive.runOnce(drive::stop),
-      Commands.waitSeconds(0.15),
-
-      drive.run(() -> drive.runVelocity(new ChassisSpeeds(0.0, 0.0, rotateCoeff * drive.getMaxAngularSpeedRadPerSec())))
-        .withTimeout(Seconds.of(1)),
 
       drive.runOnce(drive::stop),
-      Commands.waitSeconds(0.15),
+      drive.targetedDrive(
+        () -> 0,
+        () -> 0,
+        0.0,
+        field::hubTarget).until(drive::isFacingTarget),
+      drive.runOnce(drive::stop),
 
-      shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore)
+      shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore)
         .alongWith(indexer.setState(IndexerState.kFeed)),
         
-      Commands.waitSeconds(15.0),
+      Commands.waitSeconds(13.0)
+    ).finallyDo(() -> {
+      intake.setIdle();
+      indexer.setIdle();
+      shooter.setIdle();
+    });
+  }
 
-      indexer.setState(IndexerState.kIdle)
-        .alongWith(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle))
-    );
+  private Command appliedPathPlannerAuto(String autoName) {
+    return new PathPlannerAuto(autoName, SmartDashboard.getBoolean("Auto/MirrorPath", false));
   }
 }
