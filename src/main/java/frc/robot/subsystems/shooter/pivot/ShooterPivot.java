@@ -72,8 +72,8 @@ public class ShooterPivot extends SubsystemBase {
   public Command setState(ShooterPivotState state) {
     return (switch (state) {
       case kStow -> runOnce(() -> setPosition(ShooterConstants.kPivotStowAngle));
+      case kPass -> run(() -> setPosition(ShooterConstants.kPivotStaticPassAngle));
       case kStaticScore -> runOnce(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
-      case kPass -> run(() -> setPosition(ShooterConstants.kPivotPassAngle));
       case kScore -> run(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Shooter/Pivot] Run from state: " + state.toString());
@@ -81,6 +81,11 @@ public class ShooterPivot extends SubsystemBase {
 
   public ShooterPivotState getState() {
     return state;
+  }
+
+  public void setIdle() {
+    this.state = ShooterPivotState.kStow;
+    setPosition(ShooterConstants.kPivotStowAngle);
   }
 
   private void setPosition(Angle position) {

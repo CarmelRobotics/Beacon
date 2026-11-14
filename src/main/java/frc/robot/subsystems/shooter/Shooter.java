@@ -3,6 +3,8 @@ package frc.robot.subsystems.shooter;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +26,8 @@ public class Shooter {
   private final ShooterKicker kicker;
 
   private final Supplier<Pose2d> pose;
+  @AutoLogOutput(key = "Shooter/DistanceToTarget")
+  private double distance = 0.0;
 
   public Shooter(
     ShooterKickerIO kickerio,
@@ -49,6 +53,12 @@ public class Shooter {
     return roller.setState(state);
   }
 
+  public void setIdle() {
+    kicker.setIdle();
+    roller.setIdle();
+    pivot.setIdle();
+  }
+
   public Command setState(ShooterKickerState kickerState, ShooterPivotState pivotState, ShooterRollerState rollerState) {
     return kicker.setState(kickerState).alongWith(pivot.setState(pivotState)).alongWith(roller.setState(rollerState));
   }
@@ -64,9 +74,10 @@ public class Shooter {
   public ShooterRollerState getRollerState() {
     return roller.getState();
   }
-
+  
   public double getScoreDistance() {
-    return pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
+    distance = pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
+    return distance;
   }
 
   public double getPassDistance() {

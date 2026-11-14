@@ -28,15 +28,15 @@ public class ShooterRoller extends SubsystemBase {
   private final Alert frontRightMotorDisconnected;
   private final Alert backRightMotorDisconnected;
 
-  private final BooleanSupplier facingTarget;
-  private final DoubleSupplier targetDistance;
-
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
   private final LoggedTunableNumber kI;
   private final LoggedTunableNumber kP;
   private final LoggedTunableNumber kS;
   private final LoggedTunableNumber kV;
+
+  private final BooleanSupplier facingTarget;
+  private final DoubleSupplier targetDistance;
 
   @AutoLogOutput(key = "Shooter/Roller/Velocity")
   private AngularVelocity targetVelocity;
@@ -60,15 +60,15 @@ public class ShooterRoller extends SubsystemBase {
     this.backRightMotorDisconnected = new Alert("[Shooter/Roller] Back Right Roller Motor Disconnected.",
         AlertType.kError);
 
-    this.facingTarget = facingTarget;
-    this.targetDistance = targetDistance;
-
     this.kA = new LoggedTunableNumber("Shooter/Roller/kA", ShooterConstants.RollerConfigs.kA);
     this.kD = new LoggedTunableNumber("Shooter/Roller/kD", ShooterConstants.RollerConfigs.kD);
     this.kI = new LoggedTunableNumber("Shooter/Roller/kI", ShooterConstants.RollerConfigs.kI);
     this.kP = new LoggedTunableNumber("Shooter/Roller/kP", ShooterConstants.RollerConfigs.kP);
     this.kS = new LoggedTunableNumber("Shooter/Roller/kS", ShooterConstants.RollerConfigs.kS);
     this.kV = new LoggedTunableNumber("Shooter/Roller/kV", ShooterConstants.RollerConfigs.kV);
+
+    this.facingTarget = facingTarget;
+    this.targetDistance = targetDistance;
 
     this.targetVelocity = RotationsPerSecond.zero();
     this.targetOutput = 0.0;
@@ -78,13 +78,13 @@ public class ShooterRoller extends SubsystemBase {
 
   public Command setState(ShooterRollerState state) {
     return (switch (state) {
-      case kIdle -> runOnce(() -> setVoltage(Volts.zero()));
-      case kStaticScore -> runOnce(() -> setVelocity(ShooterConstants.kRollerStaticScoreVelocity));
-      case kPass -> 
-        run(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerPassingMap.get(targetDistance.getAsDouble()))));
-      case kScore -> run(() -> setVelocity(RotationsPerSecond.of(
-              ShooterConstants.RollerScoringMap.get(targetDistance.getAsDouble()))));
+      case kIdle -> runOnce(() -> setVoltage(ShooterConstants.kRollerIdleVoltage));
+      case kPass ->
+        run(() -> setVelocity(ShooterConstants.kRollerPassVelocity));
+      case kStaticScore ->
+        run(() -> setVelocity(ShooterConstants.kRollerScoreVelocity));
+      case kScore ->
+        run(() -> setVelocity(RotationsPerSecond.of(ShooterConstants.RollerScoringVelocityMap.get(targetDistance.getAsDouble()))));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Shooter/Roller] Run from state: " + state.toString());
   }
@@ -96,12 +96,17 @@ public class ShooterRoller extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/Roller/ReadyToFeed")
   public boolean isReadyToFeed() {
     return 
-      inputs.frontLeftVelocity.isNear(targetVelocity, ShooterConstants.kRollerToleranceVelocity)
-      && facingTarget.getAsBoolean();
+        Math.abs(targetOutput - inputs.frontLeftOutput) <= ShooterConstants.KRollerToleranceOutput
+        && facingTarget.getAsBoolean();
   }
 
   public ShooterRollerState getState() {
     return state;
+  }
+
+  public void setIdle() {
+    this.state = ShooterRollerState.kIdle;
+    setVoltage(Volts.zero());
   }
 
   private void setVelocity(AngularVelocity velocity) {
@@ -111,17 +116,18 @@ public class ShooterRoller extends SubsystemBase {
     io.setVelocity(velocity);
   }
 
-  private void setVoltage(Voltage voltage) {
-    targetOutput = 0.0;
-    targetVelocity = RotationsPerSecond.zero();
-    io.setVoltage(voltage);
-  }
-
+  @SuppressWarnings("unused")
   private void setOutput(double output) {
     targetVelocity = RotationsPerSecond.zero();
     targetVoltage = Volts.zero();
     targetOutput = output;
     io.setOutput(output);
+  }
+
+  private void setVoltage(Voltage voltage) {
+    targetOutput = 0.0;
+    targetVelocity = RotationsPerSecond.zero();
+    io.setVoltage(voltage);
   }
 
   private boolean hasPIDChanged() {
