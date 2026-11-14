@@ -22,7 +22,6 @@ import frc.robot.subsystems.indexer.IndexerIOSim;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeRollerState;
 import frc.robot.subsystems.intake.pivot.IntakePivotIO;
@@ -74,8 +73,11 @@ public class RobotContainer {
             new ModuleIOTalonFX(DriveConstants.BackRight));
         this.vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
-            new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation));
+            new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation)
+            /* Right Limelight Broken! Do not use. */
+            //new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation)
+            );
+        
         this.shooter = new Shooter(
           new ShooterKickerIOTalonFX(),
           new ShooterPivotIOTalonFX(),
@@ -93,7 +95,7 @@ public class RobotContainer {
             new ModuleIOSim(DriveConstants.FrontRight),
             new ModuleIOSim(DriveConstants.BackLeft),
             new ModuleIOSim(DriveConstants.BackRight));
-        // Vision disabled in simulator.
+        /* Vision disabled in simulator for performance. */
         this.vision = new Vision(
             drive::addVisionMeasurement,
             new VisionIO() {},
@@ -132,7 +134,6 @@ public class RobotContainer {
 
     this.field = new FieldRelative(drive::getPose);
     this.auto = new Auto(drive, shooter, indexer, intake, field);
-
     configureBindings();
   }
 
@@ -144,14 +145,33 @@ public class RobotContainer {
      * 
      * Left Trigger: Deploy intake, while held, run intake rollers.
      * Right Trigger: Shoot fuel.
-     * Left Bumper: Agitate.
      * POV Up: Toggle Deploy/Stow intake.
      */
 
     final Command controllerWarn = Commands.runEnd(
       () -> controller.setRumble(RumbleType.kBothRumble, 0.5),
       () -> controller.setRumble(RumbleType.kBothRumble, 0));
+
+    final Command intakeDeploy = intake.setState(IntakePivotState.kDeploy);
+    final Command intakeIdle = intake.setState(IntakeRollerState.kIdle);
+    final Command intakeRun = intake.setState(IntakeRollerState.kIntake);
+    final Command intakeAgitate = intake.setState(IntakePivotState.kAgitate, IntakeRollerState.kIntake);
+    final Command intakeIdleAndDeploy = intake.setState(IntakePivotState.kDeploy, IntakeRollerState.kIdle);
+    final Command intakeToggle =
+      intake.setState(
+        () -> intake.getPivotState() == IntakePivotState.kStow 
+          ? IntakePivotState.kDeploy
+          : IntakePivotState.kStow);
+
+    final Command shooterIdle = shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle);
+    final Command shooterScore = shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore);
+    final Command shooterPass = shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kPass, ShooterRollerState.kPass);
+    final Command shooterRollerStaticScore = shooter.setState(ShooterRollerState.kStaticScore);
+
+    final Command indexerIdle = indexer.setState(IndexerState.kIdle);
+    final Command indexerFeed = indexer.setState(IndexerState.kFeed);
     
+    /* Drivetrain Controls */
     drive.setDefaultCommand(
         drive.fieldCentricDrive(
             () -> -controller.getLeftY(),
@@ -160,71 +180,60 @@ public class RobotContainer {
             0.1));
     controller.povDown().onTrue(drive.seedFieldCentric());
 
-    controller.leftTrigger().onTrue(intake.setState(IntakePivotState.kDeploy));
+    /* Intake */
+    controller.leftTrigger().onTrue(intakeDeploy);
     controller.leftTrigger()
-      .onTrue(intake.setState(IntakeRollerState.kIntake))
-      .onFalse(intake.setState(IntakeRollerState.kIdle));
+      .onTrue(intakeRun)
+      .onFalse(intakeIdle);
+    controller.povUp().onTrue(intakeToggle);
 
-    controller.leftBumper().whileTrue(intake.setState(IntakePivotState.kAgitate))
-      .onFalse(intake.setState(IntakePivotState.kDeploy));
-    controller.leftBumper().whileTrue(indexer.setState(IndexerState.kAgitate))
-      .onFalse(indexer.setState(IndexerState.kIdle));
-
-    if (Constants.kUseStaticSetpoints) {
-      controller.rightTrigger()
-        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
-        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
-
-      controller.leftTrigger()
-        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kStaticScore, ShooterRollerState.kStaticScore))
-        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
-    } else {
-      controller.rightTrigger().and(field::isInAllianceZone).whileTrue(
+    /* Shooter Scoring */
+    controller.rightTrigger().and(field::isInAllianceZone).whileTrue(
         drive.targetedDrive(
           () -> -controller.getLeftY(),
           () -> -controller.getLeftX(),
           0.1,
           field::hubTarget));
-      controller.rightTrigger().and(field::isInAllianceZone)
-        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore))
-        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
-      controller.rightTrigger().and(field::isInAllianceZone)
-        .whileTrue(indexer.setState(IndexerState.kFeed))
-        .onFalse(indexer.setState(IndexerState.kIdle));
-      controller.rightTrigger().and(field::isInAllianceZone)
-        .whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay)
-        .andThen(intake.setState(IntakePivotState.kAgitate)))
-        .onFalse(intake.setState(IntakePivotState.kDeploy));
-      controller.rightTrigger().and(field::isNotInAllianceZone).whileTrue(controllerWarn);
+    controller.rightTrigger().and(field::isNotInAllianceZone).whileTrue(controllerWarn);
+    controller.rightTrigger().and(field::isInAllianceZone)
+        .onTrue(shooterScore)
+        .onFalse(shooterIdle);
+    controller.rightTrigger().and(field::isInAllianceZone)
+        .onTrue(indexerFeed)
+        .onFalse(indexerIdle);
+    controller.rightTrigger().and(field::isInAllianceZone)
+        .whileTrue(intakeAgitate)
+        .onFalse(intakeIdleAndDeploy);
 
-      controller.rightBumper().and(field::isPassable).whileTrue(
-        drive.targetedDrive(
-          () -> -controller.getLeftY(),
-          () -> -controller.getLeftX(),
-          0.1,
-          field::passingTarget
-          ));
-      controller.rightBumper().and(field::isPassable)
-        .onTrue(shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kPass, ShooterRollerState.kPass))
-        .onFalse(shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle));
-      controller.rightBumper().and(field::isPassable)
-        .whileTrue(indexer.setState(IndexerState.kFeed))
-        .onFalse(indexer.setState(IndexerState.kIdle));
-      controller.rightBumper().and(field::isPassable)
-        .whileTrue(Commands.waitTime(IntakeConstants.kAgitateDelay)
-        .andThen(intake.setState(IntakePivotState.kAgitate)))
-        .onFalse(intake.setState(IntakePivotState.kDeploy));
-      controller.rightBumper().and(field::isNotPassable).whileTrue(controllerWarn);
-    }
+    /* Shooter Passing */
+    controller.rightBumper()
+        .onTrue(shooterPass)
+        .onFalse(shooterIdle);
+    controller.rightBumper()
+        .whileTrue(indexerFeed)
+        .onFalse(indexerIdle);
+    controller.rightBumper()
+        .whileTrue(intakeAgitate)
+        .onFalse(intakeIdleAndDeploy);
 
-    controller.povUp().onTrue(
-      intake.setState(
-        () -> intake.getPivotState() == IntakePivotState.kStow 
-          ? IntakePivotState.kDeploy
-          : IntakePivotState.kStow));
+    /* Indexer Testing */
+    controller.b()
+      .onTrue(indexerFeed)
+      .onFalse(indexerIdle);
+    
+    /* Shooter Roller Testing */
+    controller.x()
+      .onTrue(shooterRollerStaticScore)
+      .onFalse(shooterIdle);
   }
 
   public Command getAutonomousCommand() {
-    return auto.getChooser().getSelected();
+    final Command selected = auto.getSelected();
+
+    if (selected == null) {
+      return Commands.none();
+    }
+
+    return selected;
   }
 }
