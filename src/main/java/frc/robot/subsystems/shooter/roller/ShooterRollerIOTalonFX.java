@@ -47,7 +47,8 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     this.voltageRequest = new VoltageOut(0);
 
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+        () -> frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
 
     backLeftFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -57,14 +58,15 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     backLeftFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     frontRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     backRightFollowerStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
-    ParentDevice.optimizeBusUtilizationForAll(frontLeftLeaderMotor, backLeftFollowerMotor, frontRightFollowerMotor, backRightFollowerMotor);
+    ParentDevice.optimizeBusUtilizationForAll(frontLeftLeaderMotor, backLeftFollowerMotor, frontRightFollowerMotor,
+        backRightFollowerMotor);
   }
 
   @Override
   public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {
     final Slot0Configs slot0configs = new Slot0Configs()
-      .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
-      
+        .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
+
     frontLeftLeaderMotor.getConfigurator().apply(slot0configs);
   }
 

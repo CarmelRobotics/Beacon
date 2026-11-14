@@ -19,8 +19,8 @@ public class IndexerIOTalonFX implements IndexerIO {
     this.motorStatus = new TalonFXStatus(motor);
     this.voltageRequest = new VoltageOut(0);
 
-    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, 
-      () -> motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration, Constants.kTimeoutSeconds));
     motorStatus.setUpdateFrequency(IndexerConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }

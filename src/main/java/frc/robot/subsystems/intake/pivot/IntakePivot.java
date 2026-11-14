@@ -77,13 +77,12 @@ public class IntakePivot extends SubsystemBase {
       case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
       case kAgitate ->
         Commands.waitTime(Constants.kRollerDelay).andThen(
-          Commands.repeatingSequence(
-            runOnce(() -> setPosition(IntakeConstants.kAgitatePushAngle)),
-            waitForTarget(),
-            runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
-            waitForTarget()
-          ));
-    }).beforeStarting(() -> {this.state = state;})
+            Commands.repeatingSequence(
+                runOnce(() -> setPosition(IntakeConstants.kAgitatePushAngle)),
+                waitForTarget(),
+                runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
+                waitForTarget()));
+    }).beforeStarting(() -> { this.state = state; })
       .withName("[Intake/Pivot] Run from state: " + state.toString());
   }
 

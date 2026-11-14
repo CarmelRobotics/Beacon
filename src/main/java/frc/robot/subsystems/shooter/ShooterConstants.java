@@ -65,9 +65,9 @@ public final class ShooterConstants {
         .withMotionMagicAcceleration(kMotionMagicAcceleration)
         .withMotionMagicJerk(kMotionMagicJerk);
 
-    public static final SoftwareLimitSwitchConfigs SoftwareLimitSwitchConfigs = 
-      new SoftwareLimitSwitchConfigs().withForwardSoftLimitEnable(true)
-      .withForwardSoftLimitThreshold(Degrees.of(1200));
+    public static final SoftwareLimitSwitchConfigs SoftwareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
+        .withForwardSoftLimitEnable(true)
+        .withForwardSoftLimitThreshold(Degrees.of(1200));
 
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(PivotConfigs.Slot0Configs)
@@ -88,9 +88,9 @@ public final class ShooterConstants {
     public static final double kV = 0.24;
 
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
-      .withCurrentLimits(new CurrentLimitsConfigs()
-        .withStatorCurrentLimit(Amps.of(80))
-        .withStatorCurrentLimitEnable(true))
+        .withCurrentLimits(new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(Amps.of(80))
+            .withStatorCurrentLimitEnable(true))
         .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(2.1333));
 
     public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);

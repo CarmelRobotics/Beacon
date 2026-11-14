@@ -221,7 +221,8 @@ public class Drive extends SubsystemBase {
     return run(() -> runCharacterization(Volts.zero())).withTimeout(1.0).andThen(sysId.dynamic(direction));
   }
 
-  public Command targetedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband, Supplier<Optional<Translation2d>> target) {
+  public Command targetedDrive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, double deadband,
+      Supplier<Optional<Translation2d>> target) {
     return runOnce(() -> assistController.reset())
         .andThen(run(() -> {
           final Optional<Translation2d> targetRecieved = target.get();
@@ -240,7 +241,7 @@ public class Drive extends SubsystemBase {
           Translation2d linearVelocity = new Pose2d(Translation2d.kZero, linearDirection)
               .transformBy(new Transform2d(linearMagnitude, 0.0, Rotation2d.kZero))
               .getTranslation();
-          
+
           Translation2d toRotation = targetRecieved.get().minus(getPose().getTranslation());
           Rotation2d targetRotation = toRotation.getNorm() > 1e-6
               ? toRotation.getAngle().minus(Rotation2d.k180deg)
@@ -385,7 +386,7 @@ public class Drive extends SubsystemBase {
     for (Module module : modules) {
       module.periodic();
     }
-    
+
     odometryLock.unlock();
 
     if (DriverStation.isDisabled()) {

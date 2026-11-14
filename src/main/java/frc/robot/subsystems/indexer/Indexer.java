@@ -45,8 +45,8 @@ public class Indexer extends SubsystemBase {
       case kEject -> runOnce(() -> setVoltage(IndexerConstants.kEjectVoltage));
       case kFeed ->
         Commands.waitTime(Constants.kRollerDelay)
-          .andThen(run(() -> setVoltage(IndexerConstants.kFeedVoltage)));
-    }).beforeStarting(() -> {this.state = state;})
+            .andThen(run(() -> setVoltage(IndexerConstants.kFeedVoltage)));
+    }).beforeStarting(() -> { this.state = state;})
       .withName("[Indexer] Run from state: " + state.toString());
   }
 

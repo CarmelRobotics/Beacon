@@ -84,8 +84,9 @@ public class ShooterRoller extends SubsystemBase {
       case kStaticScore ->
         run(() -> setVelocity(ShooterConstants.kRollerScoreVelocity));
       case kScore ->
-        run(() -> setVelocity(RotationsPerSecond.of(ShooterConstants.RollerScoringVelocityMap.get(targetDistance.getAsDouble()))));
-    }).beforeStarting(() -> {this.state = state;})
+        run(() -> setVelocity(
+            RotationsPerSecond.of(ShooterConstants.RollerScoringVelocityMap.get(targetDistance.getAsDouble()))));
+    }).beforeStarting(() -> { this.state = state; })
       .withName("[Shooter/Roller] Run from state: " + state.toString());
   }
 
@@ -95,8 +96,7 @@ public class ShooterRoller extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/Roller/ReadyToFeed")
   public boolean isReadyToFeed() {
-    return 
-        Math.abs(targetOutput - inputs.frontLeftOutput) <= ShooterConstants.KRollerToleranceOutput
+    return Math.abs(targetOutput - inputs.frontLeftOutput) <= ShooterConstants.KRollerToleranceOutput
         && facingTarget.getAsBoolean();
   }
 

@@ -23,7 +23,8 @@ public class ShooterPivotIOTalonFX implements ShooterPivotIO {
     this.positionRequest = new MotionMagicVoltage(0);
 
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+        () -> motor.getConfigurator().apply(ShooterConstants.PivotConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
 
     motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);

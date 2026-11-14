@@ -73,12 +73,12 @@ public class FieldRelative {
     return Optional.ofNullable(best).map(t -> AllianceFlip.apply(t));
   }
 
-  // Whether passing from the robot to the target would be blocked by the obstruction
+  /* Whether passing from the robot to the target would be blocked by the obstruction */
   private static boolean blocks(Bounds obstruction, Translation2d robot, Translation2d target) {
-    double[] lows = {obstruction.minX(), obstruction.minY()};
-    double[] highs = {obstruction.maxX(), obstruction.maxY()};
-    double[] position = {robot.getX(), robot.getY()};
-    double[] direction = {target.getX() - robot.getX(), target.getY() - robot.getY()};
+    double[] lows = { obstruction.minX(), obstruction.minY() };
+    double[] highs = { obstruction.maxX(), obstruction.maxY() };
+    double[] position = { robot.getX(), robot.getY() };
+    double[] direction = { target.getX() - robot.getX(), target.getY() - robot.getY() };
 
     double pathMin = 0.0;
     double pathMax = 1.0;

@@ -30,11 +30,11 @@ public class Shooter {
   private double distance = 0.0;
 
   public Shooter(
-    ShooterKickerIO kickerio,
-    ShooterPivotIO pivotio,
-    ShooterRollerIO rollerio,
-    Supplier<Pose2d> pose,
-    BooleanSupplier facingTarget) {
+      ShooterKickerIO kickerio,
+      ShooterPivotIO pivotio,
+      ShooterRollerIO rollerio,
+      Supplier<Pose2d> pose,
+      BooleanSupplier facingTarget) {
     this.pose = pose;
     this.pivot = new ShooterPivot(pivotio, this::getScoreDistance);
     this.roller = new ShooterRoller(rollerio, facingTarget, this::getScoreDistance);
@@ -59,7 +59,8 @@ public class Shooter {
     pivot.setIdle();
   }
 
-  public Command setState(ShooterKickerState kickerState, ShooterPivotState pivotState, ShooterRollerState rollerState) {
+  public Command setState(ShooterKickerState kickerState, ShooterPivotState pivotState,
+      ShooterRollerState rollerState) {
     return kicker.setState(kickerState).alongWith(pivot.setState(pivotState)).alongWith(roller.setState(rollerState));
   }
 
@@ -74,15 +75,16 @@ public class Shooter {
   public ShooterRollerState getRollerState() {
     return roller.getState();
   }
-  
+
   public double getScoreDistance() {
-    distance = pose.get().getTranslation().getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
+    distance = pose.get().getTranslation()
+        .getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
     return distance;
   }
 
   public double getPassDistance() {
     double zoneLineX = AllianceFlip.apply(
-      new Translation2d(FieldConstants.LinesVertical.kAllianceZone, 0.0)).getX();
+        new Translation2d(FieldConstants.LinesVertical.kAllianceZone, 0.0)).getX();
     return Math.abs(pose.get().getX() - zoneLineX);
   }
 

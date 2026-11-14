@@ -34,10 +34,10 @@ public class AllianceFlip {
 
   public static Bounds flip(Bounds bounds) {
     return new Bounds(
-          flipX(bounds.maxX()),
-          flipX(bounds.minX()),
-          flipY(bounds.maxY()),
-          flipY(bounds.minY()));
+        flipX(bounds.maxX()),
+        flipX(bounds.minX()),
+        flipY(bounds.maxY()),
+        flipY(bounds.minY()));
   }
 
   public static double applyX(double x) {
@@ -86,9 +86,9 @@ public class AllianceFlip {
   public static Rectangle2d apply(Rectangle2d rect) {
     if (shouldFlip()) {
       return new Rectangle2d(
-        apply(rect.getCenter()),
-        rect.getXWidth(),
-        rect.getYWidth());
+          apply(rect.getCenter()),
+          rect.getXWidth(),
+          rect.getYWidth());
     } else {
       return rect;
     }

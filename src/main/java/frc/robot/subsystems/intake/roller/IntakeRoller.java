@@ -46,13 +46,13 @@ public class IntakeRoller extends SubsystemBase {
   public Command setState(IntakeRollerState state) {
     return (switch (state) {
       case kIdle -> runOnce(() -> setVoltage(IntakeConstants.kIdleVoltage));
-      case kIntake -> 
+      case kIntake ->
         Commands.waitUntil(pivotDeployed)
-        .andThen(runOnce(() -> setVoltage(IntakeConstants.kIntakeVoltage)));
+            .andThen(runOnce(() -> setVoltage(IntakeConstants.kIntakeVoltage)));
       case kEject ->
         Commands.waitUntil(pivotDeployed)
-        .andThen(runOnce(() -> setVoltage(IntakeConstants.kEjectVoltage)));
-    }).beforeStarting(() -> {this.state = state;})
+            .andThen(runOnce(() -> setVoltage(IntakeConstants.kEjectVoltage)));
+    }).beforeStarting(() -> { this.state = state; })
       .withName("[Intake/Roller] Run from state: " + state.toString());
   }
 

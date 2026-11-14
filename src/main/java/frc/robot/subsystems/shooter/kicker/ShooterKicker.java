@@ -37,8 +37,8 @@ public class ShooterKicker extends SubsystemBase {
   private ShooterKickerState state;
 
   public ShooterKicker(
-    ShooterKickerIO io,
-    BooleanSupplier readyToFeed) {
+      ShooterKickerIO io,
+      BooleanSupplier readyToFeed) {
     this.io = io;
     this.inputs = new ShooterKickerIOInputsAutoLogged();
 
@@ -57,8 +57,8 @@ public class ShooterKicker extends SubsystemBase {
       case kEject -> runOnce(() -> setVoltage(ShooterConstants.kKickerEjectVoltage));
       case kFeed ->
         Commands.waitTime(Constants.kRollerDelay)
-          .andThen(runOnce(() -> setVoltage(ShooterConstants.kKickerFeedVoltage)));
-    }).beforeStarting(() -> {this.state = state;})
+            .andThen(runOnce(() -> setVoltage(ShooterConstants.kKickerFeedVoltage)));
+    }).beforeStarting(() -> { this.state = state; })
       .withName("[Shooter/Kicker] Run from state: " + state.toString());
   }
 

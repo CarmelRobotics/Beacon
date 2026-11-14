@@ -27,9 +27,10 @@ public class ShooterKickerIOTalonFX implements ShooterKickerIO {
     this.velocityRequest = new VelocityVoltage(0);
     this.voltageRequest = new VoltageOut(0);
     this.dutyCycleRequest = new DutyCycleOut(0);
-    
+
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> motor.getConfigurator().apply(ShooterConstants.KickerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+        () -> motor.getConfigurator().apply(ShooterConstants.KickerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
 
     motorStatus.setUpdateFrequency(ShooterConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);

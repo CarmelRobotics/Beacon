@@ -33,10 +33,12 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
     this.positionRequest = new MotionMagicVoltage(0);
 
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> leftLeaderMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+        () -> leftLeaderMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> rightFollowerMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
-    
+        () -> rightFollowerMotor.getConfigurator().apply(IntakeConstants.PivotConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
+
     rightFollowerMotor.setControl(new Follower(leftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     leaderStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
     followerStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);
@@ -53,7 +55,7 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
   @Override
   public void updatePID(double kA, double kD, double kI, double kP, double kS, double kV) {
     final Slot0Configs config = new Slot0Configs()
-      .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
+        .withKA(kA).withKD(kD).withKI(kI).withKP(kP).withKS(kS).withKV(kV);
 
     leftLeaderMotor.getConfigurator().apply(config);
     rightFollowerMotor.getConfigurator().apply(config);
@@ -61,9 +63,9 @@ public class IntakePivotIOTalonFX implements IntakePivotIO {
 
   public void updateMotionMagic(double kCruiseVelocity, double kAcceleration, double kJerk) {
     final MotionMagicConfigs config = new MotionMagicConfigs()
-      .withMotionMagicCruiseVelocity(kCruiseVelocity)
-      .withMotionMagicAcceleration(kAcceleration)
-      .withMotionMagicJerk(kJerk);
+        .withMotionMagicCruiseVelocity(kCruiseVelocity)
+        .withMotionMagicAcceleration(kAcceleration)
+        .withMotionMagicJerk(kJerk);
 
     leftLeaderMotor.getConfigurator().apply(config);
     rightFollowerMotor.getConfigurator().apply(config);

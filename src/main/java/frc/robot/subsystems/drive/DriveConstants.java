@@ -64,8 +64,8 @@ public class DriveConstants {
       .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
   private static final Slot0Configs DriveGains = new Slot0Configs()
-    .withKP(0.1).withKI(0).withKD(0)
-    .withKS(0).withKV(0.747);
+      .withKP(0.1).withKI(0).withKD(0)
+      .withKS(0).withKV(0.747);
 
   private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
   private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
@@ -74,11 +74,10 @@ public class DriveConstants {
   private static final SteerMotorArrangement kSteerMotorType = SteerMotorArrangement.TalonFX_Integrated;
 
   private static final TalonFXConfiguration DriveInitialConfigs = new TalonFXConfiguration()
-    .withCurrentLimits(
-      new CurrentLimitsConfigs()
-        .withStatorCurrentLimit(Amps.of(40))
-        .withStatorCurrentLimitEnable(true)
-    );
+      .withCurrentLimits(
+          new CurrentLimitsConfigs()
+              .withStatorCurrentLimit(Amps.of(40))
+              .withStatorCurrentLimitEnable(true));
   private static final TalonFXConfiguration SteerInitialConfigs = new TalonFXConfiguration()
       .withCurrentLimits(
           new CurrentLimitsConfigs()

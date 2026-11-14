@@ -30,10 +30,12 @@ public class IntakeRollerIOTalonFX implements IntakeRollerIO {
 
     this.voltageRequest = new VoltageOut(0);
 
-    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts, 
-      () -> leftLeaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
-      () -> rightFollowerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+        () -> leftLeaderMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> rightFollowerMotor.getConfigurator().apply(IntakeConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
 
     rightFollowerMotor.setControl(new Follower(leftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     leaderStatus.setUpdateFrequency(IntakeConstants.kStatusFrequency);

@@ -48,28 +48,27 @@ public class Auto {
 
   public Command larpAuto() {
     return Commands.sequence(
-      drive.seedFieldCentric(),
+        drive.seedFieldCentric(),
 
-      drive.run(() -> drive.runVelocity(new ChassisSpeeds(-1.0, 0.0, 0.0)))
-        .withTimeout(Seconds.of(1)),
+        drive.run(() -> drive.runVelocity(new ChassisSpeeds(-1.0, 0.0, 0.0)))
+            .withTimeout(Seconds.of(1)),
 
-      drive.runOnce(drive::stop),
-      drive.targetedDrive(
-        () -> 0,
-        () -> 0,
-        0.0,
-        field::hubTarget).until(drive::isFacingTarget),
-      drive.runOnce(drive::stop),
+        drive.runOnce(drive::stop),
+        drive.targetedDrive(
+            () -> 0,
+            () -> 0,
+            0.0,
+            field::hubTarget).until(drive::isFacingTarget),
+        drive.runOnce(drive::stop),
 
-      shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore)
-        .alongWith(indexer.setState(IndexerState.kFeed)),
-        
-      Commands.waitSeconds(13.0)
-    ).finallyDo(() -> {
-      intake.setIdle();
-      indexer.setIdle();
-      shooter.setIdle();
-    });
+        shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore)
+            .alongWith(indexer.setState(IndexerState.kFeed)),
+
+        Commands.waitSeconds(13.0)).finallyDo(() -> {
+          intake.setIdle();
+          indexer.setIdle();
+          shooter.setIdle();
+        });
   }
 
   private Command appliedPathPlannerAuto(String autoName) {
