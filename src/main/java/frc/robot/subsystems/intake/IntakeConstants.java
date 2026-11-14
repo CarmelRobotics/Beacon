@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -39,7 +40,8 @@ public final class IntakeConstants {
     public static final double kMotionMagicJerk = 1600;
 
     public static final MotorOutputConfigs MotorOutputConfigs = new MotorOutputConfigs()
-        .withNeutralMode(NeutralModeValue.Brake);
+        .withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.CounterClockwise_Positive);
 
     public static final Slot0Configs Slot0Configs = new Slot0Configs()
         .withKS(kS).withKV(kV).withKA(kA).withKP(kP)
@@ -52,7 +54,7 @@ public final class IntakeConstants {
 
     public static final SoftwareLimitSwitchConfigs SoftWareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
       .withForwardSoftLimitEnable(true)
-      .withForwardSoftLimitThreshold(Degrees.of(6600));
+      .withForwardSoftLimitThreshold(Degrees.of(6100));
 
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(PivotConfigs.Slot0Configs)
@@ -78,7 +80,8 @@ public final class IntakeConstants {
   public static final Voltage kEjectVoltage = Volts.of(-7);
   
   public static final Angle kStowAngle = Degrees.of(0);
-  public static final Angle kDeployAngle = Degrees.of(6450);
+  public static final Angle kAgitatePushAngle = Degrees.of(4200);
+  public static final Angle kDeployAngle = Degrees.of(5900);
 
   public static final Angle kToleranceAngle = Degrees.of(100);
   public static final Time kToleranceTimeout = Seconds.of(0.75);

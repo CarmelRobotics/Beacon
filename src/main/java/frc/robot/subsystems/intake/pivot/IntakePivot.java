@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeConstants.IntakePivotState;
 import frc.robot.util.LoggedTunableNumber;
@@ -75,12 +76,13 @@ public class IntakePivot extends SubsystemBase {
       case kStow -> runOnce(() -> setPosition(IntakeConstants.kStowAngle));
       case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
       case kAgitate ->
-        Commands.repeatingSequence(
-          runOnce(() -> setPosition(Degrees.of(4700))),
-          waitForTarget(),
-          runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
-          waitForTarget()
-        );
+        Commands.waitTime(Constants.kRollerDelay).andThen(
+          Commands.repeatingSequence(
+            runOnce(() -> setPosition(IntakeConstants.kAgitatePushAngle)),
+            waitForTarget(),
+            runOnce(() -> setPosition(IntakeConstants.kDeployAngle)),
+            waitForTarget()
+          ));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Intake/Pivot] Run from state: " + state.toString());
   }
