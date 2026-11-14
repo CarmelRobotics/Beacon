@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 
 public class Indexer extends SubsystemBase {
@@ -41,17 +42,17 @@ public class Indexer extends SubsystemBase {
   public Command setState(IndexerState state) {
     return (switch (state) {
       case kIdle -> runOnce(() -> setVoltage(IndexerConstants.kIdleVoltage));
-      case kIntake -> runOnce(() -> setVoltage(IndexerConstants.kIntakeVoltage));
       case kEject -> runOnce(() -> setVoltage(IndexerConstants.kEjectVoltage));
-      case kAgitate -> Commands.repeatingSequence(
-        run(() -> setVoltage(IndexerConstants.kFeedVoltage)).withTimeout(IndexerConstants.kAgitateTimeout),
-        run(() -> setVoltage(IndexerConstants.kEjectVoltage)).withTimeout(IndexerConstants.kAgitateTimeout)
-      );
       case kFeed ->
-        Commands.waitUntil(readyToFeed)
-          .andThen(runOnce(() -> setVoltage(IndexerConstants.kFeedVoltage)));
+        Commands.waitTime(Constants.kRollerDelay)
+          .andThen(run(() -> setVoltage(IndexerConstants.kFeedVoltage)));
     }).beforeStarting(() -> {this.state = state;})
       .withName("[Indexer] Run from state: " + state.toString());
+  }
+
+  public void setIdle() {
+    this.state = IndexerState.kIdle;
+    setVoltage(IndexerConstants.kIdleVoltage);
   }
 
   public IndexerState getState() {

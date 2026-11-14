@@ -18,16 +18,14 @@ public final class IndexerConstants {
 
   public static final Voltage kIdleVoltage = Volts.zero();
   public static final Voltage kIntakeVoltage = Volts.of(-4);
-  public static final Voltage kFeedVoltage = Volts.of(-4);
-  public static final Voltage kEjectVoltage = Volts.of(4);
+  public static final Voltage kFeedVoltage = Volts.of(-12);
+  public static final Voltage kEjectVoltage = Volts.of(5);
 
   public static final Time kAgitateTimeout = Seconds.of(0.5);
 
   public enum IndexerState {
     kIdle,
-    kIntake,
     kEject,
-    kAgitate,
     kFeed;
   }
 
