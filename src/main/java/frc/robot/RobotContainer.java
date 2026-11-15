@@ -204,15 +204,23 @@ public class RobotContainer {
         .onFalse(intakeIdleAndDeploy);
 
     /* Shooter Passing */
-    controller.rightBumper()
+    controller.rightBumper().and(field::isPassable).whileTrue(
+        drive.targetedDrive(
+          () -> -controller.getLeftY(),
+          () -> -controller.getLeftX(),
+          0.1,
+          field::passingTarget));
+    controller.rightBumper().and(field::isPassable)
         .onTrue(shooterPass)
         .onFalse(shooterIdle);
-    controller.rightBumper()
+    controller.rightBumper().and(field::isPassable)
         .whileTrue(indexerFeed)
         .onFalse(indexerIdle);
-    controller.rightBumper()
+    controller.rightBumper().and(field::isPassable)
         .whileTrue(intakeAgitate)
         .onFalse(intakeIdleAndDeploy);
+    controller.rightBumper().and(field::isNotPassable)
+        .whileTrue(controllerWarn);
   }
 
   public Command getTeleoperatedCommand() {
