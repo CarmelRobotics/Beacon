@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -20,6 +21,7 @@ import frc.robot.util.LoggedTunableNumber;
 public class IntakePivot extends SubsystemBase {
   private final IntakePivotIO io;
   private final IntakePivotIOInputsAutoLogged inputs;
+  private final BooleanSupplier readyToFeed;
 
   private final Alert leaderDisconnected;
   private final Alert followerDisconnected;
@@ -39,9 +41,10 @@ public class IntakePivot extends SubsystemBase {
   @AutoLogOutput(key = "Intake/Pivot/State")
   private IntakePivotState state;
 
-  public IntakePivot(IntakePivotIO io) {
+  public IntakePivot(IntakePivotIO io, BooleanSupplier readyToFeed) {
     this.io = io;
     this.inputs = new IntakePivotIOInputsAutoLogged();
+    this.readyToFeed = readyToFeed;
 
     this.leaderDisconnected = new Alert("[Intake/Pivot] Leader Pivot Motor Disconnected.", AlertType.kError);
     this.followerDisconnected = new Alert("[Intake/Pivot] Follower Pivot Motor Disconnected.", AlertType.kError);
@@ -75,7 +78,7 @@ public class IntakePivot extends SubsystemBase {
       case kStow -> runOnce(() -> setPosition(IntakeConstants.kStowAngle));
       case kDeploy -> runOnce(() -> setPosition(IntakeConstants.kDeployAngle));
       case kAgitate ->
-        Commands.waitTime(IntakeConstants.kAgitateDelay).andThen(
+        Commands.waitUntil(readyToFeed).andThen(
             Commands.repeatingSequence(
                 runOnce(() -> setPosition(IntakeConstants.kAgitatePushAngle)),
                 waitForTarget(),

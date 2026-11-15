@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,8 +15,8 @@ public class Intake {
   private final IntakePivot pivot;
   private final IntakeRoller roller;
 
-  public Intake(IntakePivotIO pivotio, IntakeRollerIO rollerio) {
-    this.pivot = new IntakePivot(pivotio);
+  public Intake(IntakePivotIO pivotio, IntakeRollerIO rollerio, BooleanSupplier readyToFeed) {
+    this.pivot = new IntakePivot(pivotio, readyToFeed);
     this.roller = new IntakeRoller(rollerio, pivot::isDeployed);
   }
 

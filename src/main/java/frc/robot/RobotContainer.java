@@ -84,7 +84,7 @@ public class RobotContainer {
           drive::getPose,
           drive::isFacingTarget);
         this.indexer = new Indexer(new IndexerIOTalonFX(), shooter::isReadyToFeed);
-        this.intake = new Intake(new IntakePivotIOTalonFX(), new IntakeRollerIOTalonFX());
+        this.intake = new Intake(new IntakePivotIOTalonFX(), new IntakeRollerIOTalonFX(), shooter::isReadyToFeed);
       }
       case kSim -> {
         this.drive = new Drive(
@@ -107,7 +107,7 @@ public class RobotContainer {
           drive::isFacingTarget
         );
         this.indexer = new Indexer(new IndexerIOSim(), shooter::isReadyToFeed);
-        this.intake = new Intake(new IntakePivotIOSim(), new IntakeRollerIOSim());
+        this.intake = new Intake(new IntakePivotIOSim(), new IntakeRollerIOSim(), shooter::isReadyToFeed);
       }
       default -> {
         this.drive = new Drive(
@@ -127,7 +127,7 @@ public class RobotContainer {
           drive::getPose,
           drive::isFacingTarget);
         this.indexer = new Indexer(new IndexerIO() {}, shooter::isReadyToFeed);
-        this.intake = new Intake(new IntakePivotIO() {}, new IntakeRollerIO() {});
+        this.intake = new Intake(new IntakePivotIO() {}, new IntakeRollerIO() {}, shooter::isReadyToFeed);
       }
     }
 

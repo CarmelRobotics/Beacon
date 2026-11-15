@@ -97,8 +97,6 @@ public final class IntakeConstants {
   public static final Angle kToleranceAngle = Degrees.of(100);
   public static final Time kToleranceTimeout = Seconds.of(0.75);
 
-  public static final Time kAgitateDelay = Seconds.of(1.5);
-
   public enum IntakeRollerState {
     kIdle,
     kIntake,
