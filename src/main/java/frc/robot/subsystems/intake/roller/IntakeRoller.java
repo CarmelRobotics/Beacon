@@ -1,3 +1,6 @@
+// Copyright (c) 2025-2026 Rockin' Bots
+// https://github.com/CarmelRobotics
+
 package frc.robot.subsystems.intake.roller;
 
 import static edu.wpi.first.units.Units.Volts;

@@ -1,3 +1,6 @@
+// Copyright (c) 2025-2026 Rockin' Bots
+// https://github.com/CarmelRobotics
+
 package frc.robot.util.motorstatus;
 
 import edu.wpi.first.units.measure.Angle;
