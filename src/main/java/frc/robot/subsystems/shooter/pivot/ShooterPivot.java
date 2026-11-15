@@ -2,8 +2,6 @@ package frc.robot.subsystems.shooter.pivot;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -22,8 +20,6 @@ public class ShooterPivot extends SubsystemBase {
 
   private final Alert motorDisconnected;
 
-  private final DoubleSupplier targetDistance;
-
   private final LoggedTunableNumber kA;
   private final LoggedTunableNumber kD;
   private final LoggedTunableNumber kI;
@@ -39,13 +35,11 @@ public class ShooterPivot extends SubsystemBase {
   @AutoLogOutput(key = "Shooter/Pivot/State")
   private ShooterPivotState state;
 
-  public ShooterPivot(ShooterPivotIO io, DoubleSupplier targetDistanceSupplier) {
+  public ShooterPivot(ShooterPivotIO io) {
     this.io = io;
     this.inputs = new ShooterPivotIOInputsAutoLogged();
 
     this.motorDisconnected = new Alert("[Shooter/Pivot] Pivot Motor Disconnected.", AlertType.kError);
-
-    this.targetDistance = targetDistanceSupplier;
 
     this.kA = new LoggedTunableNumber("Shooter/Pivot/kA", ShooterConstants.PivotConfigs.kA);
     this.kD = new LoggedTunableNumber("Shooter/Pivot/kD", ShooterConstants.PivotConfigs.kD);
@@ -72,10 +66,8 @@ public class ShooterPivot extends SubsystemBase {
   public Command setState(ShooterPivotState state) {
     return (switch (state) {
       case kStow -> runOnce(() -> setPosition(ShooterConstants.kPivotStowAngle));
-      case kPass -> run(() -> setPosition(ShooterConstants.kPivotStaticPassAngle));
-      case kStaticScore -> runOnce(() -> setPosition(ShooterConstants.kPivotStaticScoreAngle));
-      case kScore ->
-        run(() -> setPosition(Degrees.of(ShooterConstants.PivotScoringMap.get(targetDistance.getAsDouble()))));
+      case kPass -> run(() -> setPosition(ShooterConstants.kPivotPassAngle));
+      case kScore -> runOnce(() -> setPosition(ShooterConstants.kPivotScoreAngle));
     }).beforeStarting(() -> { this.state = state; })
       .withName("[Shooter/Pivot] Run from state: " + state.toString());
   }

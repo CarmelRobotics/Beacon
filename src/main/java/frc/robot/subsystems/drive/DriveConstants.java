@@ -47,7 +47,6 @@ public class DriveConstants {
   public static final CANBus kCANBus = new CANBus("canivore");
 
   // 50 hz temporary fix to prevent command overruns.
-  // TODO: investigate optimal frequency for RoboRIO 1.
   public static final Frequency kStatusFrequency = Hertz.of(50.0);
   public static final Frequency kOdometryFrequency = Hertz.of(kCANBus.isNetworkFD() ? 50.0 : 50.0);
 
@@ -76,13 +75,13 @@ public class DriveConstants {
   private static final TalonFXConfiguration DriveInitialConfigs = new TalonFXConfiguration()
       .withCurrentLimits(
           new CurrentLimitsConfigs()
-              .withStatorCurrentLimit(Amps.of(40))
-              .withStatorCurrentLimitEnable(true));
+              .withSupplyCurrentLimit(Amps.of(30))
+              .withSupplyCurrentLimitEnable(true));
   private static final TalonFXConfiguration SteerInitialConfigs = new TalonFXConfiguration()
       .withCurrentLimits(
           new CurrentLimitsConfigs()
-              .withStatorCurrentLimit(Amps.of(40))
-              .withStatorCurrentLimitEnable(true));
+              .withSupplyCurrentLimit(Amps.of(30))
+              .withSupplyCurrentLimitEnable(true));
   private static final CANcoderConfiguration EncoderInitialConfigs = new CANcoderConfiguration();
   private static final Pigeon2Configuration Pigeon2InitialConfigs = new Pigeon2Configuration();
 

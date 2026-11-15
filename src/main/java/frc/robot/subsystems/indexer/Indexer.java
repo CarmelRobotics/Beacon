@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.indexer.IndexerConstants.IndexerState;
 
 public class Indexer extends SubsystemBase {
@@ -44,7 +43,7 @@ public class Indexer extends SubsystemBase {
       case kIdle -> runOnce(() -> setVoltage(IndexerConstants.kIdleVoltage));
       case kEject -> runOnce(() -> setVoltage(IndexerConstants.kEjectVoltage));
       case kFeed ->
-        Commands.waitTime(Constants.kRollerDelay)
+        Commands.waitUntil(readyToFeed)
             .andThen(run(() -> setVoltage(IndexerConstants.kFeedVoltage)));
     }).beforeStarting(() -> { this.state = state;})
       .withName("[Indexer] Run from state: " + state.toString());

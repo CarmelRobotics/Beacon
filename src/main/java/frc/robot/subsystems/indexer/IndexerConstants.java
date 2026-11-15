@@ -1,9 +1,11 @@
 package frc.robot.subsystems.indexer;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Hertz;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -30,7 +32,12 @@ public final class IndexerConstants {
   }
 
   public static final class Configs {
-    public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration();
+    public static final CurrentLimitsConfigs CurrentLimitConfigs = new CurrentLimitsConfigs()
+      .withSupplyCurrentLimit(Amps.of(30))
+      .withSupplyCurrentLimitEnable(true);
+
+    public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
+      .withCurrentLimits(CurrentLimitConfigs);
 
     public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
     public static final double kSimMotorGearRatio = 1.0;

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.shooter.ShooterConstants.ShooterKickerState;
 
@@ -56,7 +55,7 @@ public class ShooterKicker extends SubsystemBase {
       case kIdle -> runOnce(() -> setVoltage(ShooterConstants.kKickerIdleVoltage));
       case kEject -> runOnce(() -> setVoltage(ShooterConstants.kKickerEjectVoltage));
       case kFeed ->
-        Commands.waitTime(Constants.kRollerDelay)
+        Commands.waitUntil(readyToFeed)
             .andThen(runOnce(() -> setVoltage(ShooterConstants.kKickerFeedVoltage)));
     }).beforeStarting(() -> { this.state = state; })
       .withName("[Shooter/Kicker] Run from state: " + state.toString());

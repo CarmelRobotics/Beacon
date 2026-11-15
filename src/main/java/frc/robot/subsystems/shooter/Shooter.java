@@ -26,8 +26,6 @@ public class Shooter {
   private final ShooterKicker kicker;
 
   private final Supplier<Pose2d> pose;
-  @AutoLogOutput(key = "Shooter/DistanceToTarget")
-  private double distance = 0.0;
 
   public Shooter(
       ShooterKickerIO kickerio,
@@ -36,7 +34,7 @@ public class Shooter {
       Supplier<Pose2d> pose,
       BooleanSupplier facingTarget) {
     this.pose = pose;
-    this.pivot = new ShooterPivot(pivotio, this::getScoreDistance);
+    this.pivot = new ShooterPivot(pivotio);
     this.roller = new ShooterRoller(rollerio, facingTarget, this::getScoreDistance);
     this.kicker = new ShooterKicker(kickerio, roller::isReadyToFeed);
   }
@@ -76,12 +74,13 @@ public class Shooter {
     return roller.getState();
   }
 
+  @AutoLogOutput(key = "Shooter/DistanceToScore")
   public double getScoreDistance() {
-    distance = pose.get().getTranslation()
+    return pose.get().getTranslation()
         .getDistance(AllianceFlip.apply(FieldConstants.Hub.kTopCenterPoint).toTranslation2d());
-    return distance;
   }
 
+  @AutoLogOutput(key = "Shooter/DistanceToPass")
   public double getPassDistance() {
     double zoneLineX = AllianceFlip.apply(
         new Translation2d(FieldConstants.LinesVertical.kAllianceZone, 0.0)).getX();

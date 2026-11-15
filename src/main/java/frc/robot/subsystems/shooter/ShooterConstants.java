@@ -30,14 +30,10 @@ public final class ShooterConstants {
 
   public static final Frequency kStatusFrequency = Hertz.of(50);
 
-  /* Distance in Meters -> Degrees */
-  public static final InterpolatingDoubleTreeMap PivotScoringMap = new InterpolatingDoubleTreeMap();
   /* Distance in Meters -> Rotations Per Second */
   public static final InterpolatingDoubleTreeMap RollerScoringVelocityMap = new InterpolatingDoubleTreeMap();
 
   static {
-    PivotScoringMap.put(1.0, 0.0);
-
     RollerScoringVelocityMap.put(2.0, 25.0);
     RollerScoringVelocityMap.put(2.770, 27.0);
     RollerScoringVelocityMap.put(3.140, 30.0);
@@ -72,7 +68,7 @@ public final class ShooterConstants {
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
         .withSlot0(PivotConfigs.Slot0Configs)
         .withMotionMagic(PivotConfigs.MotionMagicConfigs)
-        .withSoftwareLimitSwitch(SoftwareLimitSwitchConfigs);
+        .withSoftwareLimitSwitch(PivotConfigs.SoftwareLimitSwitchConfigs);
 
     public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
     public static final double kSimMotorGearRatio = 1.0;
@@ -87,11 +83,21 @@ public final class ShooterConstants {
     public static final double kS = 0.38;
     public static final double kV = 0.24;
 
+    public static final Slot0Configs Slot0Configs = new Slot0Configs()
+      .withKA(kA).withKD(kD).withKI(kI).withKP(kP)
+      .withKS(kS).withKV(kV);
+
+    public static final FeedbackConfigs FeedbackConfigs = new FeedbackConfigs()
+      .withSensorToMechanismRatio(2.1333);
+
+    public static final CurrentLimitsConfigs CurrentLimitConfigs = new CurrentLimitsConfigs()
+      .withSupplyCurrentLimit(Amps.of(60))
+      .withSupplyCurrentLimitEnable(true);
+
     public static final TalonFXConfiguration TalonFXConfiguration = new TalonFXConfiguration()
-        .withCurrentLimits(new CurrentLimitsConfigs()
-            .withStatorCurrentLimit(Amps.of(80))
-            .withStatorCurrentLimitEnable(true))
-        .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(2.1333));
+        .withSlot0(RollerConfigs.Slot0Configs)
+        .withFeedback(RollerConfigs.FeedbackConfigs)
+        .withCurrentLimits(RollerConfigs.CurrentLimitConfigs);
 
     public static final DCMotor kSimMotor = DCMotor.getKrakenX60(1);
     public static final double kSimMotorGearRatio = 2.0;
@@ -111,15 +117,14 @@ public final class ShooterConstants {
   public static final Voltage kKickerFeedVoltage = Volts.of(-12.0);
 
   public static final Angle kPivotStowAngle = Degrees.zero();
-  public static final Angle kPivotStaticScoreAngle = Degrees.of(0);
-  public static final Angle kPivotStaticPassAngle = Degrees.of(550);
+  public static final Angle kPivotScoreAngle = Degrees.of(0);
+  public static final Angle kPivotPassAngle = Degrees.of(550);
 
   public static final Voltage kRollerIdleVoltage = Volts.zero();
   public static final AngularVelocity kRollerPassVelocity = RotationsPerSecond.of(34);
   public static final AngularVelocity kRollerScoreVelocity = RotationsPerSecond.of(27);
 
   public static final AngularVelocity kRollerToleranceVelocity = RotationsPerSecond.of(3);
-  public static final double KRollerToleranceOutput = 0.1;
 
   public enum ShooterKickerState {
     kIdle,
@@ -130,7 +135,6 @@ public final class ShooterConstants {
   public enum ShooterPivotState {
     kStow,
     kPass,
-    kStaticScore,
     kScore;
   }
 

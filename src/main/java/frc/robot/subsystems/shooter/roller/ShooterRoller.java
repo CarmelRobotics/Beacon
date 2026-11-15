@@ -96,7 +96,7 @@ public class ShooterRoller extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/Roller/ReadyToFeed")
   public boolean isReadyToFeed() {
-    return Math.abs(targetOutput - inputs.frontLeftOutput) <= ShooterConstants.KRollerToleranceOutput
+    return inputs.frontLeftVelocity.isNear(targetVelocity, ShooterConstants.kRollerToleranceVelocity)
         && facingTarget.getAsBoolean();
   }
 
