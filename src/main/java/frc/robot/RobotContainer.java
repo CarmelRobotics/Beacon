@@ -73,9 +73,8 @@ public class RobotContainer {
             new ModuleIOTalonFX(DriveConstants.BackRight));
         this.vision = new Vision(
             drive::addVisionMeasurement,
-            new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation)
-            /* Right Limelight Broken! Do not use. */
-            //new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation)
+            new VisionIOLimelight(VisionConstants.kLimelightLeft.name(), drive::getRotation),
+            new VisionIOLimelight(VisionConstants.kLimelightRight.name(), drive::getRotation)
             );
         
         this.shooter = new Shooter(
@@ -149,7 +148,7 @@ public class RobotContainer {
      */
 
     final Command controllerWarn = Commands.runEnd(
-      () -> controller.setRumble(RumbleType.kBothRumble, 0.5),
+      () -> controller.setRumble(RumbleType.kBothRumble, 1.0),
       () -> controller.setRumble(RumbleType.kBothRumble, 0));
 
     final Command intakeDeploy = intake.setState(IntakePivotState.kDeploy);
@@ -166,7 +165,6 @@ public class RobotContainer {
     final Command shooterIdle = shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle);
     final Command shooterScore = shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore);
     final Command shooterPass = shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kPass, ShooterRollerState.kPass);
-    final Command shooterRollerStaticScore = shooter.setState(ShooterRollerState.kStaticScore);
 
     final Command indexerIdle = indexer.setState(IndexerState.kIdle);
     final Command indexerFeed = indexer.setState(IndexerState.kFeed);
@@ -215,25 +213,19 @@ public class RobotContainer {
     controller.rightBumper()
         .whileTrue(intakeAgitate)
         .onFalse(intakeIdleAndDeploy);
+  }
 
-    /* Indexer Testing */
-    controller.b()
-      .onTrue(indexerFeed)
-      .onFalse(indexerIdle);
-    
-    /* Shooter Roller Testing */
-    controller.x()
-      .onTrue(shooterRollerStaticScore)
-      .onFalse(shooterIdle);
+  public Command getTeleoperatedCommand() {
+    /* Set everything to idle after auto */
+    return Commands.parallel(
+        drive.runOnce(drive::stop),
+        indexer.setState(IndexerState.kIdle),
+        intake.setState(IntakeRollerState.kIdle),
+        shooter.setState(ShooterKickerState.kIdle, ShooterPivotState.kStow, ShooterRollerState.kIdle)
+    );
   }
 
   public Command getAutonomousCommand() {
-    final Command selected = auto.getSelected();
-
-    if (selected == null) {
-      return Commands.none();
-    }
-
-    return selected;
+    return auto.getSelected();
   }
 }

@@ -51,24 +51,22 @@ public class Auto {
         drive.seedFieldCentric(),
 
         drive.run(() -> drive.runVelocity(new ChassisSpeeds(-1.0, 0.0, 0.0)))
-            .withTimeout(Seconds.of(1)),
+            .withTimeout(Seconds.of(1.0)),
 
         drive.runOnce(drive::stop),
+        
         drive.targetedDrive(
             () -> 0,
             () -> 0,
             0.0,
-            field::hubTarget).until(drive::isFacingTarget),
+            field::hubTarget
+          ).until(drive::isFacingTarget)
+           .withTimeout(Seconds.of(3.5)),
+        
         drive.runOnce(drive::stop),
 
         shooter.setState(ShooterKickerState.kFeed, ShooterPivotState.kScore, ShooterRollerState.kScore)
-            .alongWith(indexer.setState(IndexerState.kFeed)),
-
-        Commands.waitSeconds(13.0)).finallyDo(() -> {
-          intake.setIdle();
-          indexer.setIdle();
-          shooter.setIdle();
-        });
+            .alongWith(indexer.setState(IndexerState.kFeed)));
   }
 
   private Command appliedPathPlannerAuto(String autoName) {
