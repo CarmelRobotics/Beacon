@@ -49,6 +49,15 @@ public class ShooterRollerIOTalonFX implements ShooterRollerIO {
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
         () -> frontLeftLeaderMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration,
             Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> backLeftFollowerMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> frontRightFollowerMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
+    PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
+        () -> backRightFollowerMotor.getConfigurator().apply(ShooterConstants.RollerConfigs.TalonFXConfiguration,
+            Constants.kTimeoutSeconds));
 
     backLeftFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     frontRightFollowerMotor.setControl(new Follower(frontLeftLeaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));

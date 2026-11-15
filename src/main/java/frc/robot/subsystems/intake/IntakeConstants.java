@@ -12,7 +12,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -42,8 +41,7 @@ public final class IntakeConstants {
     public static final double kMotionMagicJerk = 1600;
 
     public static final MotorOutputConfigs MotorOutputConfigs = new MotorOutputConfigs()
-        .withNeutralMode(NeutralModeValue.Brake)
-        .withInverted(InvertedValue.CounterClockwise_Positive);
+        .withNeutralMode(NeutralModeValue.Brake);
 
     public static final Slot0Configs Slot0Configs = new Slot0Configs()
         .withKS(kS).withKV(kV).withKA(kA).withKP(kP)

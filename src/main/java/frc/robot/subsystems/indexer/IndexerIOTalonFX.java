@@ -21,6 +21,7 @@ public class IndexerIOTalonFX implements IndexerIO {
 
     PhoenixUtil.tryUntilOk(Constants.kMaxAttempts,
         () -> motor.getConfigurator().apply(IndexerConstants.Configs.TalonFXConfiguration, Constants.kTimeoutSeconds));
+    
     motorStatus.setUpdateFrequency(IndexerConstants.kStatusFrequency);
     ParentDevice.optimizeBusUtilizationForAll(motor);
   }
