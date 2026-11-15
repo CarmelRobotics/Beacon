@@ -21,7 +21,7 @@ public class TalonFXStatus implements MotorStatus {
   private final StatusSignal<Current> statorCurrent;
   private final StatusSignal<Temperature> temperature;
 
-  public TalonFXStatus(final TalonFX motor) {
+  public TalonFXStatus(TalonFX motor) {
     this.motor = motor;
     this.position = motor.getPosition();
     this.velocity = motor.getVelocity();

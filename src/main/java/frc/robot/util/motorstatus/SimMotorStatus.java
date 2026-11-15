@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class SimMotorStatus implements MotorStatus {
   private final DCMotorSim motor;
 
-  public SimMotorStatus(final DCMotorSim motor) {
+  public SimMotorStatus(DCMotorSim motor) {
     this.motor = motor;
   }
 
